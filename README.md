@@ -1,4 +1,4 @@
-# @lunapaint/png
+# @lunapaint/png-codec
 
 This is a PNG decoder library for JavaScript that runs in both the browser and in Node.js. It is used in [Luna Paint](https://marketplace.visualstudio.com/items?itemName=Tyriar.luna-paint) (an image editor for VS Code) to works with PNG files.
 
@@ -19,7 +19,7 @@ You can try it out on [`vscode.dev`](https://vscode.dev/) by installing the Luna
 The supported way of installing the project is through npm:
 
 ```
-npm install @lunapaint/png
+npm install @lunapaint/png-codec
 ```
 
 Alternatively you could use it as a submodule in git, or download the source from the releases page on GitHub.
