@@ -1,5 +1,5 @@
 import { deepStrictEqual } from 'assert';
-import { join, resolve } from 'path';
+import { join } from 'path';
 import { decodePng } from '../out/png.js';
 import * as fs from 'fs';
 import { KnownChunkTypes } from '../out/types.js';
