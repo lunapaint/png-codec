@@ -4,6 +4,7 @@
   "description": "Decode and encode png files in web or node",
   "main": "out/png.js",
   "type": "module",
+  "typings": "typings/api.d.ts",
   "scripts": {
     "build": "tsc -b ./tsconfig.all.json",
     "watch": "tsc -b -w ./tsconfig.all.json --preserveWatchOutput",
