@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "types": [],
+    "composite": true,
+    "strict": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "pretty": true,
+    "incremental": true,
+    "noImplicitOverride": true,
+    "module": "ES2020",
+    "target": "ES6",
+    "rootDir": ".",
+    "outDir": "../out",
+    "lib": [
+      "DOM",
+      "ES2020"
+    ]
+  },
+  "include": [
+    "./**/*"
+  ]
+}
