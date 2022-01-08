@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "types": [],
+    "types": [
+      "../node_modules/@types/mocha",
+      "../node_modules/@types/node"
+    ],
     "composite": true,
     "strict": true,
     "sourceMap": true,
@@ -11,7 +14,7 @@
     "module": "ESNext",
     "target": "ES2020",
     "rootDir": ".",
-    "outDir": "../out",
+    "outDir": "../out-test",
     "lib": [
       "DOM",
       "ES2020"
@@ -19,5 +22,8 @@
   },
   "include": [
     "./**/*"
+  ],
+  "references": [
+    { "path": "../src" }
   ]
 }

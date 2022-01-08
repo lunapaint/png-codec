@@ -1,0 +1,52 @@
+import { throws } from 'assert';
+import { join } from 'path';
+import { verifyPngSignature } from '../out/pngParser.js';
+import * as fs from 'fs';
+
+const pngSuiteRoot = 'test/pngsuite/png';
+
+function dataViewFromArray(data: number[]): DataView {
+  return new DataView(new Uint8Array(data).buffer);
+}
+
+async function dataViewFromFile(file: string): Promise<DataView> {
+  return new DataView(new Uint8Array(await fs.promises.readFile(file)).buffer);
+}
+
+describe('pngParser.signature', () => {
+  it('should throw when the data doesn\'t match the fixed 8-byte header', () => {
+    throws(() => {
+      verifyPngSignature(dataViewFromArray([0x41, 0x4D]));
+    });
+    throws(() => {
+      verifyPngSignature(dataViewFromArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]));
+    });
+  });
+  it('should verify for valid headers', () => {
+    verifyPngSignature(dataViewFromArray([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]));
+  });
+  it('should verify the header of valid png suite entries', async () => {
+    // TODO: Create helpers for iterating over fixture files
+    const testFiles = fs.readdirSync(join(pngSuiteRoot));
+    for (const file of testFiles) {
+      // Ignore non-png and corrupt png files
+      if (file.endsWith('png') && !file.startsWith('x')) {
+        verifyPngSignature(await dataViewFromFile(join(pngSuiteRoot, file)));
+      }
+    }
+  });
+  it('should throw for corrupt headers in png suite', async () => {
+    const testFiles = [
+      'xcrn0g04.png',
+      'xlfn0g04.png',
+      'xs1n0g01.png',
+      'xs2n0g01.png',
+      'xs4n0g01.png',
+      'xs7n0g01.png',
+    ];
+    for (const file of testFiles) {
+      const view = await dataViewFromFile(join(pngSuiteRoot, file));
+      throws(() => verifyPngSignature(view));
+    }
+  });
+});
