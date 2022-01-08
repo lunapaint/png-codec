@@ -1,0 +1,8 @@
+[submodule "test/imagetestsuite"]
+	path = test/imagetestsuite
+	url = https://github.com/lunapaint/imagetestsuite
+	branch = main
+[submodule "test/pngsuite"]
+	path = test/pngsuite
+	url = https://github.com/lunapaint/pngsuite
+	branch = main
