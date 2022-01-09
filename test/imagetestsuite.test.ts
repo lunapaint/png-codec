@@ -223,6 +223,15 @@ describe('pngParser.integration Image Test Suite', () => {
     createTests([
       ['138331052d7c6e4acebfaa92af314e12', 'invalid number of hIST entries', { shouldThrow: 'hIST: Invalid data length: 28 !== 30' }]
     ], imageTestSuiteRoot);
+    createTests([
+      ['4c5b82ba0a9c12356007bd71e52185b2', 'invalid sRGB length', { shouldThrow: 'sRGB: Invalid data length: 0 !== 1' }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['4f14b7aab3a41855378c5517342598b9', 'invalid tRNS length for palette image', { shouldThrow: 'tRNS: Invalid data length for color type 3: 174 > 173' }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)' }],
+    ], imageTestSuiteRoot);
   });
 
   describe('invalid chunk data property value', () => {
@@ -293,6 +302,45 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-3625f98e00148cdc136c53bdcd2d2e1e', 'should throw', { shouldThrow: true }],
       ['m2-3625f98e00148cdc136c53bdcd2d2e1e', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
+    createTests([
+      ['c-m1-49e39033e275de9786d8c41f834c710b', 'should throw', { shouldThrow: true }],
+      ['m1-49e39033e275de9786d8c41f834c710b', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['4aae896ba900c48c63cffc0cc9f8c4dc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['c-m1-4bdd87fd0324f0a3d84d6905d17e1731', 'should throw', { shouldThrow: true }],
+      ['m1-4bdd87fd0324f0a3d84d6905d17e1731', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['c-m1-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
+      ['c-m2-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
+      ['m1-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
+      ['m2-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['c-m1-585dd0ac594e8226c49ae7986b8f47d3', 'should throw', { shouldThrow: true }],
+      ['m1-585dd0ac594e8226c49ae7986b8f47d3', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['586914b5d01d3889fb7bb5c44fe29771', 'should throw', { shouldThrow: true }],
+      ['c-586914b5d01d3889fb7bb5c44fe29771', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['c-m1-58d30745083f25952342caafb6ee5f37', 'should throw', { shouldThrow: true }],
+      ['m1-58d30745083f25952342caafb6ee5f37', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['c-m2-593d4b1a0b5d13b539c6c098dc5797ca', 'should throw', { shouldThrow: true }],
+      ['c-m3-593d4b1a0b5d13b539c6c098dc5797ca', 'should throw', { shouldThrow: true }],
+      ['m1-593d4b1a0b5d13b539c6c098dc5797ca', 'should throw', { shouldThrow: true }],
+      ['m2-593d4b1a0b5d13b539c6c098dc5797ca', 'should throw', { shouldThrow: true }],
+      ['m3-593d4b1a0b5d13b539c6c098dc5797ca', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+    createTests([
+      ['m1-5ae377bebf643e2e53ba7038103e48c4', 'should throw', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
   });
 
   describe('valid files', () => {
@@ -308,164 +356,14 @@ describe('pngParser.integration Image Test Suite', () => {
     createTests([
       ['2d641a11233385bb37a524ff010a8531', '162x159, 32-bit RGB+alpha, non-interlaced, 75.2%', true],
     ], imageTestSuiteRoot);
+    createTests([
+      ['51a4d21670dc8dfa8ffc9e54afd62f5f', '160x278, 16-bit grayscale+alpha, interlaced, 71.4%', true],
+    ], imageTestSuiteRoot);
   });
 
-  createTests([
-    // tRNS not allowed in grayscale+alpha image
-    // zlib: inflate error = -3 (data error)
-    // illegal (unless recently approved) unknown, public chunk tEND
-    ['c-m1-49e39033e275de9786d8c41f834c710b', 'Damaged', { shouldThrow: true }],
-    // CRC error in chunk IHDR (computed dd8baef7, expected 4d9f902b)
-    // tRNS not allowed in grayscale+alpha image
-    // zlib: inflate error = -3 (data error)
-    // illegal (unless recently approved) unknown, public chunk tEND
-    ['m1-49e39033e275de9786d8c41f834c710b', 'Damaged', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // invalid IHDR image dimensions (0x0)
-    // file doesn't end with an IEND chunk
-    ['4aae896ba900c48c63cffc0cc9f8c4dc', 'Damaged', { shouldThrow: 'Last chunk is not IEND' }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // invalid tIME year (0)
-    // invalid IDAT row-filter type (45)
-    // private (invalid?) IDAT row-filter type (150) (warning)
-    // invalid IDAT row-filter type (124)
-    // invalid IDAT row-filter type (114)
-    // invalid IDAT row-filter type (127)
-    // private (invalid?) IDAT row-filter type (131) (warning)
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (22)
-    // private (invalid?) IDAT row-filter type (133) (warning)
-    // invalid IDAT row-filter type (36)
-    // private (invalid?) IDAT row-filter type (199) (warning)
-    // private (invalid?) IDAT row-filter type (242) (warning)
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (6)
-    // zlib: inflate error = -3 (data error)
-    ['c-m1-4bdd87fd0324f0a3d84d6905d17e1731', 'Damaged', { shouldThrow: true }],
-    // invalid tIME year (0)
-    // invalid IDAT row-filter type (45)
-    // private (invalid?) IDAT row-filter type (150) (warning)
-    // invalid IDAT row-filter type (124)
-    // invalid IDAT row-filter type (114)
-    // invalid IDAT row-filter type (127)
-    // private (invalid?) IDAT row-filter type (131) (warning)
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (22)
-    // CRC error in chunk IDAT (computed 1c93886a, expected 3577897a)
-    // private (invalid?) IDAT row-filter type (133) (warning)
-    // invalid IDAT row-filter type (36)
-    // private (invalid?) IDAT row-filter type (199) (warning)
-    // private (invalid?) IDAT row-filter type (242) (warning)
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (6)
-    // zlib: inflate error = -3 (data error)
-    ['m1-4bdd87fd0324f0a3d84d6905d17e1731', 'Damaged', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
-  createTests([
-    ['4c5b82ba0a9c12356007bd71e52185b2', 'invalid sRGB length', { shouldThrow: 'sRGB: Invalid data length: 0 !== 1' }],
-  ], imageTestSuiteRoot);
-  createTests([
-    ['4f14b7aab3a41855378c5517342598b9', 'invalid tRNS length for palette image', { shouldThrow: 'tRNS: Invalid data length for color type 3: 174 > 173' }],
-  ], imageTestSuiteRoot);
-  createTests([
-    ['51a4d21670dc8dfa8ffc9e54afd62f5f', '160x278, 16-bit grayscale+alpha, interlaced, 71.4%', true],
-  ], imageTestSuiteRoot);
-  createTests([
-    ['c-m1-559dcf17d281e285b7f09f943b9706de', 'invalid IDAT row-filter type (9)', true],
-    // invalid sBIT length
-    // PLTE not allowed in grayscale image
-    // zlib: inflate error = -3 (data error)
-    ['c-m2-559dcf17d281e285b7f09f943b9706de', 'Damaged', true],
-    // CRC error in chunk IHDR (computed ed8067bf, expected 9a875729)
-    // CRC error in chunk tRNS (computed 425e370a, expected f4381a37)
-    // invalid IDAT row-filter type (9)
-    ['m1-559dcf17d281e285b7f09f943b9706de', 'Damaged', true],
-    // CRC error in chunk IHDR (computed 8832f8c7, expected 9a875729)
-    // invalid sBIT length
-    // PLTE not allowed in grayscale image
-    // zlib: inflate error = -3 (data error)
-    ['m2-559dcf17d281e285b7f09f943b9706de', 'Damaged', true],
-  ], imageTestSuiteRoot);
-  createTests([
-    ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)' }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // invalid gAMA length
-    // zlib: inflate error = -3 (data error)
-    // illegal reserved-bit-set chunk IEmD
-    ['c-m1-585dd0ac594e8226c49ae7986b8f47d3', 'Damaged', { shouldThrow: true }],
-    // CRC error in chunk IHDR (computed d0f6e06c, expected 498bc8ef)
-    // invalid gAMA length
-    // zlib: inflate error = -3 (data error)
-    // illegal reserved-bit-set chunk IEmD
-    ['m1-585dd0ac594e8226c49ae7986b8f47d3', 'Damaged', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // CRC error in chunk bKGD (computed dfe780ae, expected 1f5dec03)
-    // zlib: inflate error = -3 (data error)
-    ['586914b5d01d3889fb7bb5c44fe29771', 'Damaged', { shouldThrow: true }],
-    // zlib: inflate error = -3 (data error)
-    ['c-586914b5d01d3889fb7bb5c44fe29771', 'Damaged', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // invalid IHDR image type (11)
-    // zlib: inflate error = -3 (data error)
-    ['c-m1-58d30745083f25952342caafb6ee5f37', 'Damaged', { shouldThrow: true }],
-    // invalid IHDR image type (11)
-    // CRC error in chunk IHDR (computed 164b6bd8, expected e421b305)
-    // zlib: inflate error = -3 (data error)
-    ['m1-58d30745083f25952342caafb6ee5f37', 'Damaged', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (28)
-    // private (invalid?) IDAT row-filter type (250) (warning)
-    // invalid IDAT row-filter type (73)
-    // invalid IDAT row-filter type (121)
-    ['c-m2-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (28)
-    // private (invalid?) IDAT row-filter type (250) (warning)
-    // invalid IDAT row-filter type (73)
-    // invalid IDAT row-filter type (121)
-    ['c-m3-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
-    // first chunk must be IHDR
-    // illegal (unless recently approved) unknown, public chunk vHDR
-    // first chunk must be IHDR
-    // invalid chunk name "IDA�" (49 44 41 ffffffaf)
-    // first chunk must be IHDR
-    // illegal critical, safe-to-copy chunk IDA�
-    // first chunk must be IHDR
-    // no IDAT chunks
-    ['m1-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (28)
-    // private (invalid?) IDAT row-filter type (250) (warning)
-    // invalid IDAT row-filter type (73)
-    // invalid IDAT row-filter type (121)
-    // CRC error in chunk IDAT (computed 4c13f9e8, expected 5542ce25)
-    ['m2-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
-    // private (invalid?) IDAT row-filter type (255) (warning)
-    // invalid IDAT row-filter type (28)
-    // private (invalid?) IDAT row-filter type (250) (warning)
-    // invalid IDAT row-filter type (73)
-    // invalid IDAT row-filter type (121)
-    // CRC error in chunk IDAT (computed 0deb5053, expected 5542ce25)
-    ['m3-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
-  createTests([
-    // private (invalid?) IDAT row-filter type (185) (warning)
-    // invalid IDAT row-filter type (9)
-    // zlib: inflate error = -3 (data error)
-    // illegal (unless recently approved) unknown, public chunk sTXt
-    ['m1-5ae377bebf643e2e53ba7038103e48c4', 'should throw', { shouldThrow: true }],
-  ], imageTestSuiteRoot);
 
 
-
-
+ // TODO: up to m1-5ae377bebf643e2e53ba7038103e48c4
 
 
 
