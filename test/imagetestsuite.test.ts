@@ -709,6 +709,54 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-58d30745083f25952342caafb6ee5f37', 'Damaged', { shouldThrow: true }],
     ], imageTestSuiteRoot);
   });
+  describe('Damaged', () => {
+    createTests([
+      // private (invalid?) IDAT row-filter type (255) (warning)
+      // invalid IDAT row-filter type (28)
+      // private (invalid?) IDAT row-filter type (250) (warning)
+      // invalid IDAT row-filter type (73)
+      // invalid IDAT row-filter type (121)
+      ['c-m2-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
+      // private (invalid?) IDAT row-filter type (255) (warning)
+      // invalid IDAT row-filter type (28)
+      // private (invalid?) IDAT row-filter type (250) (warning)
+      // invalid IDAT row-filter type (73)
+      // invalid IDAT row-filter type (121)
+      ['c-m3-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
+      // first chunk must be IHDR
+      // illegal (unless recently approved) unknown, public chunk vHDR
+      // first chunk must be IHDR
+      // invalid chunk name "IDA�" (49 44 41 ffffffaf)
+      // first chunk must be IHDR
+      // illegal critical, safe-to-copy chunk IDA�
+      // first chunk must be IHDR
+      // no IDAT chunks
+      ['m1-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
+      // private (invalid?) IDAT row-filter type (255) (warning)
+      // invalid IDAT row-filter type (28)
+      // private (invalid?) IDAT row-filter type (250) (warning)
+      // invalid IDAT row-filter type (73)
+      // invalid IDAT row-filter type (121)
+      // CRC error in chunk IDAT (computed 4c13f9e8, expected 5542ce25)
+      ['m2-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
+      // private (invalid?) IDAT row-filter type (255) (warning)
+      // invalid IDAT row-filter type (28)
+      // private (invalid?) IDAT row-filter type (250) (warning)
+      // invalid IDAT row-filter type (73)
+      // invalid IDAT row-filter type (121)
+      // CRC error in chunk IDAT (computed 0deb5053, expected 5542ce25)
+      ['m3-593d4b1a0b5d13b539c6c098dc5797ca', 'Damaged', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+  });
+  describe('Damaged', () => {
+    createTests([
+      // private (invalid?) IDAT row-filter type (185) (warning)
+      // invalid IDAT row-filter type (9)
+      // zlib: inflate error = -3 (data error)
+      // illegal (unless recently approved) unknown, public chunk sTXt
+      ['m1-5ae377bebf643e2e53ba7038103e48c4', 'Damaged', { shouldThrow: true }],
+    ], imageTestSuiteRoot);
+  });
 
 
 
