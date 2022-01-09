@@ -1,166 +1,13 @@
-import { deepStrictEqual, fail, ok, strictEqual } from 'assert';
-import * as fs from 'fs';
-import { createRequire } from 'module';
-import { join } from 'path';
-import { decodePng } from '../out/png.js';
-import { IPngMetadataSuggestedPaletteEntry, PngMetadata } from '../typings/api';
+/**
+ * @license
+ * Copyright (c) 2022 Daniel Imms <http://www.growingwiththeweb.com>
+ * Released under MIT license. See LICENSE in the project root for details.
+ */
+
+import { IPngMetadataSuggestedPaletteEntry } from '../typings/api';
+import { createTests } from './testUtil.js';
 
 const pngSuiteRoot = 'test/pngsuite/png';
-
-interface ITestOptions {
-  /**
-   * Whether the test should throw, if this is a string the Error.message will be checked.
-   */
-  shouldThrow?: boolean | string;
-  includesMetadata?: { [type: string]: PngMetadata | PngMetadata[] | ((e: PngMetadata) => boolean) | undefined };
-  expectedDimensions?: { width: number, height: number };
-  /**
-   * Whether to skip the data assertion of the test, this is only meant to be used temporarily.
-   *
-   * TODO: Fix any usages of this allowance.
-   */
-  skipDataAssertion?: boolean;
-  /**
-   * A custom expected data file to load instead of the default test case name.
-   */
-  customFile?: string;
-  /**
-   * Whether to convert the image to bit depth 8.
-   *
-   * Additionally, this will allow 16-bit -> 8-bit conversion "rounding errors" in the data
-   * assertion, +/-1 is allowed for all channels in the image. This happens because a different
-   * algorithm was used to generate the .bmp/.json reference files. It's not so important to be
-   * exact here as it the image fidelity was reduced and there's no canonical way of doing this.
-   */
-  forceBitDepth8?: boolean;
-  /**
-   * Ignore rgb channels when alpha is set to 0.
-   *
-   * TODO: Fix any usages of this allowance when hue information is retained.
-   */
-  ignoreTransparentHue?: boolean;
-}
-
-type TestCase = [name: string, description: string, skip?: boolean] | [name: string, description: string, options: ITestOptions];
-
-function createTests(testCases: TestCase[], fixture: string = pngSuiteRoot) {
-  for (const t of testCases) {
-    const name = t[0];
-    const description = t[1];
-    const shouldSkip = typeof t[2] === 'boolean' ? t[2] : false;
-    const options = typeof t[2] === 'object' ? t[2] : undefined;
-    (shouldSkip ? it.skip : it)(`${name} - ${description}`, async () => {
-      const data = new Uint8Array(await fs.promises.readFile(join(fixture, `${name}.png`)));
-      if (options?.shouldThrow) {
-        try {
-          await decodePng(data, { parseChunkTypes: '*' });
-        } catch (e: unknown) {
-          if (typeof options.shouldThrow === 'string') {
-            strictEqual((e as Error).message, options.shouldThrow);
-          }
-          return;
-        }
-        fail('Exception expected');
-      }
-      const decoded = await (options?.forceBitDepth8
-        ? decodePng(data, { parseChunkTypes: '*', force32: true })
-        : decodePng(data, { parseChunkTypes: '*' })
-      );
-
-      if (options?.includesMetadata) {
-        ok(decoded.metadata);
-        for (const expectedEntryType of Object.keys(options.includesMetadata)) {
-          const expectedEntry = options.includesMetadata[expectedEntryType] as PngMetadata | PngMetadata[] | ((e: PngMetadata) => boolean);
-          if (Array.isArray(expectedEntry)) {
-            const actualEntries = decoded.metadata.filter(e => e.type === expectedEntryType) as PngMetadata[] | undefined;
-            deepStrictEqual(actualEntries, expectedEntry);
-          } else {
-            const actualEntry = decoded.metadata.find(e => e.type === expectedEntryType) as PngMetadata | undefined;
-            if (typeof expectedEntry === 'function') {
-              ok(expectedEntry(actualEntry!));
-            } else {
-              deepStrictEqual(actualEntry, expectedEntry);
-            }
-          }
-        }
-      }
-      if (options?.skipDataAssertion) {
-        return;
-      }
-
-      // Assert dimensions
-      const size = name.startsWith('s') ? parseInt(name.substring(1, 3)) : 32;
-      strictEqual(decoded.image.width, options?.expectedDimensions?.width || size);
-      strictEqual(decoded.image.height, options?.expectedDimensions?.height || size);
-
-      const actual = Array.from(decoded.image.data);
-      const require = createRequire(import.meta.url);
-      const expected = require(`../test/pngsuite/json/${options?.customFile || name}.json`);
-      if (options?.forceBitDepth8 || options?.ignoreTransparentHue) {
-        for (let i = 0; i < actual.length; i += 4) {
-          assertPixel(actual, expected, i, options);
-        }
-      } else {
-        dataArraysEqual(actual, expected);
-      }
-    });
-  }
-}
-
-function assertPixel(actual: ArrayLike<number>, expected: ArrayLike<number>, i: number, options?: ITestOptions) {
-  if (options?.ignoreTransparentHue) {
-    if (expected[i + 3] === 0) {
-      if (actual[i + 3] !== expected[i + 3]) {
-        throw new Error(
-          `Alpha value for pixel ${i / 4} differs (index=${i}).\n\n` +
-          `  actual=${Array.prototype.slice.call(actual, i, i + 4)}\n` +
-          `  expected=${Array.prototype.slice.call(expected, i, i + 4)}`
-        );
-      }
-      return;
-    }
-  }
-  for (let c = 0; c < 4; c++) {
-    const success = (
-      (options?.forceBitDepth8 && Math.abs(actual[i] - expected[i]) <= 1) ||
-      actual[i + c] === expected[i + c]
-    );
-    if (!success) {
-      throw new Error(
-        `Channel value for pixel ${i / 4} (index=${i}).\n\n` +
-        `  actual=${Array.prototype.slice.call(actual, i, i + 4)}\n` +
-        `  expected=${Array.prototype.slice.call(expected, i, i + 4)}`
-      );
-    }
-  }
-}
-
-export function dataArraysEqual(actual: ArrayLike<number>, expected: ArrayLike<number>) {
-  strictEqual(actual.length, expected.length);
-
-  const padCount = actual.length.toString(16).length;
-
-  const failures: string[] = [];
-  for (let i = 0; i < actual.length; i++) {
-    if (actual[i] !== expected[i]) {
-      failures.push([
-        `Offset 0x${i.toString(16).toUpperCase().padStart(padCount, '0')} (${i})`,
-        `          |   Actual  Expected`,
-        ` ---------+--------------------`,
-        `  binary: | ${actual[i].toString(2).padStart(8, '0')}  ${expected[i].toString(2).padStart(8, '0')}`,
-        `  dec:    | ${actual[i].toString(10).padStart(8)}  ${expected[i].toString(10).padStart(8)}`,
-        `  hex:    | ${('0x' + actual[i].toString(16)).padStart(8)}  ${('0x' + expected[i].toString(16)).padStart(8)}`,
-      ].join('\n'));
-    }
-  }
-
-  if (failures.length > 0) {
-    fail(`Data arrays differ at ${failures.length} offsets:\n\n${failures.slice(0, Math.min(5, failures.length)).join('\n\n')}${failures.length > 5 ? `\n\n...${failures.length - 5} more...\n` : ''}`);
-  }
-
-  // Double check using node's assert lib
-  deepStrictEqual(actual, expected);
-}
 
 /**
  * Generate PngSuite suggested palette, note that both 8 bit and 16 bit palettes are the same in the
@@ -198,7 +45,7 @@ describe('pngParser.integration PngSuite', () => {
       ['basn4a16', '16 bit grayscale + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
       ['basn6a08', '3x8 bits rgb color + 8 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
       ['basn6a16', '3x16 bits rgb color + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Interlacing', () => {
     createTests([
@@ -219,7 +66,7 @@ describe('pngParser.integration PngSuite', () => {
       ['basi4a16', '16 bit grayscale + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
       ['basi6a08', '3x8 bits rgb color + 8 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
       ['basi6a16', '3x16 bits rgb color + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Odd sizes', () => {
     createTests([
@@ -259,7 +106,7 @@ describe('pngParser.integration PngSuite', () => {
       ['s39n3p04', '39x39 paletted file, no interlacing'],
       ['s40i3p04', '40x40 paletted file, interlaced'],
       ['s40n3p04', '40x40 paletted file, no interlacing'],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Background colors', () => {
     createTests([
@@ -275,7 +122,7 @@ describe('pngParser.integration PngSuite', () => {
       ['bgwn6a08', '3x8 bits rgb color, alpha, white background chunk', { skipDataAssertion: true, includesMetadata: { bKGD: { type: 'bKGD', color: [255, 255, 255] } } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
       ['bgyn6a16', '3x16 bits rgb color, alpha, yellow background chunk', { includesMetadata: { bKGD: { type: 'bKGD', color: [65535, 65535, 0] } } }],
       ['bgyn6a16', '3x16 bits rgb color, alpha, yellow background chunk [converted to 8 bit]', { skipDataAssertion: true, forceBitDepth8: true, customFile: 'bgyn6a16_to8' }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Transparency', () => {
     createTests([
@@ -296,7 +143,7 @@ describe('pngParser.integration PngSuite', () => {
       ['tp0n3p08', 'not transparent for reference (logo on gray)', { ignoreTransparentHue: true }],
       ['tp1n3p08', 'transparent, but no background chunk', { ignoreTransparentHue: true }],
       ['tm3n3p02', 'multiple levels of transparency, 3 entries', { ignoreTransparentHue: true }],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Gamma values', () => {
     createTests([
@@ -324,7 +171,7 @@ describe('pngParser.integration PngSuite', () => {
       ['g25n0g16', 'grayscale, file-gamma = 2.50 [converted to 8 bit]', { forceBitDepth8: true, customFile: 'g25n0g16_to8' }],
       ['g25n2c08', 'color, file-gamma = 2.50', { includesMetadata: { gAMA: [{ type: 'gAMA', value: 2.5 }] } }],
       ['g25n3p04', 'paletted, file-gamma = 2.50', { includesMetadata: { gAMA: [{ type: 'gAMA', value: 2.5 }] } }],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Image filtering', () => {
     createTests([
@@ -339,7 +186,7 @@ describe('pngParser.integration PngSuite', () => {
       ['f04n0g08', 'grayscale, no interlacing, filter-type 4'],
       ['f04n2c08', 'color, no interlacing, filter-type 4'],
       ['f99n0g04', 'bit-depth 4, filter changing per scanline'],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Additional palettes', () => {
     createTests([
@@ -396,7 +243,7 @@ describe('pngParser.integration PngSuite', () => {
         }
       }],
       ['ps2n2c16', 'six-cube suggested palette (2 bytes) in true-color image [converted to 8 bit]', { forceBitDepth8: true, customFile: 'ps2n2c16_to8' }],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Ancillary chunks', () => {
     createTests([
@@ -766,7 +613,7 @@ describe('pngParser.integration PngSuite', () => {
         }
       }],
       ['exif2c08', 'chunk with jpeg exif data', { includesMetadata: { eXIf: e => e.type === 'eXIf' && e.value.byteLength === 978 } }],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Chunk ordering', () => {
     createTests([
@@ -786,7 +633,7 @@ describe('pngParser.integration PngSuite', () => {
       ['oi9n0g16', 'grayscale image with all idat-chunks length one [converted to 8 bit]', { forceBitDepth8: true, customFile: 'oi9n0g16_to8' }],
       ['oi9n2c16', 'color image with all idat-chunks length one'],
       ['oi9n2c16', 'color image with all idat-chunks length one [converted to 8 bit]', { forceBitDepth8: true, customFile: 'oi9n2c16_to8' }],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Zlib compression level', () => {
     createTests([
@@ -794,7 +641,7 @@ describe('pngParser.integration PngSuite', () => {
       ['z03n2c08', 'color, no interlacing, compression level 3'],
       ['z06n2c08', 'color, no interlacing, compression level 6 (default)'],
       ['z09n2c08', 'color, no interlacing, compression level 9 (maximum)'],
-    ]);
+    ], pngSuiteRoot);
   });
   describe('Corrupted files', () => {
     createTests([
@@ -812,6 +659,6 @@ describe('pngParser.integration PngSuite', () => {
       ['xd9n2c08', 'bit-depth 99', { shouldThrow: true }],
       ['xdtn0g01', 'missing IDAT chunk', { shouldThrow: true }],
       ['xcsn0g01', 'incorrect IDAT checksum', { shouldThrow: true }],
-    ]);
+    ], pngSuiteRoot);
   });
 });
