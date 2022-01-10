@@ -44,7 +44,7 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 |---------|----------------------------------------|-------
 | [bKGD]  | Background color                       |
 | [cHRM]  | Primary chromaticities and white point |
-|  eXIf   | Exchangeable image file format         | This is not formally specified but added by convention.
+|  eXIf   | Exchangeable image file format         | This is not formally specified but is often added to files by convention.
 | [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image.
 | [hIST]  | Image histogram                        |
 | [iTXt]  | International textual data             |
