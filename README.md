@@ -33,6 +33,7 @@ These are the main reasons:
 - To integrate better with Luna Paint and my other existing and future decoders that depend on png (like ico).
 - The scope is limited, this project will eventually be "done" and need minimal maintenance.
 - I didn't want to go the wasm route in Luna Paint (yet?).
+- To have full control over how the code is loaded, Luna Paint uses dynamic imports extensively to reduce the amount of code loaded to combat slow startup times.
 - As an educational resource.
 - To have some fun.
 
