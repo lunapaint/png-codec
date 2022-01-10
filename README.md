@@ -25,6 +25,39 @@ npm install @lunapaint/png-codec
 Alternatively you could use it as a submodule in git, or download the source from the releases page on GitHub.
 
 
+## Chunk support
+
+PNGs are made up of a fixed signature followed by a series of chunks. The following chunks are supported, with some notes provided where applicable:
+
+**Critical chunks:**
+
+| Chunk   | Name          | Notes
+|---------|---------------|-------
+| [IHDR]  | Image header  |
+| [PLTE]  | Palette       |
+| [IDAT]  | Image data    | Full filtering and interlacing support for all bit depths (1, 2, 4, 8, 16) are supported.
+| [IEND]  | Image trailer |
+
+**Ancillary chunks:**
+
+| Chunk   | Name                                   | Notes
+|---------|----------------------------------------|-------
+| [bKGD]  | Background color                       |
+| [cHRM]  | Primary chromaticities and white point |
+|  eXIf   | Exchangeable image file format         | This is not formally specified but added by convention.
+| [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image.
+| [hIST]  | Image histogram                        |
+| [iTXt]  | International textual data             |
+| [pHYs]  | Physical pixel dimensions              |
+| [sBIT]  | Significant bits                       | Since the decoded buffer uses a minimum of uint8, this is only when the significant bits are in the range of 9-15.
+| [sPLT]  | Suggested palette                      |
+| [sRGB]  | Standard RGB colour space              |
+| [tEXt]  | Textual data                           |
+| [tIME]  | Image last-modification time           |
+| [tRNS]  | Transparency                           | Since this chunk modifies the resulting image, you cannot skip this chunk.
+| [zTXt]  | Compressed textual data                |
+
+
 ## Why does this exist?
 
 These are the main reasons:
@@ -47,3 +80,23 @@ The library has the single dependency [pako](https://github.com/nodeca/pako) whi
 
 - https://www.w3.org/TR/2003/REC-PNG-20031110
 - http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
+
+
+[IHDR]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11IHDR
+[PLTE]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11PLTE
+[IDAT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11IDAT
+[IEND]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11IEND
+
+[bKGD]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11bKGD
+[cHRM]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11cHRM
+[gAMA]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11gAMA
+[hIST]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11hIST
+[iTXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11iTXt
+[pHYs]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11pHYs
+[sBIT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sBIT
+[sPLT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sPLT
+[sRGB]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sRGB
+[tEXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tEXt
+[tIME]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tIME
+[tRNS]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tRNS
+[zTXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11zTXt
