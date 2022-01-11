@@ -55,6 +55,9 @@ describe('pngParser.integration Image Test Suite', () => {
       ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { shouldThrow: 'bKGD: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
+      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT' }],
+    ], imageTestSuiteRoot);
+    createTests([
       ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
     ], imageTestSuiteRoot);
   });
@@ -130,6 +133,9 @@ describe('pngParser.integration Image Test Suite', () => {
       ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)' }],
     ], imageTestSuiteRoot);
     createTests([
+      ['8711007ea5e351755a80cba913d16a32', 'invalid number of sPLT entries (0.6)', { shouldThrow: 'sPLT: Invalid data length: 6 should be divisible by entry size 10' }],
+    ], imageTestSuiteRoot);
+    createTests([
       ['b583e48e218193e4c287f033931a6314', 'invalid number of PLTE entries (0)', { shouldThrow: 'PLTE: Cannot have 0 entries' }],
     ], imageTestSuiteRoot);
     createTests([
@@ -157,9 +163,6 @@ describe('pngParser.integration Image Test Suite', () => {
       ['6399623892b45aa4901aa6e702c7a62d', 'invalid negative sCAL value(s)', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
-      ['8711007ea5e351755a80cba913d16a32', 'invalid number of sPLT entries (0.6)', true],
-    ], imageTestSuiteRoot);
-    createTests([
       ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', true],
     ], imageTestSuiteRoot);
     createTests([
@@ -173,7 +176,7 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       // TODO: Improve error
-      ['f5e7b9db8e8d002a26304f5c81889ee1', 'EOF while reading IHDR data', true],
+      ['f5e7b9db8e8d002a26304f5c81889ee1', 'EOF while reading IHDR data', { shouldThrow: 'EOF while reading chunk "IHDR" starting at offset 8' }],
     ], imageTestSuiteRoot);
   });
 
@@ -201,30 +204,30 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-1b5df699719c4a7cc8314ab9af139405', 'should throw', { shouldThrow: 'CRC for chunk "IDAT" at offset 0xa2 doesn\'t match (0xb4be58e1 !== 0x6275f80e)' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m1-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['c-m2-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['c-m3-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['c-m5-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['c-m6-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['c-m7-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['c-m8-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m1-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m2-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m3-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m4-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m5-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m6-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m7-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
-      ['m8-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', true],
+      ['c-m1-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['c-m2-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['c-m3-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['c-m5-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['c-m6-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['c-m7-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['c-m8-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m1-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m2-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m3-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m4-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m5-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m6-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m7-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
+      ['m8-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
       ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', true],
-      ['m1-272ae9468b7883e5cf61873a17271fb4', 'should throw', true],
-      ['m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', true],
+      ['c-m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', { shouldThrow: true }],
+      ['m1-272ae9468b7883e5cf61873a17271fb4', 'should throw', { shouldThrow: true }],
+      ['m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-2dc3bdd9274b121b851fa536b0e35b6a', 'should throw', { shouldThrow: true }],
@@ -251,10 +254,10 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-4bdd87fd0324f0a3d84d6905d17e1731', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m1-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
-      ['c-m2-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
-      ['m1-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
-      ['m2-559dcf17d281e285b7f09f943b9706de', 'should throw', true],
+      ['c-m1-559dcf17d281e285b7f09f943b9706de', 'should throw', { shouldThrow: true }],
+      ['c-m2-559dcf17d281e285b7f09f943b9706de', 'should throw', { shouldThrow: true }],
+      ['m1-559dcf17d281e285b7f09f943b9706de', 'should throw', { shouldThrow: true }],
+      ['m2-559dcf17d281e285b7f09f943b9706de', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-585dd0ac594e8226c49ae7986b8f47d3', 'should throw', { shouldThrow: true }],
@@ -279,8 +282,8 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-5ae377bebf643e2e53ba7038103e48c4', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m1-5e149c14dc7b7c16ff6bcedd1625ca31', 'should throw', true],
-      ['m1-5e149c14dc7b7c16ff6bcedd1625ca31', 'should throw', true],
+      ['c-m1-5e149c14dc7b7c16ff6bcedd1625ca31', 'should throw', { shouldThrow: true }],
+      ['m1-5e149c14dc7b7c16ff6bcedd1625ca31', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['5e2b64196b9e014e0ed0a27873cafdb3', 'should throw', { shouldThrow: true }],
@@ -343,8 +346,8 @@ describe('pngParser.integration Image Test Suite', () => {
       ['c-94e1bdbb03c42581d8407602634636ea.png', 'should throw', true],
     ], imageTestSuiteRoot);
     createTests([
-      ['m1-94f94e608d647b1b433f4d0ecc21e023', 'should throw', true],
-      ['m2-94f94e608d647b1b433f4d0ecc21e023', 'should throw', true],
+      ['m1-94f94e608d647b1b433f4d0ecc21e023', 'should throw', { shouldThrow: true }],
+      ['m2-94f94e608d647b1b433f4d0ecc21e023', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       // 9540743374e1fdb273b6a6ca625eb7a3.png  invalid gAMA value (0.0000)
@@ -352,21 +355,21 @@ describe('pngParser.integration Image Test Suite', () => {
       ['9540743374e1fdb273b6a6ca625eb7a3', '', true], // TODO: This passes?
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m2-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', true],
-      ['c-m4-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', true],
-      ['m1-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', true],
-      ['m3-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', true],
-      ['m2-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', true],
-      ['m4-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', true],
+      ['c-m2-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
+      ['c-m4-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
+      ['m1-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
+      ['m3-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
+      ['m2-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
+      ['m4-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['9a3e0c7b687b526987e2270541002d47', 'should throw', true],
-      ['c-9a3e0c7b687b526987e2270541002d47', 'should throw', true],
-      ['c-m1-9a3e0c7b687b526987e2270541002d47', 'should throw', true],
-      ['c-m2-9a3e0c7b687b526987e2270541002d47', 'should throw', true],
-      ['m1-9a3e0c7b687b526987e2270541002d47', 'should throw', true],
-      ['m2-9a3e0c7b687b526987e2270541002d47', 'should throw', true],
-      ['m3-9a3e0c7b687b526987e2270541002d47', 'should throw', true],
+      ['9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
+      ['c-9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
+      ['c-m1-9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
+      ['c-m2-9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
+      ['m1-9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
+      ['m2-9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
+      ['m3-9a3e0c7b687b526987e2270541002d47', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['m1-9bec9d0461c0ef0f5faf16d0d4bdcc13', 'should throw', { shouldThrow: true }],
@@ -467,12 +470,6 @@ describe('pngParser.integration Image Test Suite', () => {
     createTests([
       ['c-ea01d6c175bb25dc75757cf8a5793822', 'should throw', { shouldThrow: true }],
       ['ea01d6c175bb25dc75757cf8a5793822', 'should throw', { shouldThrow: true }],
-    ], imageTestSuiteRoot);
-    createTests([
-      // TODO: Should fail
-      // pHYs must precede IDAT
-      // sCAL must precede IDAT
-      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', '', true],
     ], imageTestSuiteRoot);
     createTests([
       ['edf5c1b0aa5b01eea5017290a286a173', 'should throw', { shouldThrow: true }],

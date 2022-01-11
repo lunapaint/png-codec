@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions } from '../types.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
+import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions, KnownChunkTypes } from '../types.js';
 
 /**
  * Spec: https://www.w3.org/TR/PNG/#11pYHs
@@ -15,6 +15,7 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataPhysicalPixelDimensions {
   assertChunkSinglular(chunk, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
   assertChunkDataLengthEquals(chunk, 9);
 
   // Format:

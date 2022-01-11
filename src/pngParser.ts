@@ -160,13 +160,24 @@ export function readChunks(dataView: DataView): IPngChunk[] {
 }
 
 export function readChunk(dataView: DataView, offset: number): IPngChunk {
+  if (dataView.byteLength < offset + ChunkPartByteLength.Length) {
+    throw new Error(`EOF while reading chunk length for chunk starting at offset ${offset}`);
+  }
+
   const dataLength = dataView.getUint32(offset);
+  if (dataView.byteLength < offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type) {
+    throw new Error(`EOF while reading chunk type for chunk starting at offset ${offset}`);
+  }
+
   const type = String.fromCharCode(
     dataView.getUint8(offset + 4),
     dataView.getUint8(offset + 5),
     dataView.getUint8(offset + 6),
     dataView.getUint8(offset + 7)
   );
+  if (dataView.byteLength < offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength + ChunkPartByteLength.CRC) {
+    throw new Error(`EOF while reading chunk "${type}" starting at offset ${offset}`);
+  }
 
   // Verify crc
   const actualCrc = dataView.getUint32(offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength) >>> 0;
