@@ -517,50 +517,51 @@ describe('pngParser.integration Image Test Suite', () => {
   });
 
   describe('valid files', () => {
+    // TODO: Test metadata
     createTests([
-      ['0839d93f8e77e21acd0ac40a80b14b7b', '350x490, 24-bit RGB, non-interlaced, -2.5% (Adobe Photoshop CS2 Windows)', true] // TODO: Create result image
+      ['0839d93f8e77e21acd0ac40a80b14b7b', '350x490, 24-bit RGB, non-interlaced, -2.5% (Adobe Photoshop CS2 Windows)', { expectedDimensions: { width: 350, height: 490 }}]
     ], imageTestSuiteRoot);
     createTests([
-      ['0839d93f8e77e21acd0ac40a80b14b7b', '118x79, 24-bit RGB, interlaced, 62.3% (Software: ULead System)', true], // TODO: Fix
+      ['18f9baf3834980f4b80a3e82ad45be48', '118x79, 24-bit RGB, interlaced, 62.3% (Software: ULead System)', { expectedDimensions: { width: 118, height: 79 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['1ebd73c1d3fbc89782f29507364128fc', '110x110, 24-bit RGB, non-interlaced, -54.6%', true], // TODO: Fix
+      ['1ebd73c1d3fbc89782f29507364128fc', '110x110, 24-bit RGB, non-interlaced, -54.6%', { expectedDimensions: { width: 110, height: 110 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['2d641a11233385bb37a524ff010a8531', '162x159, 32-bit RGB+alpha, non-interlaced, 75.2%', true],
+      ['2d641a11233385bb37a524ff010a8531', '162x159, 32-bit RGB+alpha, non-interlaced, 75.2%', { expectedDimensions: { width: 162, height: 159 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['51a4d21670dc8dfa8ffc9e54afd62f5f', '160x278, 16-bit grayscale+alpha, interlaced, 71.4%', true],
+      ['51a4d21670dc8dfa8ffc9e54afd62f5f', '160x278, 16-bit grayscale+alpha, interlaced, 71.4%', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
     ], imageTestSuiteRoot);
     createTests([
-      ['6c853ed9dacd5716bc54eb59cec30889', '724x1024, 48-bit RGB, non-interlaced, 35.6%', true],
+      ['6c853ed9dacd5716bc54eb59cec30889', '724x1024, 48-bit RGB, non-interlaced, 35.6%', true], // TODO: 16 bit depth image
     ], imageTestSuiteRoot);
     createTests([
-      ['93e6127b9c4e7a99459c558b81d31bc5', '50x50, 32-bit grayscale+alpha, interlaced, 54.1%', true],
+      ['93e6127b9c4e7a99459c558b81d31bc5', '50x50, 32-bit grayscale+alpha, interlaced, 54.1%', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
     ], imageTestSuiteRoot);
     createTests([
-      ['ac6343a98f8edabfcc6e536dd75aacb0', '75x74, 8-bit palette+trns, interlaced, -58.5%', true],
+      ['ac6343a98f8edabfcc6e536dd75aacb0', '75x74, 8-bit palette+trns, interlaced, -58.5%', { expectedDimensions: { width: 75, height: 74 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['affc57dfffa5ec448a0795738d456018', '435x235, 8-bit palette+trns, non-interlaced, 91.5%', true],
+      ['affc57dfffa5ec448a0795738d456018', '435x235, 8-bit palette+trns, non-interlaced, 91.5%', { expectedDimensions: { width: 435, height: 235 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['b59d7a023a8dcd112da2eb859004199a', '470x551, 32-bit RGB+alpha, non-interlaced, 96.8%', true],
+      ['b59d7a023a8dcd112da2eb859004199a', '470x551, 32-bit RGB+alpha, non-interlaced, 96.8%', { expectedDimensions: { width: 470, height: 551 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['ba2b2b6e72ca0e4683bb640e2d5572f8', '218x265, 32-bit RGB+alpha, non-interlaced, 83.2%', true],
+      ['ba2b2b6e72ca0e4683bb640e2d5572f8', '218x265, 32-bit RGB+alpha, non-interlaced, 83.2%', { expectedDimensions: { width: 218, height: 265 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['c636287a4d7cb1a36362f7f236564cef', '32x32, 8-bit palette, non-interlaced, -29.9%', true],
+      ['c636287a4d7cb1a36362f7f236564cef', '32x32, 8-bit palette, non-interlaced, -29.9%', { expectedDimensions: { width: 32, height: 32 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['d2e515cfdabae699301dcf290382474d', '120x126, 32-bit RGB+alpha, non-interlaced, -81.2%', true],
+      ['d2e515cfdabae699301dcf290382474d', '120x126, 32-bit RGB+alpha, non-interlaced, -81.2%', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
     ], imageTestSuiteRoot);
     createTests([
-      ['e59ec0cfb8ab64558099543dc19f8378', '18x11, 1-bit palette+trns, interlaced, -672.7%', true],
+      ['e59ec0cfb8ab64558099543dc19f8378', '18x11, 1-bit palette+trns, interlaced, -672.7%', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
     ], imageTestSuiteRoot);
     createTests([
-      ['ebfb1cd42314a557e72d4da75c21fc1c', '202x158, 32-bit RGB+alpha, non-interlaced, 84.2%', true],
+      ['ebfb1cd42314a557e72d4da75c21fc1c', '202x158, 32-bit RGB+alpha, non-interlaced, 84.2%', { expectedDimensions: { width: 202, height: 158 }}],
     ], imageTestSuiteRoot);
   });
 

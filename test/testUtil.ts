@@ -99,7 +99,12 @@ export function createTests(testCases: TestCase[], fixture: string) {
 
       const actual = Array.from(decoded.image.data);
       const require = createRequire(import.meta.url);
-      const expected = require(`../test/pngsuite/json/${options?.customFile || name}.json`);
+      let expected: number[];
+      try {
+        expected = require(`../${fixture}/json/${options?.customFile || name}.json`);
+      } catch {
+        expected = require(`../${fixture}/../json/${options?.customFile || name}.json`);
+      }
       if (options?.forceBitDepth8 || options?.ignoreTransparentHue) {
         for (let i = 0; i < actual.length; i += 4) {
           assertPixel(actual, expected, i, options);
