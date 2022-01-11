@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataGamma } from '../types.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
+import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
 
 /**
  * Spec: https://www.w3.org/TR/PNG/#11gAMA
@@ -14,6 +14,9 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  * display output intensity.
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataGamma {
+  assertChunkSinglular(chunk, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
   assertChunkDataLengthEquals(chunk, 4);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;

@@ -19,6 +19,10 @@ export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPn
     throw new ChunkError(chunk, `Color type "${header.colorType}" cannot have a palette`);
   }
 
+  if (chunk.dataLength === 0) {
+    throw new ChunkError(chunk, 'Cannot have 0 entries');
+  }
+
   // A chunk length not divisible by 3 is an error.
   if (chunk.dataLength % 3 !== 0) {
     throw new ChunkError(chunk, `Chunk length must be divisible by 3 (actual "${chunk.dataLength}")`);

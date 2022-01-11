@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../types.js';
 
 /**
@@ -13,6 +13,7 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  * The tIME (Image last-modification time) chunk defines the last modification date of the image.
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataLastModificationTime {
+  assertChunkSinglular(chunk, decodedPng);
   assertChunkDataLengthEquals(chunk, 7);
 
   // Format:

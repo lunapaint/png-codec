@@ -29,9 +29,10 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
 
   // Verify length
   const entrySize = sampleBytes * 4 + 2/*Frequency*/;
-  const entryCount = (chunk.dataLength - (offset - dataStartOffset)) / entrySize;
+  const entriesOffset = (chunk.dataLength - (offset - dataStartOffset));
+  const entryCount = entriesOffset / entrySize;
   if (entryCount % 1 !== 0) {
-    throw new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} - ${offset - dataStartOffset} should be divisible by entry size ${entrySize}`);
+    throw new ChunkError(chunk, `Invalid data length: ${entriesOffset} should be divisible by entry size ${entrySize}`);
   }
 
   const entries: IPngMetadataSuggestedPaletteEntry[] = [];

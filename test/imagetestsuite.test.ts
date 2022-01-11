@@ -34,34 +34,28 @@ describe('pngParser.integration Image Test Suite', () => {
       ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { shouldThrow: 'tRNS: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', true],
+      ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { shouldThrow: 'sRGB: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
       ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', true],
     ], imageTestSuiteRoot);
     createTests([
-      ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', true],
+      ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { shouldThrow: 'gAMA: Must precede PLTE' }],
     ], imageTestSuiteRoot);
     createTests([
       ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', true],
     ], imageTestSuiteRoot);
     createTests([
-      ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', true],
+      ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { shouldThrow: 'cHRM: Must precede PLTE' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', true],
+      ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { shouldThrow: 'gAMA: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', true],
+      ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { shouldThrow: 'bKGD: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
       ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
-    ], imageTestSuiteRoot);
-  });
-
-  describe('required chunk missing', () => {
-    createTests([
-      ['b583e48e218193e4c287f033931a6314', 'invalid number of PLTE entries (0)', true],
     ], imageTestSuiteRoot);
   });
 
@@ -94,19 +88,19 @@ describe('pngParser.integration Image Test Suite', () => {
       ['64221ffc9050c92b8980326acc0e4194', 'multiple pCAL not allowed', true], // TODO: Support pCAL?
     ], imageTestSuiteRoot);
     createTests([
-      ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', true],
+      ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { shouldThrow: 'tIME: Multiple tIME chunks not allowed' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', true],
+      ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', { shouldThrow: 'hIST: Multiple hIST chunks not allowed' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', true],
+      ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', { shouldThrow: 'cHRM: Multiple cHRM chunks not allowed' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', true],
+      ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', { shouldThrow: 'pHYs: Multiple pHYs chunks not allowed' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', true],
+      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', { shouldThrow: 'gAMA: Multiple gAMA chunks not allowed' }],
     ], imageTestSuiteRoot);
   });
 
@@ -136,19 +130,22 @@ describe('pngParser.integration Image Test Suite', () => {
       ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)' }],
     ], imageTestSuiteRoot);
     createTests([
+      ['b583e48e218193e4c287f033931a6314', 'invalid number of PLTE entries (0)', { shouldThrow: 'PLTE: Cannot have 0 entries' }],
+    ], imageTestSuiteRoot);
+    createTests([
       ['c0a76d267196727887d45de4889bec33', 'invalid oFFs length', true],
     ], imageTestSuiteRoot);
     createTests([
-      ['d92428f3fc9c806b0a4373b54e06785e', 'invalid tIME length', true],
+      ['d92428f3fc9c806b0a4373b54e06785e', 'invalid tIME length', { shouldThrow: 'tIME: Invalid data length: 9 !== 7' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['dd18aac055d531e0e4ff8979458dbaa3', 'invalid number of sPLT entries (1.66667)', true],
+      ['dd18aac055d531e0e4ff8979458dbaa3', 'invalid number of sPLT entries (1.66667)', { shouldThrow: 'sPLT: Invalid data length: 10 should be divisible by entry size 6' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['e76546768d4a8f2f4c39339345c7614c', 'invalid pHYs length', true],
+      ['e76546768d4a8f2f4c39339345c7614c', 'invalid pHYs length', { shouldThrow: 'pHYs: Invalid data length: 8 !== 9' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['f427b6bee1acd1fea3ec953bc556a18a', 'invalid number of PLTE entries (0)', true],
+      ['f427b6bee1acd1fea3ec953bc556a18a', 'invalid number of PLTE entries (0)', { shouldThrow: 'PLTE: Cannot have 0 entries' }],
     ], imageTestSuiteRoot);
   });
 

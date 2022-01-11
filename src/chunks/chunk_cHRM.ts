@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity } from '../types.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
+import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
 
 /**
  * cHRM Primary chromacities and white point
@@ -13,6 +13,8 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  * Spec: https://www.w3.org/TR/PNG/#11cHRM
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataChromaticity {
+  assertChunkSinglular(chunk, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
   assertChunkDataLengthEquals(chunk, 32);
 
   // Format:

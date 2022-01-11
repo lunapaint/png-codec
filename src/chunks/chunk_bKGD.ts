@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkSinglular, ChunkError } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, IPngPalette, KnownChunkTypes, PngMetadata } from '../types.js';
 
 /**
@@ -20,6 +20,7 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  * unreadable but not if the image viewer respected a white bKGD entry.
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataBackgroundColor {
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
   assertChunkSinglular(chunk, decodedPng);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
