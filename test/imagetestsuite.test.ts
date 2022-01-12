@@ -350,9 +350,7 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m2-94f94e608d647b1b433f4d0ecc21e023', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      // 9540743374e1fdb273b6a6ca625eb7a3.png  invalid gAMA value (0.0000)
-      // 9540743374e1fdb273b6a6ca625eb7a3.png  invalid cHRM white point 42949.7 42949.7
-      ['9540743374e1fdb273b6a6ca625eb7a3', '', true], // TODO: This passes?
+      ['9540743374e1fdb273b6a6ca625eb7a3', 'should throw', { shouldThrow: 'cHRM: Invalid white point (42949.67295,42949.67295)' }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m2-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
