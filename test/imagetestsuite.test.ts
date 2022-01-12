@@ -341,9 +341,8 @@ describe('pngParser.integration Image Test Suite', () => {
       ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      // TODO: Check why these pass
-      ['94e1bdbb03c42581d8407602634636ea.png', 'should throw', true],
-      ['c-94e1bdbb03c42581d8407602634636ea.png', 'should throw', true],
+      ['94e1bdbb03c42581d8407602634636ea', 'should throw', { shouldThrow: true }],
+      ['c-94e1bdbb03c42581d8407602634636ea', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['m1-94f94e608d647b1b433f4d0ecc21e023', 'should throw', { shouldThrow: true }],
