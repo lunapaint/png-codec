@@ -9,6 +9,7 @@ export {
   IDecodePngOptions,
   IImage32,
   IImage64,
+  IPngChunk,
   IPngMetadataBackgroundColor,
   IPngMetadataChromaticity,
   IPngMetadataCompressedTextualData,
@@ -46,21 +47,6 @@ export interface IPartialDecodedPng {
    */
   parsedChunks: Set<string>;
   metadata: PngMetadata[];
-}
-
-export interface IPngChunk {
-  /** The offset of the beginning of the chunk */
-  offset: number;
-  /** The type of the chunk. */
-  type: string;
-  /** The length of the chunk's data (starts from offset + 8B). */
-  dataLength: number;
-  /** Whether the chunk is optionally interpreted (as opposed to critical). */
-  isAncillary: boolean;
-  /** Whether the chunk is private and not defined in the standard. */
-  isPrivate: boolean;
-  /** Whether this chunk is safe to copy into a new image if unrecognized. */
-  isSafeToCopy: boolean;
 }
 
 export interface IPngHeaderDetails {

@@ -6,12 +6,16 @@
 
 /**
  * Decodes a png file.
+ *
+ * Note that it's best to drop references to both metadata and rawChunks as soon as they are no
+ * longer needed as they may take up a significant amount of memory depending on the image.
+ *
  * @param data The complete png file data to decode.
  * @param options Options to configure how decoding happens.
  */
-export function decodePng(data: Readonly<Uint8Array>): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[] }>;
-export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<{ image: IImage32, metadata?: PngMetadata[] }>;
-export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[] }>;
+export function decodePng(data: Readonly<Uint8Array>): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
+export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<{ image: IImage32, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
+export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
 
 /**
  * A 32-bit image (ie. 8 bit depth).
@@ -46,6 +50,21 @@ export interface IDecodePngOptions {
    * chunk type is of use this option can be used to do that.
    */
   parseChunkTypes?: OptionalParsedChunkTypes[] | '*';
+}
+
+export interface IPngChunk {
+  /** The offset of the beginning of the chunk */
+  offset: number;
+  /** The type of the chunk. */
+  type: string;
+  /** The length of the chunk's data (starts from offset + 8B). */
+  dataLength: number;
+  /** Whether the chunk is optionally interpreted (as opposed to critical). */
+  isAncillary: boolean;
+  /** Whether the chunk is private and not defined in the standard. */
+  isPrivate: boolean;
+  /** Whether this chunk is safe to copy into a new image if unrecognized. */
+  isSafeToCopy: boolean;
 }
 
 export const enum KnownChunkTypes {

@@ -44,7 +44,7 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
   KnownChunkTypes.zTXt,
 ]);
 
-export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[] }> {
+export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }> {
   const view = new DataView(data.buffer);
 
   // Verify file header, throwing if it's invalid
@@ -126,7 +126,8 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
 
   return {
     image: result.image,
-    metadata: result.metadata.length > 0 ? result.metadata : undefined
+    metadata: result.metadata.length > 0 ? result.metadata : undefined,
+    rawChunks: chunks
   };
 }
 
