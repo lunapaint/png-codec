@@ -10,7 +10,7 @@ import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk_IEND } from './chunks/chunk_IEND.js';
 import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from './crc32.js';
-import { ChunkPartByteLength, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, KnownChunkTypes, PngMetadata } from './types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata } from './types.js';
 
 export function verifyPngSignature(dataView: DataView): void {
   assert1b(dataView, 0, 0x89);
@@ -43,6 +43,30 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
   KnownChunkTypes.tRNS,
   KnownChunkTypes.zTXt,
 ]);
+
+/**
+ * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
+ * possible chunk decoders when code splitting is not supported.
+ */
+function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng) => PngMetadata }> {
+  switch (type) {
+    case KnownChunkTypes.bKGD: return import(`./chunks/chunk_bKGD.js`);
+    case KnownChunkTypes.cHRM: return import(`./chunks/chunk_cHRM.js`);
+    case KnownChunkTypes.eXIf: return import(`./chunks/chunk_eXIf.js`);
+    case KnownChunkTypes.gAMA: return import(`./chunks/chunk_gAMA.js`);
+    case KnownChunkTypes.hIST: return import(`./chunks/chunk_hIST.js`);
+    case KnownChunkTypes.iTXt: return import(`./chunks/chunk_iTXt.js`);
+    case KnownChunkTypes.tIME: return import(`./chunks/chunk_tIME.js`);
+    case KnownChunkTypes.pHYs: return import(`./chunks/chunk_pHYs.js`);
+    case KnownChunkTypes.sBIT: return import(`./chunks/chunk_sBIT.js`);
+    case KnownChunkTypes.sPLT: return import(`./chunks/chunk_sPLT.js`);
+    case KnownChunkTypes.sRGB: return import(`./chunks/chunk_sRGB.js`);
+    case KnownChunkTypes.tEXt: return import(`./chunks/chunk_tEXt.js`);
+    case KnownChunkTypes.tRNS: return import(`./chunks/chunk_tRNS.js`);
+    case KnownChunkTypes.zTXt: return import(`./chunks/chunk_zTXt.js`);
+    default: throw new Error(`Could not get decoder for chunk type "${type}"`);
+  }
+}
 
 export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }> {
   const view = new DataView(data.buffer);
@@ -92,7 +116,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
         break;
       }
       case KnownChunkTypes.PLTE:
-        result.palette = (await import(`./chunks/chunk_${chunk.type}.js`)).parseChunk(header, view, chunk, result);
+        result.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(header, view, chunk, result);
         break;
       case KnownChunkTypes.IEND:
         if (i < chunks.length - 1) {
@@ -102,7 +126,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
         break;
       default:
         if (parseChunkTypes.includes(chunk.type)) {
-          result.metadata.push((await import(`./chunks/chunk_${chunk.type}.js`)).parseChunk(header, view, chunk, result));
+          result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result));
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {
             // TODO: Return as a problem
