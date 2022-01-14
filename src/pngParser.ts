@@ -13,6 +13,9 @@ import { crc32 } from './crc32.js';
 import { ChunkPartByteLength, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata } from './types.js';
 
 export function verifyPngSignature(dataView: DataView): void {
+  if (dataView.byteLength < 7) {
+    throw new Error(`Not enough bytes in file for png signature (${dataView.byteLength})`);
+  }
   assert1b(dataView, 0, 0x89);
   assert1b(dataView, 1, 0x50);
   assert1b(dataView, 2, 0x4E);
