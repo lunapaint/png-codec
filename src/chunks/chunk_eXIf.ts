@@ -16,6 +16,6 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   return {
     type: 'eXIf',
-    value: dataView.buffer.slice(offset, offset + chunk.dataLength)
+    value: dataView.buffer.slice(dataView.byteOffset + offset, dataView.byteOffset + offset + chunk.dataLength)
   };
 }

@@ -69,7 +69,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: 
 }
 
 export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }> {
-  const view = new DataView(data.buffer);
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
 
   // Verify file header, throwing if it's invalid
   verifyPngSignature(view);

@@ -54,7 +54,7 @@ class PngPalette implements IPngPalette {
 
   getRgb(colorIndex: number): Uint8Array {
     this._checkIndex(colorIndex);
-    return new Uint8Array(this._view.buffer.slice(this._paletteOffset + colorIndex * 3, this._paletteOffset + colorIndex * 3 + 3));
+    return new Uint8Array(this._view.buffer.slice(this._view.byteOffset + this._paletteOffset + colorIndex * 3, this._view.byteOffset + this._paletteOffset + colorIndex * 3 + 3));
   }
 
   setRgba(data: Uint8Array, offset: number, colorIndex: number): void {

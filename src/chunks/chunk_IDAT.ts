@@ -72,7 +72,7 @@ function decompress(dataView: DataView, chunks: IPngChunk[]): Uint8Array {
   let offset = 0;
   for (const chunk of chunks) {
     offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
-    inflator.push(dataView.buffer.slice(offset, offset + chunk.dataLength));
+    inflator.push(dataView.buffer.slice(dataView.byteOffset + offset, dataView.byteOffset + offset + chunk.dataLength));
   }
   if (inflator.err) {
     throw new Error('IDAT: Inflate error: ' + inflator.msg);
