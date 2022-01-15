@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, ChunkError } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthEquals, ChunkError } from '../assert.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceMethod, IPngChunk } from '../types.js';
 
 /**
@@ -35,10 +35,7 @@ export function parseChunk_IHDR(dataView: DataView, chunk: IPngChunk): IPngHeade
   // if (!isValidColorType(colorType, bitDepth)) {
   //   throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`);
   // }
-  if (compressionMethod !== 0) {
-    // TODO: Warn instead
-    throw new ChunkError(chunk, `Compression method "${compressionMethod}" is not valid`);
-  }
+  assertChunkCompressionMethod(chunk, compressionMethod);
   if (filterMethod !== 0) {
     // TODO: Warn instead
     throw new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`);

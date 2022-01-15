@@ -80,6 +80,18 @@ export function assertChunkMutualExclusion(chunk: Pick<IPngChunk, 'type'>, other
     throw new ChunkError(chunk, `Should not be present alongside ${otherType}`);
   }
 }
+/**
+ * Assert the chunk compression method is valid.
+ * @param chunk The chunk being checked.
+ * @param compressionMethod The chunk's compression method, only `0` (zlib datastream with deflate
+ * compression) is valid.
+ */
+export function assertChunkCompressionMethod(chunk: Pick<IPngChunk, 'type'>, compressionMethod: number) {
+  // TODO: Should this be a warning?
+  if (compressionMethod !== 0) {
+    throw new ChunkError(chunk, `Unknown compression method "${compressionMethod}"`);
+  }
+}
 
 export class ChunkError extends Error {
   constructor(chunk: Pick<IPngChunk, 'type'>, message: string) {

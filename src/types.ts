@@ -16,6 +16,7 @@ export {
   IPngMetadataExif,
   IPngMetadataGamma,
   IPngMetadataHistogram,
+  IPngMetadataEmbeddedIccProfile,
   IPngMetadataInternationalTextualData,
   IPngMetadataLastModificationTime,
   IPngMetadataPalette,

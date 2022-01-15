@@ -78,6 +78,7 @@ export const enum KnownChunkTypes {
   eXIf = 'eXIf',
   gAMA = 'gAMA',
   hIST = 'hIST',
+  iCCP = 'iCCP',
   iTXt = 'iTXt',
   tIME = 'tIME',
   pHYs = 'pHYs',
@@ -110,6 +111,7 @@ export type PngMetadata =
   IPngMetadataBackgroundColor |
   IPngMetadataChromaticity |
   IPngMetadataCompressedTextualData |
+  IPngMetadataEmbeddedIccProfile |
   IPngMetadataExif |
   IPngMetadataGamma |
   IPngMetadataHistogram |
@@ -261,6 +263,26 @@ export interface IPngMetadataGamma {
    * not standard and determined by the encoder of the image.
    */
   frequency: number[];
+}
+
+/**
+ * A metadata entry that defines an ICC profile as defined by the International Color Consortium.
+ */
+export interface IPngMetadataEmbeddedIccProfile {
+  /**
+   * The type of metadata, this is typically the name of the chunk from which is originates.
+   */
+  type: 'iCCP';
+
+  /**
+   * The name of the profile.
+   */
+  name: string;
+
+  /**
+   * The raw bytes of the embedded ICC profile.
+   */
+  data: Uint8Array;
 }
 
 /**

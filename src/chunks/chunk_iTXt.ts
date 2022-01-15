@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthGte, ChunkError } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthGte, ChunkError } from '../assert.js';
 import { readText } from '../text.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../types.js';
 
@@ -38,9 +38,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const isCompressed = dataView.getUint8(offset++) === 1;
   const compressionMethod = dataView.getUint8(offset++);
   if (isCompressed) {
-    if (compressionMethod !== 0) {
-      throw new ChunkError(chunk, `Unknown compression method "${compressionMethod}"`);
-    }
+    assertChunkCompressionMethod(chunk, compressionMethod);
   }
 
   readResult = readText(dataView, textDecoder, undefined, offset, maxOffset, true);

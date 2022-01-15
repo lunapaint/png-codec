@@ -14,7 +14,7 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataStandardRgbColorSpace {
   assertChunkSinglular(chunk, decodedPng);
-  assertChunkMutualExclusion(chunk, 'iCCP' as any, decodedPng); // TODO: Fix safety when iCCP is implemented
+  assertChunkMutualExclusion(chunk, KnownChunkTypes.iCCP, decodedPng);
   assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
   assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
   assertChunkDataLengthEquals(chunk, 1);

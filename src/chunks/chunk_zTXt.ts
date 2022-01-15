@@ -5,7 +5,7 @@
  */
 
 import { readText } from '../text.js';
-import { assertChunkDataLengthGte, ChunkError } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthGte, ChunkError } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
 
 /**
@@ -31,9 +31,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const keyword = readResult.text;
 
   const compressionMethod = dataView.getUint8(offset++);
-  if (compressionMethod !== 0) {
-    throw new ChunkError(chunk, `Unknown compression method "${compressionMethod}"`);
-  }
+  assertChunkCompressionMethod(chunk, compressionMethod);
 
   readResult = readText(dataView, textDecoder, undefined, offset, maxOffset, false, true);
   offset += readResult.bytesRead;

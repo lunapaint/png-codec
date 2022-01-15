@@ -37,13 +37,13 @@ describe('pngParser.integration Image Test Suite', () => {
       ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { shouldThrow: 'sRGB: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', true],
+      ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { shouldThrow: 'iCCP: Must precede PLTE' }],
     ], imageTestSuiteRoot);
     createTests([
       ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { shouldThrow: 'gAMA: Must precede PLTE' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', true],
+      ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { shouldThrow: 'iCCP: Must precede IDAT' }],
     ], imageTestSuiteRoot);
     createTests([
       ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { shouldThrow: 'cHRM: Must precede PLTE' }],
@@ -70,7 +70,7 @@ describe('pngParser.integration Image Test Suite', () => {
       ['0132cfdbd8ca323574a2072e7ed5014c', 'multiple sRGB not allowed', { shouldThrow: 'sRGB: Multiple sRGB chunks not allowed' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', true] // TODO: Support iCCP
+      ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', { shouldThrow: 'iCCP: Multiple iCCP chunks not allowed' }]
     ], imageTestSuiteRoot);
     createTests([
       ['13f665c09e4b03cdbe2fff3015ec8aa7', 'multiple bKGD not allowed', { shouldThrow: 'bKGD: Multiple bKGD chunks not allowed' }]
@@ -109,7 +109,7 @@ describe('pngParser.integration Image Test Suite', () => {
 
   describe('mutually exclusive chunks', () => {
     createTests([
-      ['2a6ff5f8106894b22dad3ce99673481a', 'iCCP not allowed with sRGB', true], // TODO: Support iCCP
+      ['2a6ff5f8106894b22dad3ce99673481a', 'iCCP not allowed with sRGB', { shouldThrow: 'iCCP: Should not be present alongside sRGB' }],
     ], imageTestSuiteRoot);
   });
 
@@ -169,7 +169,7 @@ describe('pngParser.integration Image Test Suite', () => {
       ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { shouldThrow: 'IHDR: Compression method "128" is not valid' }], // TODO: Test ignore warnings: 32x32, 8-bit palette, non-interlaced, -25.6%
+      ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { shouldThrow: 'IHDR: Unknown compression method "128"' }], // TODO: Test ignore warnings: 32x32, 8-bit palette, non-interlaced, -25.6%
     ], imageTestSuiteRoot);
     createTests([
       ['d45b0dbbb808df6486f8a13ea44ea174', 'invalid oFFs unit specifier (2)', true],
