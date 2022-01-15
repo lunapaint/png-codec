@@ -8,7 +8,8 @@ import { assertChunkSinglular, ChunkError } from '../assert.js';
 import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPalette } from '../types.js';
 
 /**
- * PLTE Palette
+ * `PLTE` Palette
+ *
  * Spec: https://www.w3.org/TR/PNG/#11PLTE
  */
 export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngPalette {

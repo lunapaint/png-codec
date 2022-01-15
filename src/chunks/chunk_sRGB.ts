@@ -8,7 +8,7 @@ import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPre
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
 
 /**
- * sRGB Standard RGB color space
+ * `sRGB` Standard RGB color space
  *
  * Spec: https://www.w3.org/TR/PNG/#11sRGB
  */

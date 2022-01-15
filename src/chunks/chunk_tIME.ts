@@ -8,9 +8,9 @@ import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js'
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../types.js';
 
 /**
- * Spec: https://www.w3.org/TR/PNG/#11tIME
+ * `tIME` Image last-modification time
  *
- * The tIME (Image last-modification time) chunk defines the last modification date of the image.
+ * Spec: https://www.w3.org/TR/PNG/#11tIME
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataLastModificationTime {
   assertChunkSinglular(chunk, decodedPng);

@@ -8,7 +8,7 @@ import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular,
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
 
 /**
- * cHRM Primary chromacities and white point
+ * `cHRM` Primary chromacities and white point
  *
  * Spec: https://www.w3.org/TR/PNG/#11cHRM
  */

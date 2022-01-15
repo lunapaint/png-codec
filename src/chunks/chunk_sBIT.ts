@@ -8,12 +8,9 @@ import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular,
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataSignificantBits, KnownChunkTypes } from '../types.js';
 
 /**
- * Spec: https://www.w3.org/TR/PNG/#11sBIT
+ * `sBIT` Significant bits
  *
- * The sBIT (Significant bits) chunk defines a bit depth less than or equal to the image's bit depth
- * which allows potentially storing bit depths not equal to 1, 2, 4, 8 or 16 within pngs. Since the
- * assembled data is output as a 32-bit image or 64-bit image, this is only useful in the library
- * for handling non-standard bit depths of 9 to 15.
+ * Spec: https://www.w3.org/TR/PNG/#11sBIT
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataSignificantBits {
   assertChunkSinglular(chunk, decodedPng);

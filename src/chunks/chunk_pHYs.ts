@@ -8,10 +8,9 @@ import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular 
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions, KnownChunkTypes } from '../types.js';
 
 /**
- * Spec: https://www.w3.org/TR/PNG/#11pYHs
+ * `pHYs` Physical pixel dimensions
  *
- * The pHYs (Physical pixel dimensions) chunk defines the intended pixel size or aspect ratio of the
- * image.
+ * Spec: https://www.w3.org/TR/PNG/#11pYHs
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataPhysicalPixelDimensions {
   assertChunkSinglular(chunk, decodedPng);

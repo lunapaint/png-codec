@@ -9,7 +9,7 @@ import { readText } from '../text.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../types.js';
 
 /**
- * iTXt International textual data
+ * `iTXt` International textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11iTXt
  */

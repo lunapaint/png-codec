@@ -8,16 +8,9 @@ import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular,
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, IPngPalette, KnownChunkTypes, PngMetadata } from '../types.js';
 
 /**
+ * `bKGD` Background
+ *
  * Spec: https://www.w3.org/TR/PNG/#11bKGD
- *
- * The bKGD (Background) chunk contains the preferred default background color to present the image
- * against when there isn't another option. This is useful in image viewers for example but not in
- * web browsers (where an existing background color exists) or image editors (where retaining
- * transparency is important).
- *
- * An example of where this might be useful is a diagram with text all in black where everything
- * else is transparent, opening this in an image viewer with a dark background would make this
- * unreadable but not if the image viewer respected a white bKGD entry.
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataBackgroundColor {
   assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);

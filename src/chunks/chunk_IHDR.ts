@@ -8,6 +8,8 @@ import { assertChunkDataLengthEquals, ChunkError } from '../assert.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceMethod, IPngChunk } from '../types.js';
 
 /**
+ * `IHDR` Image Header
+ *
  * Spec: https://www.w3.org/TR/PNG/#11IHDR
  *
  * The IHDR (Image Header) chunk contains critical information about the image such as its

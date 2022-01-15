@@ -9,7 +9,7 @@ import { assertChunkPrecedes, ChunkError } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
 
 /**
- * sPLT Suggested palette
+ * `sPLT` Suggested palette
  *
  * Spec: https://www.w3.org/TR/PNG/#11sPLT
  */

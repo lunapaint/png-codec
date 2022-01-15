@@ -9,7 +9,7 @@ import { assertChunkDataLengthGte, ChunkError } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
 
 /**
- * zTXt Textual data
+ * `zTXt` Textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11tEXt
  */

@@ -8,7 +8,8 @@ import { assertChunkDataLengthEquals, assertChunkFollows, assertChunkPrecedes, a
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataHistogram, KnownChunkTypes } from '../types.js';
 
 /**
- * hIST Image histogram
+ * `hIST` Image histogram
+ *
  * Spec: https://www.w3.org/TR/PNG/#11hIST
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataHistogram {

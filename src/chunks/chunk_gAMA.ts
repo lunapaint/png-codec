@@ -8,10 +8,9 @@ import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular,
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
 
 /**
- * Spec: https://www.w3.org/TR/PNG/#11gAMA
+ * `gAMA` Image Gamma
  *
- * The gAMA (Image Gamma) chunk defines the relationship between the image samples and its desired
- * display output intensity.
+ * Spec: https://www.w3.org/TR/PNG/#11gAMA
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataGamma {
   assertChunkSinglular(chunk, decodedPng);

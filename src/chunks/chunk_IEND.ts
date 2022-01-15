@@ -8,9 +8,9 @@ import { assertChunkDataLengthEquals, assertChunkFollows } from '../assert.js';
 import { IPartialDecodedPng, IPngChunk, IPngHeaderDetails, KnownChunkTypes } from '../types.js';
 
 /**
- * Spec: https://www.w3.org/TR/PNG/#11IDAT
+ * `IEND` Image trailer
  *
- * The IEND (Image trailer) chunk defines the end of the png.
+ * Spec: https://www.w3.org/TR/PNG/#11IDAT
  */
 export function parseChunk_IEND(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): void { // eslint-disable-line @typescript-eslint/naming-convention
   assertChunkFollows(chunk, KnownChunkTypes.IDAT, decodedPng);

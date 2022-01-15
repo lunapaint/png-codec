@@ -7,9 +7,9 @@
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataExif } from '../types.js';
 
 /**
- * `eXIf` Exchangeable image file format
+ * `iCCP` Embedded ICC profile
  *
- * Spec: https://www.w3.org/TR/PNG/#11eXIf
+ * Spec: https://www.w3.org/TR/PNG/#11iCCP
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataExif {
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;

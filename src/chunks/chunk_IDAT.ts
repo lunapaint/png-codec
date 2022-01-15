@@ -8,12 +8,14 @@ import * as pako from 'pako';
 import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPalette, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency } from '../types.js';
 
 /**
+ * `IDAT` Image Data
+ *
  * Spec: https://www.w3.org/TR/PNG/#11IDAT
  *
- * The IDAT (Image Data) chunk is the primary source of image data in a png. Each line is filtered
- * using various filter types, optionally interlaced via Adam7 interlacing and then compressed using
- * the deflate algorithm. Note that a single image may contain multiple IDAT chunks, if they do they
- * must appear consecutively
+ * The `IDAT` chunk is the primary source of image data in a png. Each line is filtered using
+ * various filter types, optionally interlaced via Adam7 interlacing and then compressed using the
+ * deflate algorithm. Note that a single image may contain multiple IDAT chunks, if they do they
+ * must appear consecutively.
  */
 export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, chunks: IPngChunk[], decodedPng: IPartialDecodedPng): Uint8Array | Uint16Array { // eslint-disable-line @typescript-eslint/naming-convention
   // Decompress the chunk data.

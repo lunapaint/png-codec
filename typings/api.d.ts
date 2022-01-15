@@ -124,9 +124,13 @@ export type PngMetadata =
   IPngMetadataTransparency;
 
 /**
- * A metadata entry that represents an image's preferred default background color to present it
+ * A metadata entry that defines an image's preferred default background color to present it
  * against. This is typically used in image viewers but not in web browsers (where an existing
  * background color exists) or image editors (where retaining transparency is important).
+ *
+ * An example of where this might be useful is a diagram with text all in black where everything
+ * else is transparent, opening this in an image viewer with a dark background would make this
+ * unreadable but not if the image viewer respected a white bKGD entry.
  */
 export interface IPngMetadataBackgroundColor {
   /**
@@ -179,8 +183,8 @@ export interface IPngMetadataChromaticity {
 }
 
 /**
- * A metadata entry that represents a compressed piece of text associated with the image,
- * interpreted according to the Latin-1 character set.
+ * A metadata entry that defines a compressed piece of text associated with the image, interpreted
+ * according to the Latin-1 character set.
  */
 export interface IPngMetadataCompressedTextualData {
   /**
@@ -209,7 +213,9 @@ export interface IPngMetadataCompressedTextualData {
 }
 
 /**
- * A metadata entry that represents an image's EXIF (Exchangeable image file format) data.
+ * A metadata entry that defines an image's EXIF (Exchangeable image file format) data which
+ * contains various addition metadata on an image, typically added by digital cameras, scanners,
+ * etc.
  */
 export interface IPngMetadataExif {
   /**
@@ -224,8 +230,8 @@ export interface IPngMetadataExif {
 }
 
 /**
- * A metadata entry that represents the relationship between the image samples and its desired
- * display output intensity.
+ * A metadata entry that defines the relationship between the image samples and its desired display
+ * output intensity.
  */
 export interface IPngMetadataGamma {
   /**
@@ -240,7 +246,7 @@ export interface IPngMetadataGamma {
 }
 
 /**
- * A metadata entry that represents the approximate color usage frequency in the palette. This entry
+ * A metadata entry that defines the approximate color usage frequency in the palette. This entry
  * can only exist if there is also a palette. If a viewer of the png file cannot display all colors,
  * this chunk can help select a subset of the colors to use.
  */
@@ -258,7 +264,7 @@ export interface IPngMetadataGamma {
 }
 
 /**
- * A metadata entry that represents a piece of text associated with the image that has a language
+ * A metadata entry that defines a piece of text associated with the image that has a language
  * associated with it. All text will be decoded using the `TextDecoder` API if it's present in the
  * environment (eg. web, node.js), otherwise `String.fromCharCode` will be used.
  */
@@ -299,7 +305,7 @@ export interface IPngMetadataGamma {
 }
 
 /**
- * A metadata entry that represents the last modification time of the image.
+ * A metadata entry that defines the last modification time of the image.
  */
 export interface IPngMetadataLastModificationTime {
   /**
@@ -313,6 +319,10 @@ export interface IPngMetadataLastModificationTime {
   value: Date;
 }
 
+/**
+ * A metadata entry that defines the image's core palette. This must be present when `colorType` is
+ * equal to `3` (indexed).
+ */
 export interface IPngMetadataPalette {
   /**
    * The type of metadata, this is typically the name of the chunk from which is originates.
@@ -323,7 +333,7 @@ export interface IPngMetadataPalette {
 }
 
 /**
- * A metadata entry that represents the intended pixel size or aspect ratio of the image.
+ * A metadata entry that defines the intended pixel size or aspect ratio of the image.
  */
 export interface IPngMetadataPhysicalPixelDimensions {
   /**
@@ -343,7 +353,10 @@ export interface IPngMetadataPhysicalPixelDimensions {
 }
 
 /**
- * A metadata entry that represents an image's EXIF (Exchangeable image file format) data.
+ * A metadata entry that defines a bit depth less than or equal to the image's bit depth which
+ * allows potentially storing bit depths not equal to 1, 2, 4, 8 or 16 within pngs. Since the
+ * assembled data is output as a 32-bit image or 64-bit image, this is only useful in the library
+ * for handling non-standard bit depths of 9 to 15.
  */
 export interface IPngMetadataSignificantBits {
   /**
@@ -406,7 +419,7 @@ export const enum RenderingIntent {
 }
 
 /**
- * A metadata entry that represents a suggested palette. Multiple suggested palettes can exist
+ * A metadata entry that defines a suggested palette. Multiple suggested palettes can exist.
  */
  export interface IPngMetadataSuggestedPalette {
   /**
@@ -474,8 +487,8 @@ export interface IPngMetadataSuggestedPaletteEntry {
 }
 
 /**
- * A metadata entry that represents a piece of text associated with the image, interpreted according
- * to the Latin-1 character set.
+ * A metadata entry that defines a piece of text associated with the image, interpreted according to
+ * the Latin-1 character set.
  */
  export interface IPngMetadataTextualData {
   /**

@@ -8,7 +8,7 @@ import { assertChunkDataLengthEquals, assertChunkPrecedes, ChunkError } from '..
 import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
 
 /**
- * tRNS Transparency
+ * `tRNS` Transparency
  *
  * Spec: https://www.w3.org/TR/PNG/#11tRNS
  */

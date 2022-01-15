@@ -9,7 +9,7 @@ import { assertChunkDataLengthGte } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
 
 /**
- * tEXt Textual data
+ * `tEXt` Textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11tEXt
  */
