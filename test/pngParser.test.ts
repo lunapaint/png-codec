@@ -26,6 +26,7 @@ describe('pngParser', () => {
       await decodePng(copiedTypedArray);
     });
   });
+
   describe('optionalChunks', () => {
     it('should not load sBIT when not specified', async () => {
       const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `cs3n2c16.png`)));
@@ -43,6 +44,7 @@ describe('pngParser', () => {
       ]);
     });
   });
+
   describe('palette', () => {
     it('should be able to fetch all palette entries', async () => {
       const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `s05n3p02.png`)));
@@ -60,6 +62,18 @@ describe('pngParser', () => {
       strictEqual(p.size, 3);
       throws(() => p.getRgb(-1));
       throws(() => p.getRgb(3));
+    });
+  });
+
+  describe('details', () => {
+    it('should decode correct values', async () => {
+      const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `s05n3p02.png`)));
+      const result = await decodePng(data);
+      deepStrictEqual(result.details, {
+        bitDepth: 2,
+        colorType: 3,
+        interlaceMethod: 0
+      });
     });
   });
 });

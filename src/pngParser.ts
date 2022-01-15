@@ -10,7 +10,7 @@ import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk_IEND } from './chunks/chunk_IEND.js';
 import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from './crc32.js';
-import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes, PngMetadata } from './types.js';
+import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata } from './types.js';
 
 export function verifyPngSignature(dataView: DataView): void {
   if (dataView.byteLength < 7) {
@@ -155,6 +155,11 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
 
   return {
     image: result.image,
+    details: {
+      bitDepth: header.bitDepth,
+      colorType: header.colorType,
+      interlaceMethod: header.interlaceMethod
+    },
     palette: result.palette,
     metadata: result.metadata.length > 0 ? result.metadata : undefined,
     rawChunks: chunks

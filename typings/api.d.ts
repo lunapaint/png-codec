@@ -27,6 +27,12 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
   image: T;
 
   /**
+   * Details about the image, this is mostly useful internally as they are used to decode the image.
+   * However, these could be presented in an image viewer.
+   */
+  details: IPngDetails;
+
+  /**
    * The palette if it exists.
    */
   palette?: IPngPalette;
@@ -78,6 +84,61 @@ export interface IPngPalette {
 }
 
 /**
+ * Internal details of the png required to decode.
+ */
+export interface IPngDetails {
+  /**
+   * The bit depth defines how many bits are used per channel. The total bits used for each color
+   * type is determined by `channels * bits per channel` as shown in the below table:
+   *
+   * | Color type          | Channels | 1 | 2 | 4 |  8 | 16
+   * |---------------------|----------|---------------------
+   * | Indexed             | 1        | 1 | 2 | 4 |  8 |  -
+   * | Grayscale           | 1        | 1 | 2 | 4 |  8 | 16
+   * | Grayscale and alpha | 2        | - | - | - | 16 | 32
+   * | Truecolor           | 3        | - | - | - | 24 | 48
+   * | Truecolor and alpha | 4        | - | - | - | 32 | 64
+   */
+  bitDepth: 1 | 2 | 4 | 8 | 16;
+
+  /**
+   * The color type of the image. The color type plus the bit depth defines the possible range of
+   * colors that could be encoded by the image.
+   */
+  colorType: ColorType;
+
+  /**
+   * The interlace method of the png.
+   */
+  interlaceMethod: InterlaceMethod;
+}
+
+/**
+ * The bit depth of the image which defines the number of bits used per channel. See
+ * {@link IPngDetails.bitDepth} for more information.
+ */
+export type BitDepth = 1 | 2 | 4 | 8 | 16;
+
+/**
+ * The color type of the image.
+ */
+export const enum ColorType {
+  Grayscale = 0,
+  Truecolor = 2,
+  Indexed = 3,
+  GrayacaleAndAlpha = 4,
+  TruecolorAndAlpha = 6,
+}
+
+/**
+ * The interlacing method of the image.
+ */
+export const enum InterlaceMethod {
+  None = 0,
+  Adam7 = 1
+}
+
+/**
  * A set of options to configure how decoding happens.
  */
 export interface IDecodePngOptions {
@@ -94,6 +155,11 @@ export interface IDecodePngOptions {
   parseChunkTypes?: OptionalParsedChunkTypes[] | '*';
 }
 
+/**
+ * A raw png chunk extracted from the datastream. A png is made up of a fixed signature and then a
+ * series of chunks which encode all the information in the png. The {@link IPngChunk.type} of the
+ * chunk determines what information it contains.
+ */
 export interface IPngChunk {
   /** The offset of the beginning of the chunk */
   offset: number;
@@ -182,8 +248,8 @@ export interface IPngMetadataBackgroundColor {
   type: 'bKGD';
 
   /**
-   * The preferred background color. The format of this property depends on the `colorType` of the
-   * image:
+   * The preferred background color. The format of this property depends on the
+   * {@link IPngDetails.colorType} of the image:
    *
    * - `0` (Greyscale): The lightness of the color (0-255).
    * - `2` (Truecolor): A number array made up of each color channel (each 0-255).
@@ -416,7 +482,7 @@ export interface IPngMetadataSignificantBits {
 
   /**
    * The number of significant bits for each channel. The format of this property depends on the
-   * `colorType` of the image:
+   * {@link IPngDetails.colorType} of the image:
    *
    * - `0` (Greyscale): number
    * - `2` (Truecolor): [number, number, number]

@@ -6,19 +6,22 @@
 
 // Re-export types from the api file which cannot be referenced in the out/ directory.
 export {
-  PngMetadata,
+  BitDepth,
+  ColorType,
+  DefaultParsedChunkTypes,
+  IDecodedPng,
   IDecodePngOptions,
   IImage32,
   IImage64,
+  InterlaceMethod,
   IPngChunk,
-  IDecodedPng,
   IPngMetadataBackgroundColor,
   IPngMetadataChromaticity,
   IPngMetadataCompressedTextualData,
+  IPngMetadataEmbeddedIccProfile,
   IPngMetadataExif,
   IPngMetadataGamma,
   IPngMetadataHistogram,
-  IPngMetadataEmbeddedIccProfile,
   IPngMetadataInternationalTextualData,
   IPngMetadataLastModificationTime,
   IPngMetadataPhysicalPixelDimensions,
@@ -29,14 +32,17 @@ export {
   IPngMetadataTextualData,
   IPngMetadataTransparency,
   KnownChunkTypes,
-  DefaultParsedChunkTypes,
   OptionalParsedChunkTypes,
-  RenderingIntent,
+  PngMetadata,
+  RenderingIntent
 } from '../typings/api.js';
 
 import {
+  BitDepth,
+  ColorType,
   IImage32,
   IImage64,
+  InterlaceMethod,
   IPngPalette,
   PngMetadata
 } from '../typings/api.js';
@@ -55,36 +61,9 @@ export interface IPartialDecodedPng {
 export interface IPngHeaderDetails {
   width: number;
   height: number;
-  /**
-   * The bit depth defines how many bits are used per channel. The total bits used for each color
-   * type is determined by `channels * bits per channel` as shown in the below table:
-   *
-   * | Color type          | Channels | 1 | 2 | 4 |  8 | 16
-   * |---------------------|----------|-------------------
-   * | Indexed             | 1        | 1 | 2 | 4 |  8 |  -
-   * | Grayscale           | 1        | 1 | 2 | 4 |  8 | 16
-   * | Grayscale and alpha | 2        | - | - | - | 16 | 32
-   * | Truecolor           | 3        | - | - | - | 24 | 48
-   * | Truecolor and alpha | 4        | - | - | - | 32 | 64
-   */
-  bitDepth: 1 | 2 | 4 | 8 | 16;
+  bitDepth: BitDepth;
   colorType: ColorType;
   interlaceMethod: InterlaceMethod;
-}
-
-export const enum ColorType {
-  Grayscale = 0,
-  Truecolor = 2,
-  Indexed = 3,
-  GrayacaleAndAlpha = 4,
-  TruecolorAndAlpha = 6,
-}
-
-export type BitDepth = 1 | 2 | 4 | 8 | 16;
-
-export const enum InterlaceMethod {
-  None = 0,
-  Adam7 = 1
 }
 
 export const enum ChunkPartByteLength {
