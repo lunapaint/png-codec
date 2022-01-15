@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkFollows, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
 import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, IPngPalette, KnownChunkTypes, PngMetadata } from '../types.js';
 
 /**
@@ -13,8 +13,8 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
  * Spec: https://www.w3.org/TR/PNG/#11bKGD
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataBackgroundColor {
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
   assertChunkSinglular(chunk, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   let color: number | [number, number, number];

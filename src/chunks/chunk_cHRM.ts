@@ -15,6 +15,7 @@ import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, 
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataChromaticity {
   assertChunkSinglular(chunk, decodedPng);
   assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
   assertChunkDataLengthEquals(chunk, 32);
 
   // Format:

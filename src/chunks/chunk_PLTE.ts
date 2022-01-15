@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPalette } from '../types.js';
+import { assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
+import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPalette, KnownChunkTypes } from '../types.js';
 
 /**
  * `PLTE` Palette
@@ -14,6 +14,10 @@ import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHead
  */
 export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngPalette {
   assertChunkSinglular(chunk, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.bKGD, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.hIST, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.tRNS, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
 
   // This chunk shall appear for colour type 3, and may appear for colour types 2 and 6; it shall not appear for colour types 0 and 4.
   if (header.colorType === ColorType.Grayscale || header.colorType === ColorType.GrayacaleAndAlpha) {
