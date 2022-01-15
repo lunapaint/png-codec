@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual, throws } from 'assert';
 import { join } from 'path';
 import { decodePng } from '../out/png.js';
 import * as fs from 'fs';
@@ -41,6 +41,25 @@ describe('pngParser', () => {
           value: [13, 13, 13]
         }
       ]);
+    });
+  });
+  describe('palette', () => {
+    it('should be able to fetch all palette entries', async () => {
+      const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `s05n3p02.png`)));
+      const result = await decodePng(data);
+      const p = result.palette!;
+      strictEqual(p.size, 3);
+      deepStrictEqual(Array.from(p.getRgb(0)), [0, 255, 255]);
+      deepStrictEqual(Array.from(p.getRgb(1)), [119, 0, 255]);
+      deepStrictEqual(Array.from(p.getRgb(2)), [255, 0, 0]);
+    });
+    it('should throw when accessing invalid color indexes', async () => {
+      const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `s05n3p02.png`)));
+      const result = await decodePng(data);
+      const p = result.palette!;
+      strictEqual(p.size, 3);
+      throws(() => p.getRgb(-1));
+      throws(() => p.getRgb(3));
     });
   });
 });

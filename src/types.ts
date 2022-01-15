@@ -4,6 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+// Re-export types from the api file which cannot be referenced in the out/ directory.
 export {
   PngMetadata,
   IDecodePngOptions,
@@ -19,11 +20,9 @@ export {
   IPngMetadataEmbeddedIccProfile,
   IPngMetadataInternationalTextualData,
   IPngMetadataLastModificationTime,
-  IPngMetadataPalette,
   IPngMetadataPhysicalPixelDimensions,
   IPngMetadataSignificantBits,
   IPngMetadataStandardRgbColorSpace,
-  RenderingIntent,
   IPngMetadataSuggestedPalette,
   IPngMetadataSuggestedPaletteEntry,
   IPngMetadataTextualData,
@@ -31,17 +30,19 @@ export {
   KnownChunkTypes,
   DefaultParsedChunkTypes,
   OptionalParsedChunkTypes,
+  RenderingIntent,
 } from '../typings/api.js';
 
 import {
   IImage32,
   IImage64,
+  IPngPalette,
   PngMetadata
 } from '../typings/api.js';
 
 export interface IPartialDecodedPng {
   image?: IImage32 | IImage64;
-  palette?: IPngPalette;
+  palette?: IPngPaletteInternal;
   /**
    * A Set of chunks already parsed, this can be used to enforce chunk ordering and preventing
    * multiple when only one is allowed.
@@ -91,16 +92,6 @@ export const enum ChunkPartByteLength {
   CRC = 4
 }
 
-export interface IPngPalette {
-  /**
-   * The number of colors defined in the palette.
-   */
-  size: number;
-
-  /**
-   * Gets a color for a given color index in the format [red, green, blue].
-   * @param colorIndex The color index of the color.
-   */
-  getRgb(colorIndex: number): Uint8Array;
+export interface IPngPaletteInternal extends IPngPalette {
   setRgba(data: Uint8Array, offset: number, colorIndex: number): void;
 }

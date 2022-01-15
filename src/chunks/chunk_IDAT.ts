@@ -5,7 +5,7 @@
  */
 
 import * as pako from 'pako';
-import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPalette, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency } from '../types.js';
+import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency } from '../types.js';
 
 /**
  * `IDAT` Image Data
@@ -413,7 +413,7 @@ function deinterlaceAdam7(header: IPngHeaderDetails, decompressed: Uint8Array): 
   return result;
 }
 
-function mapPackedDataToRgba(header: IPngHeaderDetails, packed: Uint8Array, palette: IPngPalette | undefined, trnsChunk: IPngMetadataTransparency | undefined) {
+function mapPackedDataToRgba(header: IPngHeaderDetails, packed: Uint8Array, palette: IPngPaletteInternal | undefined, trnsChunk: IPngMetadataTransparency | undefined) {
   const result = new (header.bitDepth === 16 ? Uint16Array : Uint8Array)(header.width * header.height * 4);
   let i = 0;
   const bpp = getBytesPerPixel(header);

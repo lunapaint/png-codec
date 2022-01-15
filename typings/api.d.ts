@@ -13,9 +13,9 @@
  * @param data The complete png file data to decode.
  * @param options Options to configure how decoding happens.
  */
-export function decodePng(data: Readonly<Uint8Array>): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
-export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<{ image: IImage32, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
-export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
+export function decodePng(data: Readonly<Uint8Array>): Promise<{ image: IImage32 | IImage64, palette?: IPngPalette, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
+export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<{ image: IImage32, palette?: IPngPalette, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
+export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, palette?: IPngPalette, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
 
 /**
  * A 32-bit image (ie. 8 bit depth).
@@ -33,6 +33,22 @@ export interface IImage64 {
   data: Uint16Array;
   width: number;
   height: number;
+}
+
+/**
+ * A png image's core palette. This must be present if the image's color type is `3` (indexed).
+ */
+export interface IPngPalette {
+  /**
+   * The number of entries in the palette.
+   */
+  readonly size: number;
+
+  /**
+   * Get the color at a given color index in [r, g, b] format.
+   * @param colorIndex The color index.
+   */
+  getRgb(colorIndex: number): Uint8Array;
 }
 
 /**
@@ -117,7 +133,6 @@ export type PngMetadata =
   IPngMetadataHistogram |
   IPngMetadataInternationalTextualData |
   IPngMetadataLastModificationTime |
-  IPngMetadataPalette |
   IPngMetadataPhysicalPixelDimensions |
   IPngMetadataSignificantBits |
   IPngMetadataStandardRgbColorSpace |
@@ -339,19 +354,6 @@ export interface IPngMetadataLastModificationTime {
    * The last modification time.
    */
   value: Date;
-}
-
-/**
- * A metadata entry that defines the image's core palette. This must be present when `colorType` is
- * equal to `3` (indexed).
- */
-export interface IPngMetadataPalette {
-  /**
-   * The type of metadata, this is typically the name of the chunk from which is originates.
-   */
-  type: 'PLTE';
-
-  // TODO: Provide access to the palette via the API
 }
 
 /**

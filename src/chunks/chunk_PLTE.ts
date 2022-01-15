@@ -5,14 +5,14 @@
  */
 
 import { assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPalette, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
 
 /**
  * `PLTE` Palette
  *
  * Spec: https://www.w3.org/TR/PNG/#11PLTE
  */
-export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngPalette {
+export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngPaletteInternal {
   assertChunkSinglular(chunk, decodedPng);
   assertChunkPrecedes(chunk, KnownChunkTypes.bKGD, decodedPng);
   assertChunkPrecedes(chunk, KnownChunkTypes.hIST, decodedPng);
@@ -42,7 +42,7 @@ export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPn
   return new PngPalette(view, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type, chunk.dataLength, header.bitDepth);
 }
 
-class PngPalette implements IPngPalette {
+class PngPalette implements IPngPaletteInternal {
   constructor(
     private readonly _view: DataView,
     private _paletteOffset: number,
@@ -73,7 +73,7 @@ class PngPalette implements IPngPalette {
 
   private _checkIndex(colorIndex: number) {
     // any out-of-range pixel value found in the image data is an error.
-    if (colorIndex * 3 > this._length - 3) {
+    if (colorIndex < 0 || colorIndex * 3 > this._length - 3) {
       throw new Error(`Palette does not contain color index "${colorIndex}"`);
     }
   }
