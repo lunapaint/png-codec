@@ -11,6 +11,7 @@ export {
   IImage32,
   IImage64,
   IPngChunk,
+  IDecodedPng,
   IPngMetadataBackgroundColor,
   IPngMetadataChromaticity,
   IPngMetadataCompressedTextualData,

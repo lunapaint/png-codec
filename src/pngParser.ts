@@ -10,7 +10,7 @@ import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk_IEND } from './chunks/chunk_IEND.js';
 import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from './crc32.js';
-import { ChunkPartByteLength, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes, PngMetadata } from './types.js';
+import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes, PngMetadata } from './types.js';
 
 export function verifyPngSignature(dataView: DataView): void {
   if (dataView.byteLength < 7) {
@@ -73,7 +73,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: 
   }
 }
 
-export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, palette?: IPngPaletteInternal, metadata?: PngMetadata[], rawChunks: IPngChunk[] }> {
+export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>> {
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
 
   // Verify file header, throwing if it's invalid

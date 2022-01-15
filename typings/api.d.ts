@@ -13,9 +13,35 @@
  * @param data The complete png file data to decode.
  * @param options Options to configure how decoding happens.
  */
-export function decodePng(data: Readonly<Uint8Array>): Promise<{ image: IImage32 | IImage64, palette?: IPngPalette, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
-export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<{ image: IImage32, palette?: IPngPalette, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
-export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<{ image: IImage32 | IImage64, palette?: IPngPalette, metadata?: PngMetadata[], rawChunks: IPngChunk[] }>;
+export function decodePng(data: Readonly<Uint8Array>): Promise<IDecodedPng<IImage32 | IImage64>>;
+export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<IDecodedPng<IImage32>>;
+export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>>;
+
+/**
+ * A png that has been successfully decoded.
+ */
+export interface IDecodedPng<T extends IImage32 | IImage64> {
+  /**
+   * The image dimensions and data.
+   */
+  image: T;
+
+  /**
+   * The palette if it exists.
+   */
+  palette?: IPngPalette;
+
+  /**
+   * A list of metadata entries that have been decoded. See
+   * {@link IDecodePngOptions.parseChunkTypes} for how to decode additional metadata entries.
+   */
+  metadata?: PngMetadata[];
+
+  /**
+   * All raw chunks contained in the png.
+   */
+  rawChunks: IPngChunk[];
+}
 
 /**
  * A 32-bit image (ie. 8 bit depth).
