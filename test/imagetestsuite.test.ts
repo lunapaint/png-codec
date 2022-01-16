@@ -259,23 +259,9 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
-      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should decode with warnings', { expectedWarnings: [
-        'Last chunk is not IEND',
-        'zTXt: No null character after text',
-        'zTXt: No null character after text',
-      ], skipDataAssertion: true}],
+      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Unrecognized critical chunk type "IdND"' }],
       ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)', strictMode: true }],
-      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should decode with warnings', { expectedWarnings: [
-        'CRC for chunk "IdND" at offset 0xc468 doesn\'t match (0xae426082 !== 0x97cd4c55)',
-        'CRC for chunk "iTXt" at offset 0x8ddf doesn\'t match (0xaa50e890 !== 0x32bfd0de)',
-        'CRC for chunk "mkBT" at offset 0x4a18 doesn\'t match (0x3f7455f9 !== 0x6c7f5095)',
-        'CRC for chunk "mkBT" at offset 0x58fb doesn\'t match (0xadd7a3c2 !== 0xfd3d7288)',
-        'CRC for chunk "mkBT" at offset 0x63bc doesn\'t match (0x7729a6f7 !== 0xe206b6a6)',
-        'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)',
-        'Last chunk is not IEND',
-        'zTXt: No null character after text',
-        'zTXt: No null character after text'
-      ], skipDataAssertion: true}],
+      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Unrecognized critical chunk type "IdND"' }]
     ], imageTestSuiteRoot);
     createTests([
       ['c-m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', { shouldThrow: true }],
@@ -404,10 +390,14 @@ describe('pngParser.integration Image Test Suite', () => {
       ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)', strictMode: true }],
       ['9032e447e32e09aef5b7de2fab42494d', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)',
+        'IHDR: Multiple IHDR chunks not allowed',
         'Last chunk is not IEND'
       ], skipDataAssertion: true }],
       ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
-      ['c-9032e447e32e09aef5b7de2fab42494d', 'should decode with warnings', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
+      ['c-9032e447e32e09aef5b7de2fab42494d', 'should decode with warnings', { expectedWarnings: [
+        'IHDR: Multiple IHDR chunks not allowed',
+        'Last chunk is not IEND'
+      ], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['94e1bdbb03c42581d8407602634636ea', 'should throw', { shouldThrow: 'CRC for chunk "sPLT" at offset 0x89 doesn\'t match (0xae426082 !== 0x4b86b3a)', strictMode: true }],
@@ -479,26 +469,9 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['m1-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x815467c7 !== 0x93e1c829)', strictMode: true }],
-      ['m1-a4842373fc20cc42b8e023a329761915', 'should decode with warnings', { expectedWarnings: [
-        'CRC for chunk "IENc" at offset 0xf6 doesn\'t match (0xae426082 !== 0xb48d5e9)',
-        'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x815467c7 !== 0x93e1c829)',
-        'CRC for chunk "aLTE" at offset 0x40 doesn\'t match (0xd2b049bd !== 0x2f590468)',
-        'CRC for chunk "hIST" at offset 0x79 doesn\'t match (0x48995941 !== 0xf189593)',
-        'CRC for chunk "sBIT" at offset 0x31 doesn\'t match (0x77f8fca3 !== 0x77f8b5a3)',
-        'Last chunk is not IEND',
-        'hIST: Must follow PLTE',
-        'sBIT: Invalid data length: 3 !== 1'
-      ], skipDataAssertion: true }],
+      ['m1-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: 'Unrecognized critical chunk type "IENc"' }],
       ['c-m1-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: 'CRC for chunk "sBIT" at offset 0x31 doesn\'t match (0x77f8fca3 !== 0x77f8b5a3)', strictMode: true }],
-      ['c-m1-a4842373fc20cc42b8e023a329761915', 'should decode with warnings', { expectedWarnings: [
-        'CRC for chunk "IENc" at offset 0xf6 doesn\'t match (0xae426082 !== 0xb48d5e9)',
-        'CRC for chunk "aLTE" at offset 0x40 doesn\'t match (0xd2b049bd !== 0x2f590468)',
-        'CRC for chunk "hIST" at offset 0x79 doesn\'t match (0x48995941 !== 0xf189593)',
-        'CRC for chunk "sBIT" at offset 0x31 doesn\'t match (0x77f8fca3 !== 0x77f8b5a3)',
-        'Last chunk is not IEND',
-        'hIST: Must follow PLTE',
-        'sBIT: Invalid data length: 3 !== 1'
-      ], skipDataAssertion: true }],
+      ['c-m1-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: 'Unrecognized critical chunk type "IENc"' }],
       ['c-m2-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: true }],
       ['m2-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);

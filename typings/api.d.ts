@@ -56,13 +56,19 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
    * - Invalid property values in ancillary chunks.
    * - Could not decode an ancillary chunk.
    * - CRC checksum check for the chunk failed.
-   * - Unrecognized chunk type.
+   * - Unrecognized chunk type (this is always a warning regardless of strict mode).
    * - Mutually exclusive chunk types were both included (eg. sRGB and iCCP).
    *
    * Strict mode can be enabled via {@link IDecodePngOptions.strictMode} which will throw an error when
    * any warning is encountered.
    */
   warnings?: Error[];
+
+  /**
+   * Any informational messages when decoding. These are things of note but not important enough to
+   * be a warning.
+   */
+  info: string[];
 }
 
 /**

@@ -80,7 +80,8 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
     palette: undefined,
     metadata: [],
     parsedChunks: new Set(),
-    warnings: []
+    warnings: [],
+    info: []
   };
 
   // Verify file header, throwing if it's invalid
@@ -108,6 +109,9 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   for (let i = 1; i < chunks.length; i++) {
     const chunk = chunks[i];
     switch (chunk.type) {
+      case KnownChunkTypes.IHDR:
+        handleWarning(new ChunkError(chunk, `Multiple IHDR chunks not allowed`), result.warnings, options?.strictMode);
+        break;
       case KnownChunkTypes.IDAT: {
         const dataChunks = [chunk];
         // Gather all consecutive IDAT entries
@@ -138,8 +142,11 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
           }
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {
-            // TODO: Return as a problem
-            console.warn(`Unrecognized chunk type "${chunk.type}"`);
+            if (!chunk.isAncillary) {
+              throw new Error(`Unrecognized critical chunk type "${chunk.type}"`);
+            } else {
+              result.info.push(`Unrecognized chunk type "${chunk.type}"`);
+            }
           }
         }
         break;
@@ -167,7 +174,8 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
     palette: result.palette,
     metadata: result.metadata.length > 0 ? result.metadata : undefined,
     rawChunks: chunks,
-    warnings: result.warnings
+    warnings: result.warnings,
+    info: result.info
   };
 }
 
