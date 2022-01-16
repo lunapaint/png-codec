@@ -594,7 +594,7 @@ describe('pngParser.integration Image Test Suite', () => {
       ], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m1-6bfb149151f58d124d6fa76eaad75520', 'PLTE not allowed in grayscale image', true],
+      ['c-m1-6bfb149151f58d124d6fa76eaad75520', 'PLTE not allowed in grayscale image', { shouldThrow: 'PLTE: Color type "0" cannot have a palette' }],
       ['c-m4-6bfb149151f58d124d6fa76eaad75520', '16x16, 1-bit palette, non-interlaced, -750.0%', true],
       ['m1-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
       ['m2-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
