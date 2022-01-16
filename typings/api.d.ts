@@ -177,7 +177,10 @@ export interface IDecodePngOptions {
   parseChunkTypes?: OptionalParsedChunkTypes[] | '*';
 
   /**
-   * Enables strict mode which will throw an error when the first warning is encountered.
+   * Enables strict mode which will throw an error when the first warning is encountered. Strict
+   * mode should be used when it's important that the PNG is completely valid, when strict mode is
+   * not enabled the decoder will be as error tolerant as possible and report any warnings that
+   * would has failed in strict mode in {@link IDecodedPng.warnings}.
    */
   strictMode?: boolean;
 }
