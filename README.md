@@ -49,7 +49,7 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 |---------|----------------------------------------|-------
 | [bKGD]  | Background color                       |
 | [cHRM]  | Primary chromaticities and white point |
-|  eXIf   | Exchangeable image file format         | This is not formally specified but is often added to files by convention.
+| [eXIf]  | Exchangeable image file format         | Approved 2017/7
 | [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image.
 | [hIST]  | Image histogram                        |
 | [iTXt]  | International textual data             |
@@ -94,6 +94,7 @@ The library has the single dependency [pako](https://github.com/nodeca/pako) whi
 
 [bKGD]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11bKGD
 [cHRM]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11cHRM
+[eXIf]: http://ftp-osl.osuosl.org/pub/libpng/documents/proposals/eXIf/png-proposed-eXIf-chunk-2017-06-15.html#C.eXIf
 [gAMA]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11gAMA
 [hIST]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11hIST
 [iTXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11iTXt
