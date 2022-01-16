@@ -130,7 +130,12 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
         break;
       default:
         if (parseChunkTypes.includes(chunk.type)) {
-          result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result, options));
+          try {
+            result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result, options));
+          } catch (e: any) {
+            // TODO: Check Error type, re-throw if unexpected
+            handleWarning(e as Error, result.warnings, options?.strictMode);
+          }
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {
             // TODO: Return as a problem

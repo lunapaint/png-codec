@@ -54,6 +54,7 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
    *
    * - Strict ordering of chunks is not respected.
    * - Invalid property values in ancillary chunks.
+   * - Could not decode an ancillary chunk.
    * - CRC checksum check for the chunk failed.
    * - Unrecognized chunk type.
    * - Mutually exclusive chunk types were both included (eg. sRGB and iCCP).
