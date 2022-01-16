@@ -499,12 +499,12 @@ describe('pngParser.integration Image Test Suite', () => {
       ['bd927c8547634cdbdd22af0afe818a9b', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      // TODO: This test should fail:
-      //    pCAL must precede IDAT
-      //    sCAL must precede IDAT
-      //    pHYs must precede IDAT
-      //    oFFs must precede IDAT
-      ['bf203e765c98b12f6c2b2c33577c730d', '', true],
+      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
+      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { expectedWarnings: ['pHYs: Must precede IDAT'], expectedInfo: [
+        'Unrecognized chunk type "pCAL"',
+        'Unrecognized chunk type "sCAL"',
+        'Unrecognized chunk type "oFFs"'
+      ], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-bfce28c0e44bc8d1824d48fbec5075e2', 'should throw', { shouldThrow: true }],
