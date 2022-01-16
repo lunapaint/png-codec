@@ -72,6 +72,7 @@ export function assertChunkPrecedes(chunk: Pick<IPngChunk, 'type'>, typeAfter: K
  * @param decodedPng The partial decoded png.
  */
 export function assertChunkFollows(chunk: Pick<IPngChunk, 'type'>, typeAfter: KnownChunkTypes, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks'>) {
+  // Follows assertions are always errors by design
   if (!decodedPng.parsedChunks.has(typeAfter)) {
     throw new ChunkError(chunk, `Must follow ${typeAfter}`);
   }

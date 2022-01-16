@@ -1,6 +1,7 @@
 import * as pako from 'pako';
+import { IPngChunk } from './types';
 
-export function readText(dataView: DataView, textDecoder: TextDecoder | undefined, maxLength: number | undefined, offset: number, maxOffset: number, readTrailingNull: boolean, isCompressed?: boolean): { bytesRead: number, text: string } {
+export function readText(chunk: IPngChunk, dataView: DataView, textDecoder: TextDecoder | undefined, maxLength: number | undefined, offset: number, maxOffset: number, readTrailingNull: boolean, isCompressed?: boolean): { bytesRead: number, text: string } {
   const bytes = [];
   let current = 0;
   let i = 0;
@@ -18,7 +19,7 @@ export function readText(dataView: DataView, textDecoder: TextDecoder | undefine
   }
 
   if (readTrailingNull && dataView.getUint8(offset) !== 0) {
-    throw new Error('zTXt: No null character after text');
+    throw new Error(`${chunk.type}: No null character after text`);
   }
 
   let typedArray: Uint8Array = new Uint8Array(bytes);
@@ -26,7 +27,7 @@ export function readText(dataView: DataView, textDecoder: TextDecoder | undefine
     const inflator = new pako.Inflate();
     inflator.push(typedArray);
     if (inflator.err) {
-      throw new Error('zTXt: Inflate error: ' + inflator.msg);
+      throw new Error(`${chunk.type}: Inflate error: ${inflator.msg}`);
     }
     typedArray = inflator.result as Uint8Array;
   }

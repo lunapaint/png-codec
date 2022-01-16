@@ -25,7 +25,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   let offset = chunkDataOffset;
   const textDecoder = new TextDecoder('latin1');
 
-  const readResult = readText(dataView, textDecoder, 79, offset, maxOffset, true);
+  const readResult = readText(chunk, dataView, textDecoder, 79, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const name = readResult.text;
 
