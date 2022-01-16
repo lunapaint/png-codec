@@ -56,6 +56,7 @@ export interface IPartialDecodedPng {
    */
   parsedChunks: Set<string>;
   metadata: PngMetadata[];
+  warnings: Error[];
 }
 
 export interface IPngHeaderDetails {

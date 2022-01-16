@@ -6,14 +6,14 @@
 
 import { readText } from '../text.js';
 import { assertChunkDataLengthGte } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
 
 /**
  * `tEXt` Textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11tEXt
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataTextualData {
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataTextualData {
   assertChunkDataLengthGte(chunk, 6);
 
   // Format:

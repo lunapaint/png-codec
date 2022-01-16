@@ -5,7 +5,7 @@
  */
 
 import * as pako from 'pako';
-import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency } from '../types.js';
+import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency, IDecodePngOptions } from '../types.js';
 
 /**
  * `IDAT` Image Data
@@ -17,7 +17,7 @@ import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPalet
  * deflate algorithm. Note that a single image may contain multiple IDAT chunks, if they do they
  * must appear consecutively.
  */
-export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, chunks: IPngChunk[], decodedPng: IPartialDecodedPng): Uint8Array | Uint16Array { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, chunks: IPngChunk[], decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): Uint8Array | Uint16Array { // eslint-disable-line @typescript-eslint/naming-convention
   // Decompress the chunk data.
   const decompressed = decompress(dataView, chunks);
 

@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkCompressionMethod, assertChunkDataLengthEquals, ChunkError } from '../assert.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceMethod, IPngChunk } from '../types.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthEquals, ChunkError, handleWarning } from '../assert.js';
+import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceMethod, IPngChunk, IPartialDecodedPng, IDecodePngOptions } from '../types.js';
 
 /**
  * `IHDR` Image Header
@@ -16,7 +16,7 @@ import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceM
  * dimensions and bit depth, this information is used when looking at later chunks and it's required
  * that this chunk is the first chunk in the datastream.
  */
-export function parseChunk_IHDR(dataView: DataView, chunk: IPngChunk): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk_IHDR(dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
   assertChunkDataLengthEquals(chunk, 13);
 
   let offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
@@ -35,13 +35,12 @@ export function parseChunk_IHDR(dataView: DataView, chunk: IPngChunk): IPngHeade
   // if (!isValidColorType(colorType, bitDepth)) {
   //   throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`);
   // }
-  assertChunkCompressionMethod(chunk, compressionMethod);
+  assertChunkCompressionMethod(chunk, compressionMethod, decodedPng.warnings, options?.strictMode);
   if (filterMethod !== 0) {
-    // TODO: Warn instead
-    throw new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`);
+    handleWarning(new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`), decodedPng.warnings, options?.strictMode);
   }
   if (!isValidInterlaceMethod(interlaceMethod)) {
-    throw new ChunkError(chunk, `Interlace method "${interlaceMethod}" is not valid`);
+    handleWarning(new ChunkError(chunk, `Interlace method "${interlaceMethod}" is not valid`), decodedPng.warnings, options?.strictMode);
   }
 
   return {

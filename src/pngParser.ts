@@ -52,7 +52,7 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
  * possible chunk decoders when code splitting is not supported.
  */
-function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng) => PngMetadata }> {
+function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined) => PngMetadata }> {
   switch (type) {
     case KnownChunkTypes.bKGD: return import(`./chunks/chunk_bKGD.js`);
     case KnownChunkTypes.cHRM: return import(`./chunks/chunk_cHRM.js`);
@@ -75,6 +75,13 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: 
 
 export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>> {
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  const result: IPartialDecodedPng = {
+    image: undefined,
+    palette: undefined,
+    metadata: [],
+    parsedChunks: new Set(),
+    warnings: []
+  };
 
   // Verify file header, throwing if it's invalid
   verifyPngSignature(view);
@@ -83,8 +90,9 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   const chunks = readChunks(view);
 
   // Parse the header
-  const header = parseChunk_IHDR(view, chunks[0]);
+  const header = parseChunk_IHDR(view, chunks[0], result, options);
 
+  // Load supported chunks to read
   let parseChunkTypes: ReadonlyArray<string>;
   if (options && options.parseChunkTypes) {
     if (options.parseChunkTypes === '*') {
@@ -97,12 +105,6 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   }
 
   // Parse the chunks
-  const result: IPartialDecodedPng = {
-    image: undefined,
-    palette: undefined,
-    metadata: [],
-    parsedChunks: new Set()
-  };
   for (let i = 1; i < chunks.length; i++) {
     const chunk = chunks[i];
     switch (chunk.type) {
@@ -116,22 +118,22 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
           width: header.width,
           height: header.height,
           // HACK: Not sure why TS doesn't like unioned typed arrays
-          data: parseChunk_IDAT(header, view, dataChunks, result) as any
+          data: parseChunk_IDAT(header, view, dataChunks, result, options) as any
         };
         break;
       }
       case KnownChunkTypes.PLTE:
-        result.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(header, view, chunk, result);
+        result.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(header, view, chunk, result, options);
         break;
       case KnownChunkTypes.IEND:
         if (i < chunks.length - 1) {
           throw new ChunkError(chunk, 'Chunk is not last');
         }
-        parseChunk_IEND(header, view, chunk, result);
+        parseChunk_IEND(header, view, chunk, result, options);
         break;
       default:
         if (parseChunkTypes.includes(chunk.type)) {
-          result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result));
+          result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result, options));
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {
             // TODO: Return as a problem
@@ -162,7 +164,8 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
     },
     palette: result.palette,
     metadata: result.metadata.length > 0 ? result.metadata : undefined,
-    rawChunks: chunks
+    rawChunks: chunks,
+    warnings: result.warnings
   };
 }
 

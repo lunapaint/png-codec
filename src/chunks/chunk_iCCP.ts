@@ -6,18 +6,18 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthGte, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../types.js';
 
 /**
  * `iCCP` Embedded ICC profile
  *
  * Spec: https://www.w3.org/TR/PNG/#11iCCP
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataEmbeddedIccProfile {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkMutualExclusion(chunk, KnownChunkTypes.sRGB, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataEmbeddedIccProfile {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkMutualExclusion(chunk, KnownChunkTypes.sRGB, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
   assertChunkDataLengthGte(chunk, 3);
 
   const chunkDataOffset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
@@ -30,7 +30,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const name = readResult.text;
 
   const compressionMethod = dataView.getUint8(offset++);
-  assertChunkCompressionMethod(chunk, compressionMethod);
+  assertChunkCompressionMethod(chunk, compressionMethod, decodedPng.warnings, options?.strictMode);
 
   const data = new Uint8Array(dataView.buffer.slice(dataView.byteOffset + offset, dataView.byteOffset + maxOffset));
 

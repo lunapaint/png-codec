@@ -6,14 +6,14 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthGte, ChunkError } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../types.js';
 
 /**
  * `iTXt` International textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11iTXt
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataInternationalTextualData {
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataInternationalTextualData {
   assertChunkDataLengthGte(chunk, 6);
 
   // Format:
@@ -38,7 +38,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const isCompressed = dataView.getUint8(offset++) === 1;
   const compressionMethod = dataView.getUint8(offset++);
   if (isCompressed) {
-    assertChunkCompressionMethod(chunk, compressionMethod);
+    assertChunkCompressionMethod(chunk, compressionMethod, decodedPng.warnings, options?.strictMode);
   }
 
   readResult = readText(dataView, textDecoder, undefined, offset, maxOffset, true);

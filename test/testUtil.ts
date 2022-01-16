@@ -16,8 +16,10 @@ export interface ITestOptions {
    * Whether the test should throw, if this is a string the Error.message will be checked.
    */
   shouldThrow?: boolean | string;
+  strictMode?: boolean;
   includesMetadata?: { [type: string]: PngMetadata | PngMetadata[] | ((e: PngMetadata) => boolean) | undefined };
   expectedDimensions?: { width: number, height: number };
+  expectedWarnings?: string[];
   /**
    * Whether to skip the data assertion of the test, this is only meant to be used temporarily.
    *
@@ -52,12 +54,12 @@ export function createTests(testCases: TestCase[], fixture: string) {
     const name = t[0];
     const description = t[1];
     const shouldSkip = typeof t[2] === 'boolean' ? t[2] : false;
-    const options = typeof t[2] === 'object' ? t[2] : undefined;
+    const options = typeof t[2] === 'object' ? t[2] : {};
     (shouldSkip ? it.skip : it)(`${name} - ${description}`, async () => {
       const data = new Uint8Array(await fs.promises.readFile(join(fixture, `${name}.png`)));
-      if (options?.shouldThrow) {
+      if (options.shouldThrow) {
         try {
-          await decodePng(data, { parseChunkTypes: '*' });
+          await decodePng(data, { parseChunkTypes: '*', strictMode: options.strictMode });
         } catch (e: unknown) {
           if (typeof options.shouldThrow === 'string') {
             strictEqual((e as Error).message, options.shouldThrow);
@@ -66,12 +68,12 @@ export function createTests(testCases: TestCase[], fixture: string) {
         }
         fail('Exception expected');
       }
-      const decoded = await (options?.forceBitDepth8
-        ? decodePng(data, { parseChunkTypes: '*', force32: true })
-        : decodePng(data, { parseChunkTypes: '*' })
+      const decoded = await (options.forceBitDepth8
+        ? decodePng(data, { parseChunkTypes: '*', strictMode: options.strictMode, force32: true })
+        : decodePng(data, { parseChunkTypes: '*', strictMode: options.strictMode })
       );
 
-      if (options?.includesMetadata) {
+      if (options.includesMetadata) {
         ok(decoded.metadata);
         for (const expectedEntryType of Object.keys(options.includesMetadata)) {
           const expectedEntry = options.includesMetadata[expectedEntryType] as PngMetadata | PngMetadata[] | ((e: PngMetadata) => boolean);
@@ -88,24 +90,30 @@ export function createTests(testCases: TestCase[], fixture: string) {
           }
         }
       }
-      if (options?.skipDataAssertion) {
+
+      if (options.expectedWarnings) {
+        const actualWarnings = decoded.warnings?.map(e => e.message).sort();
+        deepStrictEqual(actualWarnings, options.expectedWarnings.sort());
+      }
+
+      if (options.skipDataAssertion) {
         return;
       }
 
       // Assert dimensions
       const size = name.startsWith('s') ? parseInt(name.substring(1, 3)) : 32;
-      strictEqual(decoded.image.width, options?.expectedDimensions?.width || size);
-      strictEqual(decoded.image.height, options?.expectedDimensions?.height || size);
+      strictEqual(decoded.image.width, options.expectedDimensions?.width || size);
+      strictEqual(decoded.image.height, options.expectedDimensions?.height || size);
 
       const actual = Array.from(decoded.image.data);
       const require = createRequire(import.meta.url);
       let expected: number[];
       try {
-        expected = require(`../${fixture}/json/${options?.customFile || name}.json`);
+        expected = require(`../${fixture}/json/${options.customFile || name}.json`);
       } catch {
-        expected = require(`../${fixture}/../json/${options?.customFile || name}.json`);
+        expected = require(`../${fixture}/../json/${options.customFile || name}.json`);
       }
-      if (options?.forceBitDepth8 || options?.ignoreTransparentHue) {
+      if (options.forceBitDepth8 || options.ignoreTransparentHue) {
         for (let i = 0; i < actual.length; i += 4) {
           assertPixel(actual, expected, i, options);
         }
@@ -116,8 +124,8 @@ export function createTests(testCases: TestCase[], fixture: string) {
   }
 }
 
-export function assertPixel(actual: ArrayLike<number>, expected: ArrayLike<number>, i: number, options?: ITestOptions) {
-  if (options?.ignoreTransparentHue) {
+export function assertPixel(actual: ArrayLike<number>, expected: ArrayLike<number>, i: number, options: ITestOptions) {
+  if (options.ignoreTransparentHue) {
     if (expected[i + 3] === 0) {
       if (actual[i + 3] !== expected[i + 3]) {
         throw new Error(
@@ -131,7 +139,7 @@ export function assertPixel(actual: ArrayLike<number>, expected: ArrayLike<numbe
   }
   for (let c = 0; c < 4; c++) {
     const success = (
-      (options?.forceBitDepth8 && Math.abs(actual[i] - expected[i]) <= 1) ||
+      (options.forceBitDepth8 && Math.abs(actual[i] - expected[i]) <= 1) ||
       actual[i + c] === expected[i + c]
     );
     if (!success) {

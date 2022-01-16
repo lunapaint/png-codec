@@ -5,15 +5,15 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../types.js';
 
 /**
  * `tIME` Image last-modification time
  *
  * Spec: https://www.w3.org/TR/PNG/#11tIME
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataLastModificationTime {
-  assertChunkSinglular(chunk, decodedPng);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataLastModificationTime {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
   assertChunkDataLengthEquals(chunk, 7);
 
   // Format:

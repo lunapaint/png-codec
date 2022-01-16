@@ -5,17 +5,17 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataSignificantBits, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataSignificantBits, KnownChunkTypes } from '../types.js';
 
 /**
  * `sBIT` Significant bits
  *
  * Spec: https://www.w3.org/TR/PNG/#11sBIT
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataSignificantBits {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataSignificantBits {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
 
   // Format:
   // `0` (Greyscale): number

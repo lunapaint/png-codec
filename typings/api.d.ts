@@ -47,6 +47,21 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
    * All raw chunks contained in the png.
    */
   rawChunks: IPngChunk[];
+
+  /**
+   * Any warnings that were encountered during decoding. Warnings typically fall into the following
+   * categories and are generally safe to ignore:
+   *
+   * - Strict ordering of chunks is not respected.
+   * - Invalid property values in ancillary chunks.
+   * - CRC checksum check for the chunk failed.
+   * - Unrecognized chunk type.
+   * - Mutually exclusive chunk types were both included (eg. sRGB and iCCP).
+   *
+   * Strict mode can be enabled via {@link IDecodePngOptions.strictMode} which will throw an error when
+   * any warning is encountered.
+   */
+  warnings?: Error[];
 }
 
 /**
@@ -153,6 +168,11 @@ export interface IDecodePngOptions {
    * chunk type is of use this option can be used to do that.
    */
   parseChunkTypes?: OptionalParsedChunkTypes[] | '*';
+
+  /**
+   * Enables strict mode which will throw an error when the first warning is encountered.
+   */
+  strictMode?: boolean;
 }
 
 /**

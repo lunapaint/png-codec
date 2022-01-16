@@ -16,46 +16,59 @@ describe('pngParser.integration Image Test Suite', () => {
 
   describe('chunk ordering', () => {
     createTests([
-      ['0301fde58080883e938b604cab9768ea', 'sRGB must precede PLTE', { shouldThrow: 'sRGB: Must precede PLTE' }],
+      ['0301fde58080883e938b604cab9768ea', 'sRGB must precede PLTE', { shouldThrow: 'sRGB: Must precede PLTE', strictMode: true }],
+      ['0301fde58080883e938b604cab9768ea', 'sRGB must precede PLTE', { expectedWarnings: ['sRGB: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['18bd8bf75e7a9b40b961dd501654ce0e', 'hIST must precede IDAT', { shouldThrow: 'hIST: Must precede IDAT' }],
+      ['18bd8bf75e7a9b40b961dd501654ce0e', 'hIST must precede IDAT', { shouldThrow: 'hIST: Must precede IDAT', strictMode: true }],
+      ['18bd8bf75e7a9b40b961dd501654ce0e', 'hIST must precede IDAT', { expectedWarnings: ['hIST: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
-      ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { shouldThrow: 'sBIT: Must precede IDAT' }],
+      ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { shouldThrow: 'sBIT: Must precede IDAT', strictMode: true }],
+      ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { expectedWarnings: ['sBIT: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['429104334d1fb6a58e17307883c17608', 'sBIT must precede PLTE', { shouldThrow: 'sBIT: Must precede PLTE' }],
+      ['429104334d1fb6a58e17307883c17608', 'sBIT must precede PLTE', { shouldThrow: 'sBIT: Must precede PLTE', strictMode: true }],
+      ['429104334d1fb6a58e17307883c17608', 'sBIT must precede PLTE', { expectedWarnings: ['sBIT: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { shouldThrow: 'tRNS: Must precede IDAT' }],
+      ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { shouldThrow: 'tRNS: Must precede IDAT', strictMode: true }],
+      ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { expectedWarnings: ['tRNS: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { shouldThrow: 'sRGB: Must precede IDAT' }],
+      ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { shouldThrow: 'sRGB: Must precede IDAT', strictMode: true }],
+      ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { expectedWarnings: ['sRGB: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { shouldThrow: 'iCCP: Must precede PLTE' }],
+      ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { shouldThrow: 'iCCP: Must precede PLTE', strictMode: true }],
+      ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { expectedWarnings: ['iCCP: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { shouldThrow: 'gAMA: Must precede PLTE' }],
+      ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { shouldThrow: 'gAMA: Must precede PLTE', strictMode: true }],
+      ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { expectedWarnings: ['gAMA: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { shouldThrow: 'iCCP: Must precede IDAT' }],
+      ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { shouldThrow: 'iCCP: Must precede IDAT', strictMode: true }],
+      ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { expectedWarnings: ['iCCP: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { shouldThrow: 'cHRM: Must precede PLTE' }],
+      ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { shouldThrow: 'cHRM: Must precede PLTE', strictMode: true }],
+      ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { expectedWarnings: ['cHRM: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { shouldThrow: 'gAMA: Must precede IDAT' }],
+      ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { shouldThrow: 'gAMA: Must precede IDAT', strictMode: true }],
+      ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { expectedWarnings: ['gAMA: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { shouldThrow: 'bKGD: Must precede IDAT' }],
+      ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { shouldThrow: 'bKGD: Must precede IDAT', strictMode: true }],
+      ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { expectedWarnings: ['bKGD: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT' }],
+      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
+      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { expectedWarnings: ['pHYs: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
@@ -64,22 +77,27 @@ describe('pngParser.integration Image Test Suite', () => {
 
   describe('invalid duplicate chunks', () => {
     createTests([
-      ['008b8bb75b8a487dc5aac86c9abb06fb', 'multiple sBIT not allowed', { shouldThrow: 'sBIT: Multiple sBIT chunks not allowed' }],
+      ['008b8bb75b8a487dc5aac86c9abb06fb', 'multiple sBIT not allowed', { shouldThrow: 'sBIT: Multiple sBIT chunks not allowed', strictMode: true }],
+      ['008b8bb75b8a487dc5aac86c9abb06fb', 'multiple sBIT not allowed', { expectedWarnings: ['sBIT: Multiple sBIT chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['0132cfdbd8ca323574a2072e7ed5014c', 'multiple sRGB not allowed', { shouldThrow: 'sRGB: Multiple sRGB chunks not allowed' }],
+      ['0132cfdbd8ca323574a2072e7ed5014c', 'multiple sRGB not allowed', { shouldThrow: 'sRGB: Multiple sRGB chunks not allowed', strictMode: true }],
+      ['0132cfdbd8ca323574a2072e7ed5014c', 'multiple sRGB not allowed', { expectedWarnings: ['sRGB: Multiple sRGB chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', { shouldThrow: 'iCCP: Multiple iCCP chunks not allowed' }]
+      ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', { shouldThrow: 'iCCP: Multiple iCCP chunks not allowed', strictMode: true }],
+      ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', { expectedWarnings: ['iCCP: Multiple iCCP chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['13f665c09e4b03cdbe2fff3015ec8aa7', 'multiple bKGD not allowed', { shouldThrow: 'bKGD: Multiple bKGD chunks not allowed' }]
+      ['13f665c09e4b03cdbe2fff3015ec8aa7', 'multiple bKGD not allowed', { shouldThrow: 'bKGD: Multiple bKGD chunks not allowed', strictMode: true }],
+      ['13f665c09e4b03cdbe2fff3015ec8aa7', 'multiple bKGD not allowed', { expectedWarnings: ['bKGD: Multiple bKGD chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['1bcc34d49e56a2fba38490db206328b8', 'multiple sCAL not allowed', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
-      ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { shouldThrow: 'PLTE: Multiple PLTE chunks not allowed' }],
+      ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { shouldThrow: 'PLTE: Multiple PLTE chunks not allowed', strictMode: true }],
+      ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { expectedWarnings: ['PLTE: Multiple PLTE chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['5beaadc10dfdbf61124e98fdf8a5c191', 'multiple sTER not allowed', true],
@@ -91,25 +109,31 @@ describe('pngParser.integration Image Test Suite', () => {
       ['64221ffc9050c92b8980326acc0e4194', 'multiple pCAL not allowed', true], // TODO: Support pCAL?
     ], imageTestSuiteRoot);
     createTests([
-      ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { shouldThrow: 'tIME: Multiple tIME chunks not allowed' }],
+      ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { shouldThrow: 'tIME: Multiple tIME chunks not allowed', strictMode: true }],
+      ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { expectedWarnings: ['tIME: Multiple tIME chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', { shouldThrow: 'hIST: Multiple hIST chunks not allowed' }],
+      ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', { shouldThrow: 'hIST: Multiple hIST chunks not allowed', strictMode: true }],
+      ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', { expectedWarnings: ['hIST: Multiple hIST chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', { shouldThrow: 'cHRM: Multiple cHRM chunks not allowed' }],
+      ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', { shouldThrow: 'cHRM: Multiple cHRM chunks not allowed', strictMode: true }],
+      ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', { expectedWarnings: ['cHRM: Multiple cHRM chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', { shouldThrow: 'pHYs: Multiple pHYs chunks not allowed' }],
+      ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', { shouldThrow: 'pHYs: Multiple pHYs chunks not allowed', strictMode: true }],
+      ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', { expectedWarnings: ['pHYs: Multiple pHYs chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', { shouldThrow: 'gAMA: Multiple gAMA chunks not allowed' }],
+      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', { shouldThrow: 'gAMA: Multiple gAMA chunks not allowed', strictMode: true }],
+      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', { expectedWarnings: ['gAMA: Multiple gAMA chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
   });
 
   describe('mutually exclusive chunks', () => {
     createTests([
-      ['2a6ff5f8106894b22dad3ce99673481a', 'iCCP not allowed with sRGB', { shouldThrow: 'iCCP: Should not be present alongside sRGB' }],
+      ['2a6ff5f8106894b22dad3ce99673481a', 'iCCP not allowed with sRGB', { shouldThrow: 'iCCP: Should not be present alongside sRGB', strictMode: true }],
+      ['2a6ff5f8106894b22dad3ce99673481a', 'iCCP not allowed with sRGB', { expectedWarnings: ['iCCP: Should not be present alongside sRGB'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
   });
 
@@ -166,10 +190,12 @@ describe('pngParser.integration Image Test Suite', () => {
       ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', true],
     ], imageTestSuiteRoot);
     createTests([
-      ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid' }],
+      ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid', strictMode: true }],
+      ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { expectedWarnings: ['IHDR: Filter method \"128\" is not valid'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { shouldThrow: 'IHDR: Unknown compression method "128"' }], // TODO: Test ignore warnings: 32x32, 8-bit palette, non-interlaced, -25.6%
+      ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { shouldThrow: 'IHDR: Unknown compression method "128"', strictMode: true }],
+      ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { expectedWarnings: ['IHDR: Unknown compression method "128"'], skipDataAssertion: true }], // TODO: Test ignore warnings: 32x32, 8-bit palette, non-interlaced, -25.6%
     ], imageTestSuiteRoot);
     createTests([
       ['d45b0dbbb808df6486f8a13ea44ea174', 'invalid oFFs unit specifier (2)', true],
