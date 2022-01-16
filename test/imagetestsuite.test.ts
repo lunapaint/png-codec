@@ -250,9 +250,10 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m8-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
+      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
+      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'zTXt: No null character after text' }],
       ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)', strictMode: true }],
-      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
+      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'zTXt: No null character after text' }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', { shouldThrow: true }],
@@ -277,7 +278,8 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-49e39033e275de9786d8c41f834c710b', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['4aae896ba900c48c63cffc0cc9f8c4dc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
+      ['4aae896ba900c48c63cffc0cc9f8c4dc', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
+      ['4aae896ba900c48c63cffc0cc9f8c4dc', 'should throw', { shouldThrow: 'No IDAT chunk' }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-4bdd87fd0324f0a3d84d6905d17e1731', 'should throw', { shouldThrow: true }],
@@ -367,8 +369,13 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m2-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: true }],
-      ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: true }],
+      ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)', strictMode: true }],
+      ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { expectedWarnings: [
+        'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)',
+        'Last chunk is not IEND'
+      ], skipDataAssertion: true }],
+      ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
+      ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['94e1bdbb03c42581d8407602634636ea', 'should throw', { shouldThrow: true }],
@@ -464,8 +471,13 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-bfce28c0e44bc8d1824d48fbec5075e2', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { shouldThrow: true }],
-      ['c-c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
+      ['c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { shouldThrow: 'CRC for chunk "IDAT" at offset 0x89 doesn\'t match (0xae426082 !== 0x35af061e)', strictMode: true }],
+      ['c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { expectedWarnings: [
+        'CRC for chunk "IDAT" at offset 0x89 doesn\'t match (0xae426082 !== 0x35af061e)',
+        'Last chunk is not IEND'
+      ], skipDataAssertion: true }],
+      ['c-c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
+      ['c-c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-c5a372c145ce25ce712959cd3b6df35e', 'should throw', { shouldThrow: true }],

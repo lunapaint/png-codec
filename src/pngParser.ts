@@ -126,9 +126,6 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
         result.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(header, view, chunk, result, options);
         break;
       case KnownChunkTypes.IEND:
-        if (i < chunks.length - 1) {
-          throw new ChunkError(chunk, 'Chunk is not last');
-        }
         parseChunk_IEND(header, view, chunk, result, options);
         break;
       default:
@@ -190,7 +187,7 @@ export function readChunks(dataView: DataView, decoded: IPartialDecodedPng, opti
     throw new Error(`First chunk is not IHDR`);
   }
   if (chunks[chunks.length - 1].type !== KnownChunkTypes.IEND) {
-    throw new Error('Last chunk is not IEND');
+    handleWarning(new Error('Last chunk is not IEND'), decoded.warnings, options?.strictMode);
   }
   if (!hasData) {
     throw new Error('No IDAT chunk');
