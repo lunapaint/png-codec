@@ -17,58 +17,58 @@ describe('pngParser.integration Image Test Suite', () => {
   describe('chunk ordering', () => {
     createTests([
       ['0301fde58080883e938b604cab9768ea', 'sRGB must precede PLTE', { shouldThrow: 'sRGB: Must precede PLTE', strictMode: true }],
-      ['0301fde58080883e938b604cab9768ea', 'sRGB must precede PLTE', { expectedWarnings: ['sRGB: Must precede PLTE'], skipDataAssertion: true }],
+      ['0301fde58080883e938b604cab9768ea', 'should decode with warnings', { expectedWarnings: ['sRGB: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['18bd8bf75e7a9b40b961dd501654ce0e', 'hIST must precede IDAT', { shouldThrow: 'hIST: Must precede IDAT', strictMode: true }],
-      ['18bd8bf75e7a9b40b961dd501654ce0e', 'hIST must precede IDAT', { expectedWarnings: ['hIST: Must precede IDAT'], skipDataAssertion: true }],
+      ['18bd8bf75e7a9b40b961dd501654ce0e', 'should decode with warnings', { expectedWarnings: ['hIST: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
       ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { shouldThrow: 'sBIT: Must precede IDAT', strictMode: true }],
-      ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { expectedWarnings: ['sBIT: Must precede IDAT'], skipDataAssertion: true }],
+      ['31e3bc3eb811cff582b5feee2494fed8', 'should decode with warnings', { expectedWarnings: ['sBIT: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['429104334d1fb6a58e17307883c17608', 'sBIT must precede PLTE', { shouldThrow: 'sBIT: Must precede PLTE', strictMode: true }],
-      ['429104334d1fb6a58e17307883c17608', 'sBIT must precede PLTE', { expectedWarnings: ['sBIT: Must precede PLTE'], skipDataAssertion: true }],
+      ['429104334d1fb6a58e17307883c17608', 'should decode with warnings', { expectedWarnings: ['sBIT: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { shouldThrow: 'tRNS: Must precede IDAT', strictMode: true }],
-      ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { expectedWarnings: ['tRNS: Must precede IDAT'], skipDataAssertion: true }],
+      ['42ec8668adb5dbc6581393f463976510', 'should decode with warnings', { expectedWarnings: ['tRNS: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { shouldThrow: 'sRGB: Must precede IDAT', strictMode: true }],
-      ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { expectedWarnings: ['sRGB: Must precede IDAT'], skipDataAssertion: true }],
+      ['5b689479bd7e527c2385a40437272607', 'should decode with warnings', { expectedWarnings: ['sRGB: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { shouldThrow: 'iCCP: Must precede PLTE', strictMode: true }],
-      ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { expectedWarnings: ['iCCP: Must precede PLTE'], skipDataAssertion: true }],
+      ['71714b783e01aec455b5a4a760326ccc', 'should decode with warnings', { expectedWarnings: ['iCCP: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { shouldThrow: 'gAMA: Must precede PLTE', strictMode: true }],
-      ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { expectedWarnings: ['gAMA: Must precede PLTE'], skipDataAssertion: true }],
+      ['7b9abb94ace0278f943a6df29d0ca652', 'should decode with warnings', { expectedWarnings: ['gAMA: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { shouldThrow: 'iCCP: Must precede IDAT', strictMode: true }],
-      ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { expectedWarnings: ['iCCP: Must precede IDAT'], skipDataAssertion: true }],
+      ['829b05b759b2977bc3eb970ab256d867', 'should decode with warnings', { expectedWarnings: ['iCCP: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { shouldThrow: 'cHRM: Must precede PLTE', strictMode: true }],
-      ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { expectedWarnings: ['cHRM: Must precede PLTE'], skipDataAssertion: true }],
+      ['b3ac9fdb7239f42c734921dfe790291b', 'should decode with warnings', { expectedWarnings: ['cHRM: Must precede PLTE'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { shouldThrow: 'gAMA: Must precede IDAT', strictMode: true }],
-      ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { expectedWarnings: ['gAMA: Must precede IDAT'], skipDataAssertion: true }],
+      ['c1a4baf5d7c68d366d4d4f948f7295be', 'should decode with warnings', { expectedWarnings: ['gAMA: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { shouldThrow: 'bKGD: Must precede IDAT', strictMode: true }],
-      ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { expectedWarnings: ['bKGD: Must precede IDAT'], skipDataAssertion: true }],
+      ['c5c030bf52b9b2d8c45c88988fafff4f', 'should decode with warnings', { expectedWarnings: ['bKGD: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
-      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { expectedWarnings: ['pHYs: Must precede IDAT'], skipDataAssertion: true }],
+      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'should decode with warnings', { expectedWarnings: ['pHYs: Must precede IDAT'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
@@ -78,26 +78,26 @@ describe('pngParser.integration Image Test Suite', () => {
   describe('invalid duplicate chunks', () => {
     createTests([
       ['008b8bb75b8a487dc5aac86c9abb06fb', 'multiple sBIT not allowed', { shouldThrow: 'sBIT: Multiple sBIT chunks not allowed', strictMode: true }],
-      ['008b8bb75b8a487dc5aac86c9abb06fb', 'multiple sBIT not allowed', { expectedWarnings: ['sBIT: Multiple sBIT chunks not allowed'], skipDataAssertion: true }],
+      ['008b8bb75b8a487dc5aac86c9abb06fb', 'should decode with warnings', { expectedWarnings: ['sBIT: Multiple sBIT chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['0132cfdbd8ca323574a2072e7ed5014c', 'multiple sRGB not allowed', { shouldThrow: 'sRGB: Multiple sRGB chunks not allowed', strictMode: true }],
-      ['0132cfdbd8ca323574a2072e7ed5014c', 'multiple sRGB not allowed', { expectedWarnings: ['sRGB: Multiple sRGB chunks not allowed'], skipDataAssertion: true }],
+      ['0132cfdbd8ca323574a2072e7ed5014c', 'should decode with warnings', { expectedWarnings: ['sRGB: Multiple sRGB chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', { shouldThrow: 'iCCP: Multiple iCCP chunks not allowed', strictMode: true }],
-      ['0d466db9067b719df0b06ef441bf1ee7', 'multiple iCCP not allowed', { expectedWarnings: ['iCCP: Multiple iCCP chunks not allowed'], skipDataAssertion: true }],
+      ['0d466db9067b719df0b06ef441bf1ee7', 'should decode with warnings', { expectedWarnings: ['iCCP: Multiple iCCP chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['13f665c09e4b03cdbe2fff3015ec8aa7', 'multiple bKGD not allowed', { shouldThrow: 'bKGD: Multiple bKGD chunks not allowed', strictMode: true }],
-      ['13f665c09e4b03cdbe2fff3015ec8aa7', 'multiple bKGD not allowed', { expectedWarnings: ['bKGD: Multiple bKGD chunks not allowed'], skipDataAssertion: true }],
+      ['13f665c09e4b03cdbe2fff3015ec8aa7', 'should decode with warnings', { expectedWarnings: ['bKGD: Multiple bKGD chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['1bcc34d49e56a2fba38490db206328b8', 'multiple sCAL not allowed', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
       ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { shouldThrow: 'PLTE: Multiple PLTE chunks not allowed', strictMode: true }],
-      ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { expectedWarnings: ['PLTE: Multiple PLTE chunks not allowed'], skipDataAssertion: true }],
+      ['463d3570f92a6b6ecba0cc4fd9a7a384', 'should decode with warnings', { expectedWarnings: ['PLTE: Multiple PLTE chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['5beaadc10dfdbf61124e98fdf8a5c191', 'multiple sTER not allowed', true],
@@ -110,23 +110,23 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { shouldThrow: 'tIME: Multiple tIME chunks not allowed', strictMode: true }],
-      ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { expectedWarnings: ['tIME: Multiple tIME chunks not allowed'], skipDataAssertion: true }],
+      ['9bd8a9ed81c5a9190f74496197da7249', 'should decode with warnings', { expectedWarnings: ['tIME: Multiple tIME chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', { shouldThrow: 'hIST: Multiple hIST chunks not allowed', strictMode: true }],
-      ['a1d54c960686558901e320a52a967158', 'multiple hIST not allowed', { expectedWarnings: ['hIST: Multiple hIST chunks not allowed'], skipDataAssertion: true }],
+      ['a1d54c960686558901e320a52a967158', 'should decode with warnings', { expectedWarnings: ['hIST: Multiple hIST chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', { shouldThrow: 'cHRM: Multiple cHRM chunks not allowed', strictMode: true }],
-      ['a24a39e69554a701412b3ed0c009e7f6', 'multiple cHRM not allowed', { expectedWarnings: ['cHRM: Multiple cHRM chunks not allowed'], skipDataAssertion: true }],
+      ['a24a39e69554a701412b3ed0c009e7f6', 'should decode with warnings', { expectedWarnings: ['cHRM: Multiple cHRM chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', { shouldThrow: 'pHYs: Multiple pHYs chunks not allowed', strictMode: true }],
-      ['f757de9794666c3d14985210679bc98c', 'multiple pHYs not allowed', { expectedWarnings: ['pHYs: Multiple pHYs chunks not allowed'], skipDataAssertion: true }],
+      ['f757de9794666c3d14985210679bc98c', 'should decode with warnings', { expectedWarnings: ['pHYs: Multiple pHYs chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', { shouldThrow: 'gAMA: Multiple gAMA chunks not allowed', strictMode: true }],
-      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'multiple gAMA not allowed', { expectedWarnings: ['gAMA: Multiple gAMA chunks not allowed'], skipDataAssertion: true }],
+      ['fa9f6aa9bcc679d20e171dbf07a628fd', 'should decode with warnings', { expectedWarnings: ['gAMA: Multiple gAMA chunks not allowed'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
   });
 
@@ -143,26 +143,26 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['0b7d50ac449fd59eb3de00647636d0c9', 'invalid cHRM length', { shouldThrow: 'cHRM: Invalid data length: 31 !== 32', strictMode: true }],
-      ['0b7d50ac449fd59eb3de00647636d0c9', 'invalid cHRM length', { expectedWarnings: ['cHRM: Invalid data length: 31 !== 32'], skipDataAssertion: true }]
+      ['0b7d50ac449fd59eb3de00647636d0c9', 'should decode with warnings', { expectedWarnings: ['cHRM: Invalid data length: 31 !== 32'], skipDataAssertion: true }]
     ], imageTestSuiteRoot);
     createTests([
       ['138331052d7c6e4acebfaa92af314e12', 'invalid number of hIST entries', { shouldThrow: 'hIST: Invalid data length: 28 !== 30', strictMode: true }],
-      ['138331052d7c6e4acebfaa92af314e12', 'invalid number of hIST entries', { expectedWarnings: ['hIST: Invalid data length: 28 !== 30'], skipDataAssertion: true }],
+      ['138331052d7c6e4acebfaa92af314e12', 'should decode with warnings', { expectedWarnings: ['hIST: Invalid data length: 28 !== 30'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['4c5b82ba0a9c12356007bd71e52185b2', 'invalid sRGB length', { shouldThrow: 'sRGB: Invalid data length: 0 !== 1', strictMode: true }],
-      ['4c5b82ba0a9c12356007bd71e52185b2', 'invalid sRGB length', { expectedWarnings: ['sRGB: Invalid data length: 0 !== 1'], skipDataAssertion: true }],
+      ['4c5b82ba0a9c12356007bd71e52185b2', 'should decode with warnings', { expectedWarnings: ['sRGB: Invalid data length: 0 !== 1'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['4f14b7aab3a41855378c5517342598b9', 'invalid tRNS length for palette image', { shouldThrow: 'tRNS: Invalid data length for color type 3: 174 > 173', strictMode: true }],
-      ['4f14b7aab3a41855378c5517342598b9', 'invalid tRNS length for palette image', { expectedWarnings: ['tRNS: Invalid data length for color type 3: 174 > 173'], skipDataAssertion: true }],
+      ['4f14b7aab3a41855378c5517342598b9', 'should decode with warnings', { expectedWarnings: ['tRNS: Invalid data length for color type 3: 174 > 173'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)' }],  // TODO: Make too many entries a warning
     ], imageTestSuiteRoot);
     createTests([
       ['8711007ea5e351755a80cba913d16a32', 'invalid number of sPLT entries (0.6)', { shouldThrow: 'sPLT: Invalid data length: 6 should be divisible by entry size 10', strictMode: true }],
-      ['8711007ea5e351755a80cba913d16a32', 'invalid number of sPLT entries (0.6)', { expectedWarnings: ['sPLT: Invalid data length: 6 should be divisible by entry size 10'], skipDataAssertion: true }],
+      ['8711007ea5e351755a80cba913d16a32', 'should decode with warnings', { expectedWarnings: ['sPLT: Invalid data length: 6 should be divisible by entry size 10'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['b583e48e218193e4c287f033931a6314', 'invalid number of PLTE entries (0)', { shouldThrow: 'PLTE: Cannot have 0 entries' }],
@@ -172,15 +172,15 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['d92428f3fc9c806b0a4373b54e06785e', 'invalid tIME length', { shouldThrow: 'tIME: Invalid data length: 9 !== 7', strictMode: true }],
-      ['d92428f3fc9c806b0a4373b54e06785e', 'invalid tIME length', { expectedWarnings: ['tIME: Invalid data length: 9 !== 7'], skipDataAssertion: true }],
+      ['d92428f3fc9c806b0a4373b54e06785e', 'should decode with warnings', { expectedWarnings: ['tIME: Invalid data length: 9 !== 7'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['dd18aac055d531e0e4ff8979458dbaa3', 'invalid number of sPLT entries (1.66667)', { shouldThrow: 'sPLT: Invalid data length: 10 should be divisible by entry size 6', strictMode: true }],
-      ['dd18aac055d531e0e4ff8979458dbaa3', 'invalid number of sPLT entries (1.66667)', { expectedWarnings: ['sPLT: Invalid data length: 10 should be divisible by entry size 6'], skipDataAssertion: true }],
+      ['dd18aac055d531e0e4ff8979458dbaa3', 'should decode with warnings', { expectedWarnings: ['sPLT: Invalid data length: 10 should be divisible by entry size 6'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['e76546768d4a8f2f4c39339345c7614c', 'invalid pHYs length', { shouldThrow: 'pHYs: Invalid data length: 8 !== 9', strictMode: true }],
-      ['e76546768d4a8f2f4c39339345c7614c', 'invalid pHYs length', { expectedWarnings: ['pHYs: Invalid data length: 8 !== 9'], skipDataAssertion: true }],
+      ['e76546768d4a8f2f4c39339345c7614c', 'should decode with warnings', { expectedWarnings: ['pHYs: Invalid data length: 8 !== 9'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['f427b6bee1acd1fea3ec953bc556a18a', 'invalid number of PLTE entries (0)', { shouldThrow: 'PLTE: Cannot have 0 entries' }],
@@ -199,11 +199,11 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid', strictMode: true }],
-      ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { expectedWarnings: ['IHDR: Filter method \"128\" is not valid'], skipDataAssertion: true }],
+      ['7ce702ec69b7af26b3218d1278520bce', 'should decode with warnings', { expectedWarnings: ['IHDR: Filter method \"128\" is not valid'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { shouldThrow: 'IHDR: Unknown compression method "128"', strictMode: true }],
-      ['a1d1aafb5bca660229f8e9fc65291eab', 'private (invalid?) IHDR compression method (128) (warning)', { expectedWarnings: ['IHDR: Unknown compression method "128"'], skipDataAssertion: true }], // TODO: Test ignore warnings: 32x32, 8-bit palette, non-interlaced, -25.6%
+      ['a1d1aafb5bca660229f8e9fc65291eab', 'should decode with warnings', { expectedWarnings: ['IHDR: Unknown compression method "128"'], skipDataAssertion: true }], // TODO: Test ignore warnings: 32x32, 8-bit palette, non-interlaced, -25.6%
     ], imageTestSuiteRoot);
     createTests([
       ['d45b0dbbb808df6486f8a13ea44ea174', 'invalid oFFs unit specifier (2)', true],
@@ -259,13 +259,13 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
-      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { expectedWarnings: [
+      ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should decode with warnings', { expectedWarnings: [
         'Last chunk is not IEND',
         'zTXt: No null character after text',
         'zTXt: No null character after text',
       ], skipDataAssertion: true}],
       ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)', strictMode: true }],
-      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { expectedWarnings: [
+      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "IdND" at offset 0xc468 doesn\'t match (0xae426082 !== 0x97cd4c55)',
         'CRC for chunk "iTXt" at offset 0x8ddf doesn\'t match (0xaa50e890 !== 0x32bfd0de)',
         'CRC for chunk "mkBT" at offset 0x4a18 doesn\'t match (0x3f7455f9 !== 0x6c7f5095)',
@@ -341,14 +341,14 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['5e2b64196b9e014e0ed0a27873cafdb3', 'should throw', { shouldThrow: 'CRC for chunk "sRGB" at offset 0x31 doesn\'t match (0xaece1ce9 !== 0xa9a3d8f0)', strictMode: true }],
-      ['5e2b64196b9e014e0ed0a27873cafdb3', 'should throw', { expectedWarnings: [
+      ['5e2b64196b9e014e0ed0a27873cafdb3', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "cHRM" at offset 0x3e doesn\'t match (0x9cba513c !== 0x1d9f341b)',
         'CRC for chunk "sRGB" at offset 0x31 doesn\'t match (0xaece1ce9 !== 0xa9a3d8f0)',
         'cHRM: Invalid red (168.41216,0.33)',
         'sRGB: Invalid rendering intent "4"',
       ], skipDataAssertion: true }],
       ['c-5e2b64196b9e014e0ed0a27873cafdb3', 'should throw', { shouldThrow: 'sRGB: Invalid rendering intent "4"', strictMode: true }],
-      ['c-5e2b64196b9e014e0ed0a27873cafdb3', 'should throw', { expectedWarnings: [
+      ['c-5e2b64196b9e014e0ed0a27873cafdb3', 'should decode with warnings', { expectedWarnings: [
         'cHRM: Invalid red (168.41216,0.33)',
         'sRGB: Invalid rendering intent "4"'
       ], skipDataAssertion: true }],
@@ -402,23 +402,23 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)', strictMode: true }],
-      ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { expectedWarnings: [
+      ['9032e447e32e09aef5b7de2fab42494d', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)',
         'Last chunk is not IEND'
       ], skipDataAssertion: true }],
       ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
-      ['c-9032e447e32e09aef5b7de2fab42494d', 'should throw', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
+      ['c-9032e447e32e09aef5b7de2fab42494d', 'should decode with warnings', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['94e1bdbb03c42581d8407602634636ea', 'should throw', { shouldThrow: 'CRC for chunk "sPLT" at offset 0x89 doesn\'t match (0xae426082 !== 0x4b86b3a)', strictMode: true }],
-      ['94e1bdbb03c42581d8407602634636ea', 'should throw', { expectedWarnings: [
+      ['94e1bdbb03c42581d8407602634636ea', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "sPLT" at offset 0x89 doesn\'t match (0xae426082 !== 0x4b86b3a)',
         'Last chunk is not IEND',
         'Offset is outside the bounds of the DataView',
         'sPLT: Must precede IDAT'
       ], skipDataAssertion: true }],
       ['c-94e1bdbb03c42581d8407602634636ea', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
-      ['c-94e1bdbb03c42581d8407602634636ea', 'should throw', { expectedWarnings: [
+      ['c-94e1bdbb03c42581d8407602634636ea', 'should decode with warnings', { expectedWarnings: [
         'Last chunk is not IEND',
         'Offset is outside the bounds of the DataView',
         'sPLT: Must precede IDAT'
@@ -430,7 +430,7 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['9540743374e1fdb273b6a6ca625eb7a3', 'should throw', { shouldThrow: 'cHRM: Invalid white point (42949.67295,42949.67295)', strictMode: true }],
-      ['9540743374e1fdb273b6a6ca625eb7a3', 'should throw', { expectedWarnings: ['cHRM: Invalid white point (42949.67295,42949.67295)'], skipDataAssertion: true }],
+      ['9540743374e1fdb273b6a6ca625eb7a3', 'should decode with warnings', { expectedWarnings: ['cHRM: Invalid white point (42949.67295,42949.67295)'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m2-96b70653ba3f8a83b7cfd48749bed8b1', 'should throw', { shouldThrow: true }],
@@ -479,7 +479,7 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['m1-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x815467c7 !== 0x93e1c829)', strictMode: true }],
-      ['m1-a4842373fc20cc42b8e023a329761915', 'should throw', { expectedWarnings: [
+      ['m1-a4842373fc20cc42b8e023a329761915', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "IENc" at offset 0xf6 doesn\'t match (0xae426082 !== 0xb48d5e9)',
         'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x815467c7 !== 0x93e1c829)',
         'CRC for chunk "aLTE" at offset 0x40 doesn\'t match (0xd2b049bd !== 0x2f590468)',
@@ -490,7 +490,7 @@ describe('pngParser.integration Image Test Suite', () => {
         'sBIT: Invalid data length: 3 !== 1'
       ], skipDataAssertion: true }],
       ['c-m1-a4842373fc20cc42b8e023a329761915', 'should throw', { shouldThrow: 'CRC for chunk "sBIT" at offset 0x31 doesn\'t match (0x77f8fca3 !== 0x77f8b5a3)', strictMode: true }],
-      ['c-m1-a4842373fc20cc42b8e023a329761915', 'should throw', { expectedWarnings: [
+      ['c-m1-a4842373fc20cc42b8e023a329761915', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "IENc" at offset 0xf6 doesn\'t match (0xae426082 !== 0xb48d5e9)',
         'CRC for chunk "aLTE" at offset 0x40 doesn\'t match (0xd2b049bd !== 0x2f590468)',
         'CRC for chunk "hIST" at offset 0x79 doesn\'t match (0x48995941 !== 0xf189593)',
@@ -535,12 +535,12 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { shouldThrow: 'CRC for chunk "IDAT" at offset 0x89 doesn\'t match (0xae426082 !== 0x35af061e)', strictMode: true }],
-      ['c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { expectedWarnings: [
+      ['c53911b0385c34a8204c30fdc14ea5cc', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "IDAT" at offset 0x89 doesn\'t match (0xae426082 !== 0x35af061e)',
         'Last chunk is not IEND'
       ], skipDataAssertion: true }],
       ['c-c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { shouldThrow: 'Last chunk is not IEND', strictMode: true }],
-      ['c-c53911b0385c34a8204c30fdc14ea5cc', 'should throw', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
+      ['c-c53911b0385c34a8204c30fdc14ea5cc', 'should decode with warnings', { expectedWarnings: ['Last chunk is not IEND'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-c5a372c145ce25ce712959cd3b6df35e', 'should throw', { shouldThrow: true }],
@@ -597,19 +597,21 @@ describe('pngParser.integration Image Test Suite', () => {
   describe('invalid and repaired', () => {
     createTests([
       ['66ac49ef3f48ac9482049e1ab57a53e9', '80x15, 32-bit RGB+alpha, non-interlaced, 16.0%', true], // TODO: Fix
-      ['c-m1-66ac49ef3f48ac9482049e1ab57a53e9', '80x15, 32-bit RGB+alpha, non-interlaced, 16.0%', { shouldThrow: 'zTXt: Inflate error: invalid distance too far back', strictMode: true }],
+      ['c-m1-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: 'zTXt: Inflate error: invalid distance too far back', strictMode: true }],
       ['c-m1-66ac49ef3f48ac9482049e1ab57a53e9', '80x15, 32-bit RGB+alpha, non-interlaced, 16.0%', { expectedWarnings: ['zTXt: Inflate error: invalid distance too far back'], skipDataAssertion: true }],
-      ['c-m2-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: true }],
-      ['c-m3-66ac49ef3f48ac9482049e1ab57a53e9', '80x15, 32-bit RGB+alpha, non-interlaced, 16.0%', true], // TODO: Suite says should pass, fails zTXt
+      ['c-m2-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: 'CRC for chunk "IDAT" at offset 0xd49 doesn\'t match (0xc7923abe !== 0x8c52e0a)', strictMode: true }],
+      ['c-m2-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: 'IDAT: Inflate error: incorrect data check', skipDataAssertion: true }],
+      ['c-m3-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: 'zTXt: Inflate error: incorrect data check', strictMode: true }],
+      ['c-m3-66ac49ef3f48ac9482049e1ab57a53e9', 'should decode with warnings', { expectedWarnings: ['zTXt: Inflate error: incorrect data check'], skipDataAssertion: true }],
       ['m1-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: 'CRC for chunk "gAMA" at offset 0x21 doesn\'t match (0xbfc6105 !== 0xf41078d0)', strictMode: true }],
-      ['m1-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { expectedWarnings: [
+      ['m1-66ac49ef3f48ac9482049e1ab57a53e9', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "gAMA" at offset 0x21 doesn\'t match (0xbfc6105 !== 0xf41078d0)',
         'CRC for chunk "zTXt" at offset 0x91 doesn\'t match (0xbb0815b0 !== 0x565f2318)',
         'zTXt: Inflate error: invalid distance too far back'
       ], skipDataAssertion: true }],
       ['m2-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: true }],
       ['m3-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { shouldThrow: 'CRC for chunk "zTXt" at offset 0x91 doesn\'t match (0xbb0815b0 !== 0xf6421cb4)', strictMode: true }],
-      ['m3-66ac49ef3f48ac9482049e1ab57a53e9', 'should throw', { expectedWarnings: [
+      ['m3-66ac49ef3f48ac9482049e1ab57a53e9', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "zTXt" at offset 0x91 doesn\'t match (0xbb0815b0 !== 0xf6421cb4)',
         'zTXt: Inflate error: incorrect data check'
       ], skipDataAssertion: true }],
@@ -621,12 +623,17 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m2-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
       ['m3-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
       ['m4-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x253d4f22 !== 0x253d6d22)', strictMode: true }],
-      ['m4-6bfb149151f58d124d6fa76eaad75520', 'should throw', { skipDataAssertion: true }],
+      ['m4-6bfb149151f58d124d6fa76eaad75520', 'should decode with warnings', { expectedWarnings: [
+        'CRC for chunk "IEND" at offset 0x104 doesn\'t match (0xae8d6082 !== 0xae426082)',
+        'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x253d4f22 !== 0x253d6d22)',
+        'CRC for chunk "tEXt" at offset 0xa2 doesn\'t match (0xdc930890 !== 0x344d4d5b)',
+        'CRC for chunk "tEXt" at offset 0xd3 doesn\'t match (0x83227ea4 !== 0x3ff9cdcd)',
+      ], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-e0f25ec3373dfdca79ba7bcc3ad366f3', '621x174, 32-bit RGB+alpha, non-interlaced, 52.5%', true],
       ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should throw', { shouldThrow: 'CRC for chunk "zTXt" at offset 0xa91 doesn\'t match (0x9ced0937 !== 0x8e5143e2)', strictMode: true }],
-      ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should throw', { expectedWarnings: [
+      ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "zTXt" at offset 0xa91 doesn\'t match (0x9ced0937 !== 0x8e5143e2)',
         'zTXt: Inflate error: incorrect data check'
       ], skipDataAssertion: true }],
