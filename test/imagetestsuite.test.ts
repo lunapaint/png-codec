@@ -68,7 +68,11 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
-      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'should decode with warnings', { expectedWarnings: ['pHYs: Must precede IDAT'], skipDataAssertion: true }],
+      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'should decode with warnings', { expectedWarnings: ['pHYs: Must precede IDAT'], expectedInfo: [
+        'Unrecognized chunk type "oFFs"',
+        'Unrecognized chunk type "pCAL"',
+        'Unrecognized chunk type "sCAL"'
+      ], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
@@ -332,12 +336,12 @@ describe('pngParser.integration Image Test Suite', () => {
         'CRC for chunk "sRGB" at offset 0x31 doesn\'t match (0xaece1ce9 !== 0xa9a3d8f0)',
         'cHRM: Invalid red (168.41216,0.33)',
         'sRGB: Invalid rendering intent "4"',
-      ], skipDataAssertion: true }],
+      ], expectedInfo: ['Unrecognized chunk type "vpAg"'], skipDataAssertion: true }],
       ['c-5e2b64196b9e014e0ed0a27873cafdb3', 'should throw', { shouldThrow: 'sRGB: Invalid rendering intent "4"', strictMode: true }],
       ['c-5e2b64196b9e014e0ed0a27873cafdb3', 'should decode with warnings', { expectedWarnings: [
         'cHRM: Invalid red (168.41216,0.33)',
         'sRGB: Invalid rendering intent "4"'
-      ], skipDataAssertion: true }],
+      ], expectedInfo: ['Unrecognized chunk type "vpAg"'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['m1-5efba06832cc674ae5d290ba7ebc2533', 'should throw', { shouldThrow: true }],
@@ -601,7 +605,13 @@ describe('pngParser.integration Image Test Suite', () => {
         'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x253d4f22 !== 0x253d6d22)',
         'CRC for chunk "tEXt" at offset 0xa2 doesn\'t match (0xdc930890 !== 0x344d4d5b)',
         'CRC for chunk "tEXt" at offset 0xd3 doesn\'t match (0x83227ea4 !== 0x3ff9cdcd)',
-      ], skipDataAssertion: true }],
+      ], expectedInfo: [
+        'Unrecognized chunk type "ubUC"',
+        'Unrecognized chunk type "ubSc"',
+        'Unrecognized chunk type "vpAg"',
+        'Unrecognized chunk type "ueUC"',
+        'Unrecognized chunk type "ueSc"'
+      ] , skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-e0f25ec3373dfdca79ba7bcc3ad366f3', '621x174, 32-bit RGB+alpha, non-interlaced, 52.5%', true],
@@ -609,20 +619,20 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should decode with warnings', { expectedWarnings: [
         'CRC for chunk "zTXt" at offset 0xa91 doesn\'t match (0x9ced0937 !== 0x8e5143e2)',
         'zTXt: Inflate error: incorrect data check'
-      ], skipDataAssertion: true }],
+      ], expectedInfo: ['Unrecognized chunk type "vpAg"'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
   });
 
   describe('valid files', () => {
     // TODO: Test metadata
     createTests([
-      ['0839d93f8e77e21acd0ac40a80b14b7b', '350x490, 24-bit RGB, non-interlaced, -2.5% (Adobe Photoshop CS2 Windows)', { expectedDimensions: { width: 350, height: 490 }}]
+      ['0839d93f8e77e21acd0ac40a80b14b7b', '350x490, 24-bit RGB, non-interlaced, -2.5% (Adobe Photoshop CS2 Windows)', { expectedDimensions: { width: 350, height: 490 }, expectedInfo: ['Unrecognized chunk type "vpAg"'] }]
     ], imageTestSuiteRoot);
     createTests([
       ['18f9baf3834980f4b80a3e82ad45be48', '118x79, 24-bit RGB, interlaced, 62.3% (Software: ULead System)', { expectedDimensions: { width: 118, height: 79 }}],
     ], imageTestSuiteRoot);
     createTests([
-      ['1ebd73c1d3fbc89782f29507364128fc', '110x110, 24-bit RGB, non-interlaced, -54.6%', { expectedDimensions: { width: 110, height: 110 }}],
+      ['1ebd73c1d3fbc89782f29507364128fc', '110x110, 24-bit RGB, non-interlaced, -54.6%', { expectedDimensions: { width: 110, height: 110 }, expectedInfo: ['Unrecognized chunk type "vpAg"'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['2d641a11233385bb37a524ff010a8531', '162x159, 32-bit RGB+alpha, non-interlaced, 75.2%', { expectedDimensions: { width: 162, height: 159 }}],
@@ -658,7 +668,10 @@ describe('pngParser.integration Image Test Suite', () => {
       ['e59ec0cfb8ab64558099543dc19f8378', '18x11, 1-bit palette+trns, interlaced, -672.7%', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
     ], imageTestSuiteRoot);
     createTests([
-      ['ebfb1cd42314a557e72d4da75c21fc1c', '202x158, 32-bit RGB+alpha, non-interlaced, 84.2%', { expectedDimensions: { width: 202, height: 158 }}],
+      ['ebfb1cd42314a557e72d4da75c21fc1c', '202x158, 32-bit RGB+alpha, non-interlaced, 84.2%', { expectedDimensions: { width: 202, height: 158 }, expectedInfo: [
+        'Unrecognized chunk type "oFFs"',
+        'Unrecognized chunk type "vpAg"'
+      ] }],
     ], imageTestSuiteRoot);
   });
 

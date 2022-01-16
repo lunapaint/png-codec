@@ -19,6 +19,11 @@ export interface ITestOptions {
   strictMode?: boolean;
   includesMetadata?: { [type: string]: PngMetadata | PngMetadata[] | ((e: PngMetadata) => boolean) | undefined };
   expectedDimensions?: { width: number, height: number };
+  /**
+   * The expected info messages for the test, note that undefined will be treated as [] for this
+   * property to ensure all info messages are tested.
+   */
+  expectedInfo?: string[];
   expectedWarnings?: string[];
   /**
    * Whether to skip the data assertion of the test, this is only meant to be used temporarily.
@@ -90,6 +95,8 @@ export function createTests(testCases: TestCase[], fixture: string) {
           }
         }
       }
+
+      deepStrictEqual(decoded.info, options.expectedInfo || []);
 
       if (options.expectedWarnings) {
         const actualWarnings = decoded.warnings?.map(e => e.message).sort();
