@@ -45,8 +45,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
       throw new ChunkError(chunk, `Unrecognized color type "${header.colorType}"`);
   }
 
-  // TODO: Warn instead
-  assertChunkDataLengthEquals(chunk, expectedLength);
+  assertChunkDataLengthEquals(chunk, expectedLength, decodedPng.warnings, options?.strictMode);
 
   return { type: 'bKGD', color };
 }

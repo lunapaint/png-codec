@@ -19,10 +19,10 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
 
   switch (header.colorType) {
     case ColorType.Grayscale:
-      assertChunkDataLengthEquals(chunk, 2);
+      assertChunkDataLengthEquals(chunk, 2, decodedPng.warnings, options?.strictMode);
       break;
     case ColorType.Truecolor:
-      assertChunkDataLengthEquals(chunk, 6);
+      assertChunkDataLengthEquals(chunk, 6, decodedPng.warnings, options?.strictMode);
       break;
     case ColorType.Indexed:
       // TODO: PngSuite has tRNS before PLTE?

@@ -14,7 +14,7 @@ import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, 
  */
 export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataLastModificationTime {
   assertChunkSinglular(chunk, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, 7);
+  assertChunkDataLengthEquals(chunk, 7, decodedPng.warnings, options?.strictMode);
 
   // Format:
   // Year:   2 bytes (complete; for example, 1995, not 95)

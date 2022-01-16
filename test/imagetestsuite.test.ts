@@ -162,7 +162,8 @@ describe('pngParser.integration Image Test Suite', () => {
       ['4f14b7aab3a41855378c5517342598b9', 'should decode with warnings', { expectedWarnings: ['tRNS: Invalid data length for color type 3: 174 > 173'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)' }],  // TODO: Make too many entries a warning
+      ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)', strictMode: true }],
+      ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { expectedWarnings: ['PLTE: Too many entries (257 > 256)'], skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['8711007ea5e351755a80cba913d16a32', 'invalid number of sPLT entries (0.6)', { shouldThrow: 'sPLT: Invalid data length: 6 should be divisible by entry size 10', strictMode: true }],

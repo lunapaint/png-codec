@@ -17,7 +17,7 @@ import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceM
  * that this chunk is the first chunk in the datastream.
  */
 export function parseChunk_IHDR(dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
-  assertChunkDataLengthEquals(chunk, 13);
+  assertChunkDataLengthEquals(chunk, 13, decodedPng.warnings, options?.strictMode);
 
   let offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const width = dataView.getUint32(offset); offset += 4;

@@ -16,7 +16,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   assertChunkSinglular(chunk, decodedPng, options?.strictMode);
   assertChunkFollows(chunk, KnownChunkTypes.PLTE, decodedPng);
   assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, decodedPng.palette!.size * 2);
+  assertChunkDataLengthEquals(chunk, decodedPng.palette!.size * 2, decodedPng.warnings, options?.strictMode);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const frequency: number[] = [];

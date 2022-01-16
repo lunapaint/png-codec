@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
+import { assertChunkPrecedes, assertChunkSinglular, ChunkError, handleWarning } from '../assert.js';
 import { ChunkPartByteLength, ColorType, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
 
 /**
@@ -34,7 +34,7 @@ export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPn
   }
 
   if (chunk.dataLength / 3 > 256) {
-    throw new ChunkError(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`);
+    handleWarning(new ChunkError(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`), decodedPng.warnings, options?.strictMode);
   }
 
   // TODO: The number of palette entries shall not exceed the range that can be represented in the image bit depth (for example, 24 = 16 for a bit depth of 4).

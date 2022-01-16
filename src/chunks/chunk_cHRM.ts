@@ -16,7 +16,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   assertChunkSinglular(chunk, decodedPng, options?.strictMode);
   assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
   assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, 32);
+  assertChunkDataLengthEquals(chunk, 32, decodedPng.warnings, options?.strictMode);
 
   // Format:
   // White point x: 4 bytes

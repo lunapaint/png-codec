@@ -29,9 +29,15 @@ export function assertChunkSinglular(chunk: Pick<IPngChunk, 'type'>, decodedPng:
  * @param chunk The chunk being checked.
  * @param expected The expected data length of the chunk.
  */
-export function assertChunkDataLengthEquals(chunk: Pick<IPngChunk, 'type' | 'dataLength'>, expected: number) {
+export function assertChunkDataLengthEquals(chunk: Pick<IPngChunk, 'type' | 'dataLength'>, expected: number, warnings: Error[], strictMode: boolean | undefined) {
   if (chunk.dataLength !== expected) {
-    throw new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`);
+    const error = new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`);
+    // Only warn if the data is larger
+    if (chunk.dataLength > expected) {
+      handleWarning(error, warnings, strictMode);
+    } else {
+      throw error;
+    }
   }
 }
 

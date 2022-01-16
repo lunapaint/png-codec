@@ -17,7 +17,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   assertChunkMutualExclusion(chunk, KnownChunkTypes.iCCP, decodedPng, options?.strictMode);
   assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
   assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, 1);
+  assertChunkDataLengthEquals(chunk, 1, decodedPng.warnings, options?.strictMode);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const byte = dataView.getUint8(offset);

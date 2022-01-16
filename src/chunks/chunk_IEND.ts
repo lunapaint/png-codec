@@ -14,5 +14,5 @@ import { IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, Kn
  */
 export function parseChunk_IEND(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): void { // eslint-disable-line @typescript-eslint/naming-convention
   assertChunkFollows(chunk, KnownChunkTypes.IDAT, decodedPng);
-  assertChunkDataLengthEquals(chunk, 0);
+  assertChunkDataLengthEquals(chunk, 0, decodedPng.warnings, options?.strictMode);
 }

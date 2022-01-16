@@ -65,7 +65,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   }
 
   // TODO: Warn instead
-  assertChunkDataLengthEquals(chunk, expectedLength);
+  assertChunkDataLengthEquals(chunk, expectedLength, decodedPng.warnings, options?.strictMode);
 
   return {
     type: 'sBIT',
