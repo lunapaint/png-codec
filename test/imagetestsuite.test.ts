@@ -223,11 +223,14 @@ describe('pngParser.integration Image Test Suite', () => {
       ['18288f761922f9b9b00e927eaeb9e707', 'should throw', { shouldThrow: true }]
     ], imageTestSuiteRoot);
     createTests([
-      ['c-m1-19e0d1d0dfe97dca39e9d449c6b8b3d2', 'should throw', { shouldThrow: 'CRC for chunk "mkBT" at offset 0x3c02 doesn\'t match (0x52da2a66 !== 0x28db6e2e)' }],
-      ['m1-19e0d1d0dfe97dca39e9d449c6b8b3d2', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x97d650c0 !== 0xe0d16056)' }],
+      ['c-m1-19e0d1d0dfe97dca39e9d449c6b8b3d2', 'should throw', { shouldThrow: 'CRC for chunk "mkBT" at offset 0x3c02 doesn\'t match (0x52da2a66 !== 0x28db6e2e)', strictMode: true }],
+      ['c-m1-19e0d1d0dfe97dca39e9d449c6b8b3d2', 'should throw', { shouldThrow: 'IDAT: Inflate error: incorrect data check' }],
+      ['m1-19e0d1d0dfe97dca39e9d449c6b8b3d2', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x97d650c0 !== 0xe0d16056)', strictMode: true }],
+      ['m1-19e0d1d0dfe97dca39e9d449c6b8b3d2', 'should throw', { shouldThrow: 'IDAT: Inflate error: incorrect data check' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['m1-1b5df699719c4a7cc8314ab9af139405', 'should throw', { shouldThrow: 'CRC for chunk "IDAT" at offset 0xa2 doesn\'t match (0xb4be58e1 !== 0x6275f80e)' }],
+      ['m1-1b5df699719c4a7cc8314ab9af139405', 'should throw', { shouldThrow: 'CRC for chunk "IDAT" at offset 0xa2 doesn\'t match (0xb4be58e1 !== 0x6275f80e)', strictMode: true }],
+      ['m1-1b5df699719c4a7cc8314ab9af139405', 'should throw', { shouldThrow: 'IDAT: Inflate error: incorrect data check' }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-1f97f040d0b6b26faeb0a1a7f1499590', 'should throw', { shouldThrow: true }],
@@ -248,7 +251,8 @@ describe('pngParser.integration Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
-      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)' }],
+      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'CRC for chunk "mkTS" at offset 0x202 doesn\'t match (0xeda6716d !== 0xe7e8c98)', strictMode: true }],
+      ['m1-1fc0c0de88608a9445d6f98a544b5abc', 'should throw', { shouldThrow: 'Last chunk is not IEND' }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m2-272ae9468b7883e5cf61873a17271fb4', 'should throw', { shouldThrow: true }],
@@ -531,11 +535,13 @@ describe('pngParser.integration Image Test Suite', () => {
       ['m1-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
       ['m2-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
       ['m3-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
-      ['m4-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: true }],
+      ['m4-6bfb149151f58d124d6fa76eaad75520', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x253d4f22 !== 0x253d6d22)', strictMode: true }],
+      ['m4-6bfb149151f58d124d6fa76eaad75520', 'should throw', { skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-e0f25ec3373dfdca79ba7bcc3ad366f3', '621x174, 32-bit RGB+alpha, non-interlaced, 52.5%', true],
-      ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should throw', { shouldThrow: 'CRC for chunk "zTXt" at offset 0xa91 doesn\'t match (0x9ced0937 !== 0x8e5143e2)' }],
+      ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should throw', { shouldThrow: 'CRC for chunk "zTXt" at offset 0xa91 doesn\'t match (0x9ced0937 !== 0x8e5143e2)', strictMode: true }],
+      ['m1-e0f25ec3373dfdca79ba7bcc3ad366f3', 'should throw', { shouldThrow: 'zTXt: Inflate error: incorrect data check' }],
     ], imageTestSuiteRoot);
   });
 

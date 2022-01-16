@@ -5,7 +5,7 @@
  */
 
 import { convert16BitTo8BitData } from './array.js';
-import { assert1b, ChunkError } from './assert.js';
+import { assert1b, ChunkError, handleWarning } from './assert.js';
 import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk_IEND } from './chunks/chunk_IEND.js';
 import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';
@@ -87,7 +87,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   verifyPngSignature(view);
 
   // Read chunks
-  const chunks = readChunks(view);
+  const chunks = readChunks(view, result, options);
 
   // Parse the header
   const header = parseChunk_IHDR(view, chunks[0], result, options);
@@ -169,13 +169,13 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   };
 }
 
-export function readChunks(dataView: DataView): IPngChunk[] {
+export function readChunks(dataView: DataView, decoded: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngChunk[] {
   const chunks: IPngChunk[] = [];
   // The first chunk always starts at offset 8, after the fixed size header
   let offset = 8;
   let hasData = false;
   while (offset < dataView.byteLength) {
-    const chunk = readChunk(dataView, offset);
+    const chunk = readChunk(dataView, offset, decoded, options);
     // Chunk layout:
     // 4B: Length (l)
     // 4B: Type
@@ -198,7 +198,7 @@ export function readChunks(dataView: DataView): IPngChunk[] {
   return chunks;
 }
 
-export function readChunk(dataView: DataView, offset: number): IPngChunk {
+export function readChunk(dataView: DataView, offset: number, decoded: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngChunk {
   if (dataView.byteLength < offset + ChunkPartByteLength.Length) {
     throw new Error(`EOF while reading chunk length for chunk starting at offset ${offset}`);
   }
@@ -222,8 +222,7 @@ export function readChunk(dataView: DataView, offset: number): IPngChunk {
   const actualCrc = dataView.getUint32(offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength) >>> 0;
   const expectedCrc = crc32(dataView, offset + ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
   if (actualCrc !== expectedCrc) {
-    // TODO: Warn by returning problem when crc doesn't match
-    throw new Error(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`);
+    handleWarning(new Error(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`), decoded.warnings, options?.strictMode);
   }
 
   return {
