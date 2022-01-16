@@ -5,18 +5,18 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
 
 /**
  * `gAMA` Image Gamma
  *
  * Spec: https://www.w3.org/TR/PNG/#11gAMA
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataGamma {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
-  assertChunkDataLengthEquals(chunk, 4);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataGamma {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+  assertChunkDataLengthEquals(chunk, 4, decodedPng.warnings, options?.strictMode);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const value = dataView.getUint32(offset) / 100000;

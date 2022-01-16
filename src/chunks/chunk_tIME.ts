@@ -5,16 +5,16 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../types.js';
 
 /**
  * `tIME` Image last-modification time
  *
  * Spec: https://www.w3.org/TR/PNG/#11tIME
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataLastModificationTime {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkDataLengthEquals(chunk, 7);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataLastModificationTime {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkDataLengthEquals(chunk, 7, decodedPng.warnings, options?.strictMode);
 
   // Format:
   // Year:   2 bytes (complete; for example, 1995, not 95)

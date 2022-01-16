@@ -5,24 +5,24 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, ColorType, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
 
 /**
  * `tRNS` Transparency
  *
  * Spec: https://www.w3.org/TR/PNG/#11tRNS
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataTransparency {
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataTransparency {
   // TODO: PngSuite has tRNS before PLTE?
   // assertChunkFollows(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
 
   switch (header.colorType) {
     case ColorType.Grayscale:
-      assertChunkDataLengthEquals(chunk, 2);
+      assertChunkDataLengthEquals(chunk, 2, decodedPng.warnings, options?.strictMode);
       break;
     case ColorType.Truecolor:
-      assertChunkDataLengthEquals(chunk, 6);
+      assertChunkDataLengthEquals(chunk, 6, decodedPng.warnings, options?.strictMode);
       break;
     case ColorType.Indexed:
       // TODO: PngSuite has tRNS before PLTE?

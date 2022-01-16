@@ -4,20 +4,20 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
+import { assertChunkPrecedes, assertChunkSinglular, ChunkError, handleWarning } from '../assert.js';
+import { ChunkPartByteLength, ColorType, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
 
 /**
  * `PLTE` Palette
  *
  * Spec: https://www.w3.org/TR/PNG/#11PLTE
  */
-export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngPaletteInternal {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.bKGD, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.hIST, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.tRNS, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
+export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngPaletteInternal {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.bKGD, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.hIST, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.tRNS, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
 
   // This chunk shall appear for colour type 3, and may appear for colour types 2 and 6; it shall not appear for colour types 0 and 4.
   if (header.colorType === ColorType.Grayscale || header.colorType === ColorType.GrayacaleAndAlpha) {
@@ -34,7 +34,7 @@ export function parseChunk(header: IPngHeaderDetails, view: DataView, chunk: IPn
   }
 
   if (chunk.dataLength / 3 > 256) {
-    throw new ChunkError(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`);
+    handleWarning(new ChunkError(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`), decodedPng.warnings, options?.strictMode);
   }
 
   // TODO: The number of palette entries shall not exceed the range that can be represented in the image bit depth (for example, 24 = 16 for a bit depth of 4).

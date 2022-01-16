@@ -5,7 +5,7 @@
  */
 
 import { convert16BitTo8BitData } from './array.js';
-import { assert1b, ChunkError } from './assert.js';
+import { assert1b, ChunkError, handleWarning } from './assert.js';
 import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk_IEND } from './chunks/chunk_IEND.js';
 import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';
@@ -52,7 +52,7 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
  * possible chunk decoders when code splitting is not supported.
  */
-function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng) => PngMetadata }> {
+function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined) => PngMetadata }> {
   switch (type) {
     case KnownChunkTypes.bKGD: return import(`./chunks/chunk_bKGD.js`);
     case KnownChunkTypes.cHRM: return import(`./chunks/chunk_cHRM.js`);
@@ -75,16 +75,25 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (header: 
 
 export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>> {
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  const result: IPartialDecodedPng = {
+    image: undefined,
+    palette: undefined,
+    metadata: [],
+    parsedChunks: new Set(),
+    warnings: [],
+    info: []
+  };
 
   // Verify file header, throwing if it's invalid
   verifyPngSignature(view);
 
   // Read chunks
-  const chunks = readChunks(view);
+  const chunks = readChunks(view, result, options);
 
   // Parse the header
-  const header = parseChunk_IHDR(view, chunks[0]);
+  const header = parseChunk_IHDR(view, chunks[0], result, options);
 
+  // Load supported chunks to read
   let parseChunkTypes: ReadonlyArray<string>;
   if (options && options.parseChunkTypes) {
     if (options.parseChunkTypes === '*') {
@@ -97,15 +106,12 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   }
 
   // Parse the chunks
-  const result: IPartialDecodedPng = {
-    image: undefined,
-    palette: undefined,
-    metadata: [],
-    parsedChunks: new Set()
-  };
   for (let i = 1; i < chunks.length; i++) {
     const chunk = chunks[i];
     switch (chunk.type) {
+      case KnownChunkTypes.IHDR:
+        handleWarning(new ChunkError(chunk, `Multiple IHDR chunks not allowed`), result.warnings, options?.strictMode);
+        break;
       case KnownChunkTypes.IDAT: {
         const dataChunks = [chunk];
         // Gather all consecutive IDAT entries
@@ -116,26 +122,31 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
           width: header.width,
           height: header.height,
           // HACK: Not sure why TS doesn't like unioned typed arrays
-          data: parseChunk_IDAT(header, view, dataChunks, result) as any
+          data: parseChunk_IDAT(header, view, dataChunks, result, options) as any
         };
         break;
       }
       case KnownChunkTypes.PLTE:
-        result.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(header, view, chunk, result);
+        result.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(header, view, chunk, result, options);
         break;
       case KnownChunkTypes.IEND:
-        if (i < chunks.length - 1) {
-          throw new ChunkError(chunk, 'Chunk is not last');
-        }
-        parseChunk_IEND(header, view, chunk, result);
+        parseChunk_IEND(header, view, chunk, result, options);
         break;
       default:
         if (parseChunkTypes.includes(chunk.type)) {
-          result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result));
+          try {
+            result.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(header, view, chunk, result, options));
+          } catch (e: any) {
+            // TODO: Check Error type, re-throw if unexpected
+            handleWarning(e as Error, result.warnings, options?.strictMode);
+          }
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {
-            // TODO: Return as a problem
-            console.warn(`Unrecognized chunk type "${chunk.type}"`);
+            if (!chunk.isAncillary) {
+              throw new Error(`Unrecognized critical chunk type "${chunk.type}"`);
+            } else {
+              result.info.push(`Unrecognized chunk type "${chunk.type}"`);
+            }
           }
         }
         break;
@@ -162,17 +173,19 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
     },
     palette: result.palette,
     metadata: result.metadata.length > 0 ? result.metadata : undefined,
-    rawChunks: chunks
+    rawChunks: chunks,
+    warnings: result.warnings,
+    info: result.info
   };
 }
 
-export function readChunks(dataView: DataView): IPngChunk[] {
+export function readChunks(dataView: DataView, decoded: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngChunk[] {
   const chunks: IPngChunk[] = [];
   // The first chunk always starts at offset 8, after the fixed size header
   let offset = 8;
   let hasData = false;
   while (offset < dataView.byteLength) {
-    const chunk = readChunk(dataView, offset);
+    const chunk = readChunk(dataView, offset, decoded, options);
     // Chunk layout:
     // 4B: Length (l)
     // 4B: Type
@@ -187,7 +200,7 @@ export function readChunks(dataView: DataView): IPngChunk[] {
     throw new Error(`First chunk is not IHDR`);
   }
   if (chunks[chunks.length - 1].type !== KnownChunkTypes.IEND) {
-    throw new Error('Last chunk is not IEND');
+    handleWarning(new Error('Last chunk is not IEND'), decoded.warnings, options?.strictMode);
   }
   if (!hasData) {
     throw new Error('No IDAT chunk');
@@ -195,7 +208,7 @@ export function readChunks(dataView: DataView): IPngChunk[] {
   return chunks;
 }
 
-export function readChunk(dataView: DataView, offset: number): IPngChunk {
+export function readChunk(dataView: DataView, offset: number, decoded: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngChunk {
   if (dataView.byteLength < offset + ChunkPartByteLength.Length) {
     throw new Error(`EOF while reading chunk length for chunk starting at offset ${offset}`);
   }
@@ -219,8 +232,7 @@ export function readChunk(dataView: DataView, offset: number): IPngChunk {
   const actualCrc = dataView.getUint32(offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength) >>> 0;
   const expectedCrc = crc32(dataView, offset + ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
   if (actualCrc !== expectedCrc) {
-    // TODO: Warn by returning problem when crc doesn't match
-    throw new Error(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`);
+    handleWarning(new Error(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`), decoded.warnings, options?.strictMode);
   }
 
   return {

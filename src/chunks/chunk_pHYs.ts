@@ -5,17 +5,17 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions, KnownChunkTypes } from '../types.js';
 
 /**
  * `pHYs` Physical pixel dimensions
  *
  * Spec: https://www.w3.org/TR/PNG/#11pYHs
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataPhysicalPixelDimensions {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
-  assertChunkDataLengthEquals(chunk, 9);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataPhysicalPixelDimensions {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+  assertChunkDataLengthEquals(chunk, 9, decodedPng.warnings, options?.strictMode);
 
   // Format:
   // Pixels per unit, X axis: 4 bytes (PNG unsigned integer)

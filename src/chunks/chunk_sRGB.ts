@@ -5,19 +5,19 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
 
 /**
  * `sRGB` Standard RGB color space
  *
  * Spec: https://www.w3.org/TR/PNG/#11sRGB
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataStandardRgbColorSpace {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkMutualExclusion(chunk, KnownChunkTypes.iCCP, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
-  assertChunkDataLengthEquals(chunk, 1);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataStandardRgbColorSpace {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkMutualExclusion(chunk, KnownChunkTypes.iCCP, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+  assertChunkDataLengthEquals(chunk, 1, decodedPng.warnings, options?.strictMode);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const byte = dataView.getUint8(offset);

@@ -651,14 +651,16 @@ describe('pngParser.integration PngSuite', () => {
       ['xs7n0g01', '7th byte a space instead of control-Z', { shouldThrow: true }],
       ['xcrn0g04', 'added cr bytes', { shouldThrow: true }],
       ['xlfn0g04', 'added lf bytes', { shouldThrow: true }],
-      ['xhdn0g08', 'incorrect IHDR checksum', { shouldThrow: true }],
+      ['xhdn0g08', 'incorrect IHDR checksum', { shouldThrow: true, strictMode: true }],
+      ['xhdn0g08', 'incorrect IHDR checksum', { skipDataAssertion: true }],
       ['xc1n0g08', 'color type 1', { shouldThrow: true }],
       ['xc9n2c08', 'color type 9', { shouldThrow: true }],
       ['xd0n2c08', 'bit-depth 0', { shouldThrow: true }],
       ['xd3n2c08', 'bit-depth 3', { shouldThrow: true }],
       ['xd9n2c08', 'bit-depth 99', { shouldThrow: true }],
       ['xdtn0g01', 'missing IDAT chunk', { shouldThrow: true }],
-      ['xcsn0g01', 'incorrect IDAT checksum', { shouldThrow: true }],
+      ['xcsn0g01', 'incorrect IDAT checksum', { shouldThrow: true, strictMode: true }],
+      ['xcsn0g01', 'incorrect IDAT checksum', { skipDataAssertion: true }],
     ], pngSuiteRoot);
   });
 });

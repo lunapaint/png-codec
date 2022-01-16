@@ -5,18 +5,18 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
 
 /**
  * `cHRM` Primary chromacities and white point
  *
  * Spec: https://www.w3.org/TR/PNG/#11cHRM
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataChromaticity {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
-  assertChunkDataLengthEquals(chunk, 32);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataChromaticity {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+  assertChunkDataLengthEquals(chunk, 32, decodedPng.warnings, options?.strictMode);
 
   // Format:
   // White point x: 4 bytes

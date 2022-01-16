@@ -5,16 +5,16 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../types.js';
 
 /**
  * `bKGD` Background
  *
  * Spec: https://www.w3.org/TR/PNG/#11bKGD
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataBackgroundColor {
-  assertChunkSinglular(chunk, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng);
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataBackgroundColor {
+  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
+  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   let color: number | [number, number, number];
@@ -45,8 +45,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
       throw new ChunkError(chunk, `Unrecognized color type "${header.colorType}"`);
   }
 
-  // TODO: Warn instead
-  assertChunkDataLengthEquals(chunk, expectedLength);
+  assertChunkDataLengthEquals(chunk, expectedLength, decodedPng.warnings, options?.strictMode);
 
   return { type: 'bKGD', color };
 }

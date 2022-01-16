@@ -4,16 +4,16 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkCompressionMethod, assertChunkDataLengthGte, ChunkError } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthGte } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../types.js';
 
 /**
  * `iTXt` International textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11iTXt
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng): IPngMetadataInternationalTextualData {
+export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataInternationalTextualData {
   assertChunkDataLengthGte(chunk, 6);
 
   // Format:
@@ -31,25 +31,25 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const textDecoder = new TextDecoder('utf8');
   let readResult: { bytesRead: number, text: string };
 
-  readResult = readText(dataView, textDecoder, 79, offset, maxOffset, true);
+  readResult = readText(chunk, dataView, textDecoder, 79, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const keyword = readResult.text;
 
   const isCompressed = dataView.getUint8(offset++) === 1;
   const compressionMethod = dataView.getUint8(offset++);
   if (isCompressed) {
-    assertChunkCompressionMethod(chunk, compressionMethod);
+    assertChunkCompressionMethod(chunk, compressionMethod, decodedPng.warnings, options?.strictMode);
   }
 
-  readResult = readText(dataView, textDecoder, undefined, offset, maxOffset, true);
+  readResult = readText(chunk, dataView, textDecoder, undefined, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const languageTag = readResult.text;
 
-  readResult = readText(dataView, textDecoder, undefined, offset, maxOffset, true);
+  readResult = readText(chunk, dataView, textDecoder, undefined, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const translatedKeyword = readResult.text;
 
-  readResult = readText(dataView, textDecoder, undefined, offset, maxOffset, false, isCompressed);
+  readResult = readText(chunk, dataView, textDecoder, undefined, offset, maxOffset, false, isCompressed);
   offset += readResult.bytesRead;
   const text = readResult.text;
 

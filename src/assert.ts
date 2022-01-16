@@ -16,10 +16,11 @@ export function assert1b(dataView: DataView, offset: number, expected: number) {
  * Assert the given chunk type already exists.
  * @param chunk The chunk being checked.
  * @param decodedPng The partial decoded png.
+ * @param strictMode Whether strict decoding is enabled.
  */
-export function assertChunkSinglular(chunk: Pick<IPngChunk, 'type'>, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks'>) {
+export function assertChunkSinglular(chunk: Pick<IPngChunk, 'type'>, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks' | 'warnings'>, strictMode: boolean | undefined) {
   if (decodedPng.parsedChunks.has(chunk.type)) {
-    throw new ChunkError(chunk, `Multiple ${chunk.type} chunks not allowed`);
+    handleWarning(new ChunkError(chunk, `Multiple ${chunk.type} chunks not allowed`), decodedPng.warnings, strictMode);
   }
 }
 
@@ -28,9 +29,15 @@ export function assertChunkSinglular(chunk: Pick<IPngChunk, 'type'>, decodedPng:
  * @param chunk The chunk being checked.
  * @param expected The expected data length of the chunk.
  */
-export function assertChunkDataLengthEquals(chunk: Pick<IPngChunk, 'type' | 'dataLength'>, expected: number) {
+export function assertChunkDataLengthEquals(chunk: Pick<IPngChunk, 'type' | 'dataLength'>, expected: number, warnings: Error[], strictMode: boolean | undefined) {
   if (chunk.dataLength !== expected) {
-    throw new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`);
+    const error = new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`);
+    // Only warn if the data is larger
+    if (chunk.dataLength > expected) {
+      handleWarning(error, warnings, strictMode);
+    } else {
+      throw error;
+    }
   }
 }
 
@@ -50,10 +57,11 @@ export function assertChunkDataLengthGte(chunk: Pick<IPngChunk, 'type' | 'dataLe
  * @param chunk The chunk being checked.
  * @param typeAfter The chunk type that `type` must precede.
  * @param decodedPng The partial decoded png.
+ * @param strictMode Whether strict decoding is enabled.
  */
-export function assertChunkPrecedes(chunk: Pick<IPngChunk, 'type'>, typeAfter: KnownChunkTypes, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks'>) {
+export function assertChunkPrecedes(chunk: Pick<IPngChunk, 'type'>, typeAfter: KnownChunkTypes, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks' | 'warnings'>, strictMode: boolean | undefined) {
   if (decodedPng.parsedChunks.has(typeAfter)) {
-    throw new ChunkError(chunk, `Must precede ${typeAfter}`);
+    handleWarning(new ChunkError(chunk, `Must precede ${typeAfter}`), decodedPng.warnings, strictMode);
   }
 }
 
@@ -64,6 +72,7 @@ export function assertChunkPrecedes(chunk: Pick<IPngChunk, 'type'>, typeAfter: K
  * @param decodedPng The partial decoded png.
  */
 export function assertChunkFollows(chunk: Pick<IPngChunk, 'type'>, typeAfter: KnownChunkTypes, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks'>) {
+  // Follows assertions are always errors by design
   if (!decodedPng.parsedChunks.has(typeAfter)) {
     throw new ChunkError(chunk, `Must follow ${typeAfter}`);
   }
@@ -74,10 +83,11 @@ export function assertChunkFollows(chunk: Pick<IPngChunk, 'type'>, typeAfter: Kn
  * @param chunk The chunk being checked.
  * @param otherType The chunk type that cannot be existed beside.
  * @param decodedPng The partial decoded png.
+ * @param strictMode Whether strict decoding is enabled.
  */
-export function assertChunkMutualExclusion(chunk: Pick<IPngChunk, 'type'>, otherType: KnownChunkTypes, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks'>) {
+export function assertChunkMutualExclusion(chunk: Pick<IPngChunk, 'type'>, otherType: KnownChunkTypes, decodedPng: Pick<IPartialDecodedPng, 'parsedChunks' | 'warnings'>, strictMode: boolean | undefined) {
   if (decodedPng.parsedChunks.has(otherType)) {
-    throw new ChunkError(chunk, `Should not be present alongside ${otherType}`);
+    handleWarning(new ChunkError(chunk, `Should not be present alongside ${otherType}`), decodedPng.warnings, strictMode);
   }
 }
 /**
@@ -85,11 +95,11 @@ export function assertChunkMutualExclusion(chunk: Pick<IPngChunk, 'type'>, other
  * @param chunk The chunk being checked.
  * @param compressionMethod The chunk's compression method, only `0` (zlib datastream with deflate
  * compression) is valid.
+ * @param strictMode Whether strict decoding is enabled.
  */
-export function assertChunkCompressionMethod(chunk: Pick<IPngChunk, 'type'>, compressionMethod: number) {
-  // TODO: Should this be a warning?
+export function assertChunkCompressionMethod(chunk: Pick<IPngChunk, 'type'>, compressionMethod: number, warnings: Error[], strictMode: boolean | undefined) {
   if (compressionMethod !== 0) {
-    throw new ChunkError(chunk, `Unknown compression method "${compressionMethod}"`);
+    handleWarning(new ChunkError(chunk, `Unknown compression method "${compressionMethod}"`), warnings, strictMode);
   }
 }
 
@@ -97,4 +107,14 @@ export class ChunkError extends Error {
   constructor(chunk: Pick<IPngChunk, 'type'>, message: string) {
     super(`${chunk.type}: ${message}`);
   }
+}
+
+/**
+ * Handles an error, throwing in strict mode or adding to the warnings array otherwise.
+ */
+export function handleWarning(error: Error, warnings: Error[], strictMode: boolean | undefined) {
+  if (strictMode) {
+    throw error;
+  }
+  warnings.push(error);
 }
