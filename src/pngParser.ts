@@ -5,7 +5,7 @@
  */
 
 import { convert16BitTo8BitData } from './array.js';
-import { assert1b, ChunkError, handleWarning } from './assert.js';
+import { ChunkError, handleWarning } from './assert.js';
 import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk_IEND } from './chunks/chunk_IEND.js';
 import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';

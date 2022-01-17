@@ -6,12 +6,6 @@
 
 import { IPartialDecodedPng, IPngChunk, KnownChunkTypes } from './types.js';
 
-export function assert1b(dataView: DataView, offset: number, expected: number) {
-  if (dataView.getUint8(offset) !== expected) {
-    throw new Error(`Assertion failure: ${dataView.getUint8(offset)} !== ${expected}`);
-  }
-}
-
 /**
  * Assert the given chunk type already exists.
  * @param chunk The chunk being checked.
