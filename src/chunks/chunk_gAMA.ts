@@ -5,21 +5,21 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
 
 /**
  * `gAMA` Image Gamma
  *
  * Spec: https://www.w3.org/TR/PNG/#11gAMA
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataGamma {
-  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, 4, decodedPng.warnings, options?.strictMode);
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataGamma {
+  assertChunkSinglular(ctx, chunk);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.PLTE);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
+  assertChunkDataLengthEquals(ctx, chunk, 4);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
-  const value = dataView.getUint32(offset) / 100000;
+  const value = ctx.view.getUint32(offset) / 100000;
   if (value === 0) {
     // TODO: Report in a problem instead
     console.warn(new ChunkError(chunk, 'A value of 0 is meaningless').message);

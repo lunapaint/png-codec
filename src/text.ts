@@ -1,7 +1,7 @@
 import * as pako from 'pako';
-import { IPngChunk } from './types';
+import { IDecodeContext, IPngChunk } from './types';
 
-export function readText(chunk: IPngChunk, dataView: DataView, textDecoder: TextDecoder | undefined, maxLength: number | undefined, offset: number, maxOffset: number, readTrailingNull: boolean, isCompressed?: boolean): { bytesRead: number, text: string } {
+export function readText(ctx: IDecodeContext, chunk: IPngChunk, textDecoder: TextDecoder | undefined, maxLength: number | undefined, offset: number, maxOffset: number, readTrailingNull: boolean, isCompressed?: boolean): { bytesRead: number, text: string } {
   const bytes = [];
   let current = 0;
   let i = 0;
@@ -9,7 +9,7 @@ export function readText(chunk: IPngChunk, dataView: DataView, textDecoder: Text
     if (!readTrailingNull && offset === maxOffset) {
       break;
     }
-    current = dataView.getUint8(offset);
+    current = ctx.view.getUint8(offset);
     // Only check if not compressed as 0 is valid is deflated data
     if (!isCompressed && current === 0) {
       break;
@@ -18,7 +18,7 @@ export function readText(chunk: IPngChunk, dataView: DataView, textDecoder: Text
     bytes.push(current);
   }
 
-  if (readTrailingNull && dataView.getUint8(offset) !== 0) {
+  if (readTrailingNull && ctx.view.getUint8(offset) !== 0) {
     throw new Error(`${chunk.type}: No null character after text`);
   }
 

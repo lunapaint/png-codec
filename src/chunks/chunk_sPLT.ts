@@ -6,25 +6,25 @@
 
 import { readText } from '../text.js';
 import { assertChunkPrecedes, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
 
 /**
  * `sPLT` Suggested palette
  *
  * Spec: https://www.w3.org/TR/PNG/#11sPLT
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataSuggestedPalette {
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataSuggestedPalette {
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
 
   const dataStartOffset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   let offset = dataStartOffset;
   const maxOffset = offset + chunk.dataLength; // Ensures reading outside this chunk is not allowed
   const textDecoder = new TextDecoder('latin1');
-  const readResult = readText(chunk, dataView, textDecoder, undefined, offset, maxOffset, true);
+  const readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const name = readResult.text;
 
-  const sampleDepth = dataView.getUint8(offset++);
+  const sampleDepth = ctx.view.getUint8(offset++);
   const sampleBytes = sampleDepth === 16 ? 2 : 1;
 
   // Verify length
@@ -39,10 +39,10 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   for (let i = 0; i < entryCount; i++) {
     const channels: number[] = [];
     for (let c = 0; c < 4; c++) {
-      channels.push(sampleBytes === 2 ? dataView.getUint16(offset) : dataView.getUint8(offset));
+      channels.push(sampleBytes === 2 ? ctx.view.getUint16(offset) : ctx.view.getUint8(offset));
       offset += sampleBytes;
     }
-    const frequency = dataView.getUint16(offset);
+    const frequency = ctx.view.getUint16(offset);
     offset += 2;
     entries.push({
       red: channels[0],

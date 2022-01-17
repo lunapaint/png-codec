@@ -5,7 +5,7 @@
  */
 
 import * as pako from 'pako';
-import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency, IDecodePngOptions } from '../types.js';
+import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IDecodeContext, IPngMetadataTransparency, IDecodePngOptions } from '../types.js';
 
 /**
  * `IDAT` Image Data
@@ -17,13 +17,9 @@ import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPalet
  * deflate algorithm. Note that a single image may contain multiple IDAT chunks, if they do they
  * must appear consecutively.
  */
-export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, chunks: IPngChunk[], decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): Uint8Array | Uint16Array { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunks: IPngChunk[]): Uint8Array | Uint16Array {
   // Decompress the chunk data.
-  const decompressed = decompress(dataView, chunks);
-
-
-  // console.log('decompressed', decompressed);
-
+  const decompressed = decompress(ctx.view, chunks);
 
   // Remove the filter, leaving the packed format. For example an 8-bit grayscale and alpha
   // filter would give an array where each pixel is represented by 2 bytes; grayscale (0-255) and
@@ -35,33 +31,17 @@ export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, c
     packed = defilter(header, decompressed);
   }
 
-  // console.log('packed', packed);
-  // if (packed.length < 10) {
-  //   console.log('packed binary:');
-  //   for (let i = 0; i < packed.length; i++) {
-  //     console.log(`  ${packed[i].toString(2).padStart(8, '0')}`);
-  //   }
-  // }
-
-
   // Apply the tRNS chunk if needed
-  const trnsChunk = decodedPng.metadata.find(e => e.type === 'tRNS') as IPngMetadataTransparency | undefined;
+  const trnsChunk = ctx.metadata.find(e => e.type === 'tRNS') as IPngMetadataTransparency | undefined;
 
   // Map the packed buffer into a new 8-bit rgba buffer. This applies alpha for indexed color type
   // as well.
-  const result = mapPackedDataToRgba(header, packed, decodedPng.palette, trnsChunk);
+  const result = mapPackedDataToRgba(header, packed, ctx.palette, trnsChunk);
 
   // Apply the tRNS if it still needed
   if (trnsChunk && (header.colorType === ColorType.Grayscale || header.colorType === ColorType.Truecolor)) {
       applyTransparency(header, result, trnsChunk);
   }
-
-  // let text = '[';
-  // for (let i = 0; i < result.length; i++) {
-  //   text += `${i !== 0 ? ',' : ''}\n  ${result[i]}`;
-  // }
-  // text += '\n]';
-  // console.log(text);
 
   return result;
 }
@@ -360,10 +340,6 @@ function deinterlaceAdam7(header: IPngHeaderDetails, decompressed: Uint8Array): 
     const passHeight = Math.ceil((header.height - passYStart) / passYGap);
     const passBplCeiled = Math.ceil(bppFloat * passWidth);
 
-
-    // console.log(`pass ${pass + 1} (1-based)`);
-
-
     // Skip pass if it has no content
     if (passWidth === 0 || passHeight === 0) {
       continue;
@@ -371,16 +347,6 @@ function deinterlaceAdam7(header: IPngHeaderDetails, decompressed: Uint8Array): 
 
     // Defilter this pass' sub-image
     const passPacked = defilter(header, decompressed, dataPointer, passWidth, passHeight);
-
-
-    // console.log(`  packed`, passPacked);
-    // if (passPacked.length < 10) {
-    //   console.log('  packed binary:');
-    //   for (let i = 0; i < passPacked.length; i++) {
-    //     console.log(`    ${passPacked[i].toString(2).padStart(8, '0')}`);
-    //   }
-    // }
-
 
     // Fill in result using the defiltered sub-image
     let i = 0;

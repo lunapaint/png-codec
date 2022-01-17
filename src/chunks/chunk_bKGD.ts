@@ -5,16 +5,16 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../types.js';
 
 /**
  * `bKGD` Background
  *
  * Spec: https://www.w3.org/TR/PNG/#11bKGD
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataBackgroundColor {
-  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataBackgroundColor {
+  assertChunkSinglular(ctx, chunk);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   let color: number | [number, number, number];
@@ -22,22 +22,22 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   switch (header.colorType) {
     case 0:
     case 4: {
-      color = dataView.getUint16(offset);
+      color = ctx.view.getUint16(offset);
       expectedLength = 2;
       break;
     }
     case 2:
     case 6: {
       color = [
-        dataView.getUint16(offset    ),
-        dataView.getUint16(offset + 2),
-        dataView.getUint16(offset + 4)
+        ctx.view.getUint16(offset    ),
+        ctx.view.getUint16(offset + 2),
+        ctx.view.getUint16(offset + 4)
       ];
       expectedLength = 6;
       break;
     }
     case 3: {
-      color = dataView.getUint8(offset);
+      color = ctx.view.getUint8(offset);
       expectedLength = 1;
       break;
     }
@@ -45,7 +45,7 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
       throw new ChunkError(chunk, `Unrecognized color type "${header.colorType}"`);
   }
 
-  assertChunkDataLengthEquals(chunk, expectedLength, decodedPng.warnings, options?.strictMode);
+  assertChunkDataLengthEquals(ctx, chunk, expectedLength);
 
   return { type: 'bKGD', color };
 }

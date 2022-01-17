@@ -5,30 +5,30 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, ColorType, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
 
 /**
  * `tRNS` Transparency
  *
  * Spec: https://www.w3.org/TR/PNG/#11tRNS
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataTransparency {
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataTransparency {
   // TODO: PngSuite has tRNS before PLTE?
   // assertChunkFollows(chunk, KnownChunkTypes.PLTE, decodedPng);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
 
   switch (header.colorType) {
     case ColorType.Grayscale:
-      assertChunkDataLengthEquals(chunk, 2, decodedPng.warnings, options?.strictMode);
+      assertChunkDataLengthEquals(ctx, chunk, 2);
       break;
     case ColorType.Truecolor:
-      assertChunkDataLengthEquals(chunk, 6, decodedPng.warnings, options?.strictMode);
+      assertChunkDataLengthEquals(ctx, chunk, 6);
       break;
     case ColorType.Indexed:
       // TODO: PngSuite has tRNS before PLTE?
-      if (decodedPng.palette) {
-        if (chunk.dataLength > decodedPng.palette.size) {
-          throw new ChunkError(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${decodedPng.palette.size}`);
+      if (ctx.palette) {
+        if (chunk.dataLength > ctx.palette.size) {
+          throw new ChunkError(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${ctx.palette.size}`);
         }
       }
       break;
@@ -41,19 +41,19 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   let transparency: number | [number, number, number] | number[];
   switch (header.colorType) {
     case ColorType.Grayscale:
-      transparency = dataView.getUint16(offset);
+      transparency = ctx.view.getUint16(offset);
       break;
     case ColorType.Truecolor:
       transparency = [
-        dataView.getUint16(offset    ),
-        dataView.getUint16(offset + 2),
-        dataView.getUint16(offset + 4)
+        ctx.view.getUint16(offset    ),
+        ctx.view.getUint16(offset + 2),
+        ctx.view.getUint16(offset + 4)
       ];
       break;
     case ColorType.Indexed:
       transparency = [];
       for (let i = 0; i < chunk.dataLength; i++) {
-        transparency.push(dataView.getUint8(offset + i));
+        transparency.push(ctx.view.getUint8(offset + i));
       }
       break;
   }

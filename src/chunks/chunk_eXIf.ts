@@ -4,17 +4,17 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataExif } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataExif } from '../types.js';
 
 /**
  * `eXIf` Exchangeable image file format
  *
  * Spec: https://www.w3.org/TR/PNG/#11eXIf
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataExif {
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataExif {
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   return {
     type: 'eXIf',
-    value: dataView.buffer.slice(dataView.byteOffset + offset, dataView.byteOffset + offset + chunk.dataLength)
+    value: ctx.view.buffer.slice(ctx.view.byteOffset + offset, ctx.view.byteOffset + offset + chunk.dataLength)
   };
 }
