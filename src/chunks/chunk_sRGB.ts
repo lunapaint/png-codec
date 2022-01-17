@@ -5,22 +5,22 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
 
 /**
  * `sRGB` Standard RGB color space
  *
  * Spec: https://www.w3.org/TR/PNG/#11sRGB
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataStandardRgbColorSpace {
-  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
-  assertChunkMutualExclusion(chunk, KnownChunkTypes.iCCP, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, 1, decodedPng.warnings, options?.strictMode);
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataStandardRgbColorSpace {
+  assertChunkSinglular(ctx, chunk);
+  assertChunkMutualExclusion(ctx, chunk, KnownChunkTypes.iCCP);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.PLTE);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
+  assertChunkDataLengthEquals(ctx, chunk, 1);
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
-  const byte = dataView.getUint8(offset);
+  const byte = ctx.view.getUint8(offset);
   let renderingIntent: RenderingIntent;
   switch (byte) {
     case RenderingIntent.Perceptual:

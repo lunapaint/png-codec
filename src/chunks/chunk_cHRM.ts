@@ -5,18 +5,18 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
 
 /**
  * `cHRM` Primary chromacities and white point
  *
  * Spec: https://www.w3.org/TR/PNG/#11cHRM
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataChromaticity {
-  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
-  assertChunkDataLengthEquals(chunk, 32, decodedPng.warnings, options?.strictMode);
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataChromaticity {
+  assertChunkSinglular(ctx, chunk);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.PLTE);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
+  assertChunkDataLengthEquals(ctx, chunk, 32);
 
   // Format:
   // White point x: 4 bytes
@@ -29,8 +29,8 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   // Blue y:        4 bytes
   let offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const whitePoint = {
-    x: dataView.getUint32(offset) / 100000,
-    y: dataView.getUint32(offset + 4) / 100000,
+    x: ctx.view.getUint32(offset) / 100000,
+    y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (whitePoint.x > 1 || whitePoint.y > 1) {
     // TODO: This should be a warning
@@ -38,8 +38,8 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   }
   offset += 8;
   const red = {
-    x: dataView.getUint32(offset) / 100000,
-    y: dataView.getUint32(offset + 4) / 100000,
+    x: ctx.view.getUint32(offset) / 100000,
+    y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (red.x > 1 || red.y > 1) {
     // TODO: This should be a warning
@@ -47,8 +47,8 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   }
   offset += 8;
   const green = {
-    x: dataView.getUint32(offset) / 100000,
-    y: dataView.getUint32(offset + 4) / 100000,
+    x: ctx.view.getUint32(offset) / 100000,
+    y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (green.x > 1 || green.y > 1) {
     // TODO: This should be a warning
@@ -56,8 +56,8 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   }
   offset += 8;
   const blue = {
-    x: dataView.getUint32(offset) / 100000,
-    y: dataView.getUint32(offset + 4) / 100000,
+    x: ctx.view.getUint32(offset) / 100000,
+    y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (blue.x > 1 || blue.y > 1) {
     // TODO: This should be a warning

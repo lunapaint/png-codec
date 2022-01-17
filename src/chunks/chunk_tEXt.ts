@@ -6,14 +6,14 @@
 
 import { readText } from '../text.js';
 import { assertChunkDataLengthGte } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
 
 /**
  * `tEXt` Textual data
  *
  * Spec: https://www.w3.org/TR/PNG/#11tEXt
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataTextualData {
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataTextualData {
   assertChunkDataLengthGte(chunk, 6);
 
   // Format:
@@ -26,11 +26,11 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   const textDecoder = new TextDecoder('latin1');
   let readResult: { bytesRead: number, text: string };
 
-  readResult = readText(chunk, dataView, textDecoder, 79, offset, maxOffset, true);
+  readResult = readText(ctx, chunk, textDecoder, 79, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const keyword = readResult.text;
 
-  readResult = readText(chunk, dataView, textDecoder, undefined, offset, maxOffset, false);
+  readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, false);
   offset += readResult.bytesRead;
   const text = readResult.text;
 

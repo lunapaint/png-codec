@@ -40,6 +40,7 @@ export {
 import {
   BitDepth,
   ColorType,
+  IDecodePngOptions,
   IImage32,
   IImage64,
   InterlaceMethod,
@@ -47,7 +48,8 @@ import {
   PngMetadata
 } from '../typings/api.js';
 
-export interface IPartialDecodedPng {
+export interface IDecodeContext {
+  view: DataView;
   image?: IImage32 | IImage64;
   palette?: IPngPaletteInternal;
   /**
@@ -58,6 +60,7 @@ export interface IPartialDecodedPng {
   metadata: PngMetadata[];
   info: string[];
   warnings: Error[];
+  options: IDecodePngOptions;
 }
 
 export interface IPngHeaderDetails {

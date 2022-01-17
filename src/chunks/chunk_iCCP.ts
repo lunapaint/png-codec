@@ -6,18 +6,18 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthGte, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodePngOptions, IPartialDecodedPng, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../types.js';
 
 /**
  * `iCCP` Embedded ICC profile
  *
  * Spec: https://www.w3.org/TR/PNG/#11iCCP
  */
-export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk: IPngChunk, decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): IPngMetadataEmbeddedIccProfile {
-  assertChunkSinglular(chunk, decodedPng, options?.strictMode);
-  assertChunkMutualExclusion(chunk, KnownChunkTypes.sRGB, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.PLTE, decodedPng, options?.strictMode);
-  assertChunkPrecedes(chunk, KnownChunkTypes.IDAT, decodedPng, options?.strictMode);
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataEmbeddedIccProfile {
+  assertChunkSinglular(ctx, chunk);
+  assertChunkMutualExclusion(ctx, chunk, KnownChunkTypes.sRGB);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.PLTE);
+  assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
   assertChunkDataLengthGte(chunk, 3);
 
   const chunkDataOffset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
@@ -25,14 +25,14 @@ export function parseChunk(header: IPngHeaderDetails, dataView: DataView, chunk:
   let offset = chunkDataOffset;
   const textDecoder = new TextDecoder('latin1');
 
-  const readResult = readText(chunk, dataView, textDecoder, 79, offset, maxOffset, true);
+  const readResult = readText(ctx, chunk, textDecoder, 79, offset, maxOffset, true);
   offset += readResult.bytesRead;
   const name = readResult.text;
 
-  const compressionMethod = dataView.getUint8(offset++);
-  assertChunkCompressionMethod(chunk, compressionMethod, decodedPng.warnings, options?.strictMode);
+  const compressionMethod = ctx.view.getUint8(offset++);
+  assertChunkCompressionMethod(ctx, chunk, compressionMethod);
 
-  const data = new Uint8Array(dataView.buffer.slice(dataView.byteOffset + offset, dataView.byteOffset + maxOffset));
+  const data = new Uint8Array(ctx.view.buffer.slice(ctx.view.byteOffset + offset, ctx.view.byteOffset + maxOffset));
 
   return {
     type: 'iCCP',

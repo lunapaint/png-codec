@@ -5,7 +5,7 @@
  */
 
 import * as pako from 'pako';
-import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IPartialDecodedPng, IPngMetadataTransparency, IDecodePngOptions } from '../types.js';
+import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IDecodeContext, IPngMetadataTransparency, IDecodePngOptions } from '../types.js';
 
 /**
  * `IDAT` Image Data
@@ -17,9 +17,9 @@ import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPalet
  * deflate algorithm. Note that a single image may contain multiple IDAT chunks, if they do they
  * must appear consecutively.
  */
-export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, chunks: IPngChunk[], decodedPng: IPartialDecodedPng, options: IDecodePngOptions | undefined): Uint8Array | Uint16Array { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk_IDAT(ctx: IDecodeContext, header: IPngHeaderDetails, chunks: IPngChunk[]): Uint8Array | Uint16Array { // eslint-disable-line @typescript-eslint/naming-convention
   // Decompress the chunk data.
-  const decompressed = decompress(dataView, chunks);
+  const decompressed = decompress(ctx.view, chunks);
 
 
   // console.log('decompressed', decompressed);
@@ -45,11 +45,11 @@ export function parseChunk_IDAT(header: IPngHeaderDetails, dataView: DataView, c
 
 
   // Apply the tRNS chunk if needed
-  const trnsChunk = decodedPng.metadata.find(e => e.type === 'tRNS') as IPngMetadataTransparency | undefined;
+  const trnsChunk = ctx.metadata.find(e => e.type === 'tRNS') as IPngMetadataTransparency | undefined;
 
   // Map the packed buffer into a new 8-bit rgba buffer. This applies alpha for indexed color type
   // as well.
-  const result = mapPackedDataToRgba(header, packed, decodedPng.palette, trnsChunk);
+  const result = mapPackedDataToRgba(header, packed, ctx.palette, trnsChunk);
 
   // Apply the tRNS if it still needed
   if (trnsChunk && (header.colorType === ColorType.Grayscale || header.colorType === ColorType.Truecolor)) {
