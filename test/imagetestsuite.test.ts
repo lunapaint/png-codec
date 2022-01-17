@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { createTests } from "./testUtil.js";
+import { createTests } from './testUtil.js';
 
 const imageTestSuiteRoot = 'test/imagetestsuite/png';
 
