@@ -5,7 +5,7 @@
  */
 
 import { convert16BitTo8BitData } from './array.js';
-import { ChunkError, handleWarning } from './assert.js';
+import { DecodeWarning, handleWarning } from './assert.js';
 import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
 import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
@@ -122,7 +122,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
     const chunk = chunks[i];
     switch (chunk.type) {
       case KnownChunkTypes.IHDR:
-        handleWarning(ctx, new ChunkError(chunk, `Multiple IHDR chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
+        handleWarning(ctx, new DecodeWarning(chunk, `Multiple IHDR chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
         break;
       case KnownChunkTypes.IDAT: {
         const dataChunks = [chunk];

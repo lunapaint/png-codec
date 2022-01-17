@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkPrecedes, ChunkError } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, DecodeWarning } from '../assert.js';
 import { ChunkPartByteLength, ColorType, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
 
 /**
@@ -28,13 +28,13 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       // TODO: PngSuite has tRNS before PLTE?
       if (ctx.palette) {
         if (chunk.dataLength > ctx.palette.size) {
-          throw new ChunkError(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${ctx.palette.size}`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
+          throw new DecodeWarning(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${ctx.palette.size}`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
         }
       }
       break;
     case ColorType.GrayacaleAndAlpha:
     case ColorType.TruecolorAndAlpha:
-      throw new ChunkError(chunk, `Chunk invalid when color type has alpha (${header.colorType})`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
+      throw new DecodeWarning(chunk, `Chunk invalid when color type has alpha (${header.colorType})`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
   }
 
   const offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;

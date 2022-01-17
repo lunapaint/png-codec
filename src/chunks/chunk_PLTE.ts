@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkPrecedes, assertChunkSinglular, ChunkError, handleWarning } from '../assert.js';
+import { assertChunkPrecedes, assertChunkSinglular, DecodeWarning, handleWarning } from '../assert.js';
 import { ChunkPartByteLength, ColorType, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
 
 /**
@@ -22,21 +22,21 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   let offset = chunk.offset + ChunkPartByteLength.Length;
   // This chunk shall appear for colour type 3, and may appear for colour types 2 and 6; it shall not appear for colour types 0 and 4.
   if (header.colorType === ColorType.Grayscale || header.colorType === ColorType.GrayacaleAndAlpha) {
-    throw new ChunkError(chunk, `Color type "${header.colorType}" cannot have a palette`, offset);
+    throw new DecodeWarning(chunk, `Color type "${header.colorType}" cannot have a palette`, offset);
   }
 
   offset += ChunkPartByteLength.Type;
   if (chunk.dataLength === 0) {
-    throw new ChunkError(chunk, 'Cannot have 0 entries', offset);
+    throw new DecodeWarning(chunk, 'Cannot have 0 entries', offset);
   }
 
   // A chunk length not divisible by 3 is an error.
   if (chunk.dataLength % 3 !== 0) {
-    throw new ChunkError(chunk, `Chunk length must be divisible by 3 (actual "${chunk.dataLength}")`, offset);
+    throw new DecodeWarning(chunk, `Chunk length must be divisible by 3 (actual "${chunk.dataLength}")`, offset);
   }
 
   if (chunk.dataLength / 3 > 256) {
-    handleWarning(ctx, new ChunkError(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`, offset));
+    handleWarning(ctx, new DecodeWarning(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`, offset));
   }
 
   // TODO: The number of palette entries shall not exceed the range that can be represented in the image bit depth (for example, 24 = 16 for a bit depth of 4).

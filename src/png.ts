@@ -4,6 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+export { DecodeWarning } from './assert.js';
 import { IDecodedPng, IDecodePngOptions, IImage32, IImage64 } from './types.js';
 
 export async function decodePng(data: Readonly<Uint8Array>): Promise<IDecodedPng<IImage32 | IImage64>>;

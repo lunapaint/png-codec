@@ -5,7 +5,7 @@
  */
 
 import { readText } from '../text.js';
-import { assertChunkCompressionMethod, assertChunkDataLengthGte, ChunkError } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthGte, DecodeWarning } from '../assert.js';
 import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
 
 /**

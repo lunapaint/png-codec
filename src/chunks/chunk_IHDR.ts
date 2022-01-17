@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkCompressionMethod, assertChunkDataLengthEquals, ChunkError, handleWarning } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthEquals, DecodeWarning, handleWarning } from '../assert.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceMethod, IPngChunk, IDecodeContext, IDecodePngOptions } from '../types.js';
 
 /**
@@ -25,13 +25,13 @@ export function parseChunk(ctx: IDecodeContext, chunk: IPngChunk): IPngHeaderDet
 
   const bitDepth = ctx.view.getUint8(offset);
   if (!isValidBitDepth(bitDepth)) {
-    throw new ChunkError(chunk, `Bit depth "${bitDepth}" is not valid`, offset);
+    throw new DecodeWarning(chunk, `Bit depth "${bitDepth}" is not valid`, offset);
   }
   offset++;
 
   const colorType = ctx.view.getUint8(offset);
   if (!isValidColorType(colorType, bitDepth)) {
-    throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`, offset);
+    throw new DecodeWarning(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`, offset);
   }
   offset++;
 
@@ -41,13 +41,13 @@ export function parseChunk(ctx: IDecodeContext, chunk: IPngChunk): IPngHeaderDet
 
   const filterMethod = ctx.view.getUint8(offset);
   if (filterMethod !== 0) {
-    handleWarning(ctx, new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`, offset));
+    handleWarning(ctx, new DecodeWarning(chunk, `Filter method "${filterMethod}" is not valid`, offset));
   }
   offset++;
 
   const interlaceMethod = ctx.view.getUint8(offset);
   if (!isValidInterlaceMethod(interlaceMethod)) {
-    handleWarning(ctx, new ChunkError(chunk, `Interlace method "${interlaceMethod}" is not valid`, offset));
+    handleWarning(ctx, new DecodeWarning(chunk, `Interlace method "${interlaceMethod}" is not valid`, offset));
   }
   offset++;
 

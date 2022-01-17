@@ -684,3 +684,7 @@ export interface IPngMetadataTransparency {
    */
   transparency: number | [number, number, number] | number[];
 }
+
+export class DecodeWarning extends Error {
+  offset: number;
+}

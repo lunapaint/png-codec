@@ -4,7 +4,6 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { IDecodeWarning } from '../typings/api.js';
 import { ChunkPartByteLength, IDecodeContext, IPngChunk, KnownChunkTypes } from './types.js';
 
 /**
@@ -14,7 +13,7 @@ import { ChunkPartByteLength, IDecodeContext, IPngChunk, KnownChunkTypes } from 
  */
 export function assertChunkSinglular(ctx: IDecodeContext, chunk: IPngChunk) {
   if (ctx.parsedChunks.has(chunk.type)) {
-    handleWarning(ctx, new ChunkError(chunk, `Multiple ${chunk.type} chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
+    handleWarning(ctx, new DecodeWarning(chunk, `Multiple ${chunk.type} chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
   }
 }
 
@@ -26,7 +25,7 @@ export function assertChunkSinglular(ctx: IDecodeContext, chunk: IPngChunk) {
  */
 export function assertChunkDataLengthEquals(ctx: IDecodeContext, chunk: IPngChunk, expected: number) {
   if (chunk.dataLength !== expected) {
-    const error = new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`, chunk.offset);
+    const error = new DecodeWarning(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`, chunk.offset);
     // Only warn if the data is larger
     if (chunk.dataLength > expected) {
       handleWarning(ctx, error);
@@ -43,7 +42,7 @@ export function assertChunkDataLengthEquals(ctx: IDecodeContext, chunk: IPngChun
  */
 export function assertChunkDataLengthGte(chunk: IPngChunk, expected: number) {
   if (chunk.dataLength < expected) {
-    throw new ChunkError(chunk, `Invalid data length: ${chunk.dataLength} < ${expected}`, chunk.offset);
+    throw new DecodeWarning(chunk, `Invalid data length: ${chunk.dataLength} < ${expected}`, chunk.offset);
   }
 }
 
@@ -55,7 +54,7 @@ export function assertChunkDataLengthGte(chunk: IPngChunk, expected: number) {
  */
 export function assertChunkPrecedes(ctx: IDecodeContext, chunk: IPngChunk, typeAfter: KnownChunkTypes) {
   if (ctx.parsedChunks.has(typeAfter)) {
-    handleWarning(ctx, new ChunkError(chunk, `Must precede ${typeAfter}`, chunk.offset + ChunkPartByteLength.Length));
+    handleWarning(ctx, new DecodeWarning(chunk, `Must precede ${typeAfter}`, chunk.offset + ChunkPartByteLength.Length));
   }
 }
 
@@ -68,7 +67,7 @@ export function assertChunkPrecedes(ctx: IDecodeContext, chunk: IPngChunk, typeA
 export function assertChunkFollows(ctx: IDecodeContext, chunk: IPngChunk, typeAfter: KnownChunkTypes) {
   // Follows assertions are always errors by design
   if (!ctx.parsedChunks.has(typeAfter)) {
-    throw new ChunkError(chunk, `Must follow ${typeAfter}`, chunk.offset + ChunkPartByteLength.Length);
+    throw new DecodeWarning(chunk, `Must follow ${typeAfter}`, chunk.offset + ChunkPartByteLength.Length);
   }
 }
 
@@ -80,7 +79,7 @@ export function assertChunkFollows(ctx: IDecodeContext, chunk: IPngChunk, typeAf
  */
 export function assertChunkMutualExclusion(ctx: IDecodeContext, chunk: IPngChunk, otherType: KnownChunkTypes) {
   if (ctx.parsedChunks.has(otherType)) {
-    handleWarning(ctx, new ChunkError(chunk, `Should not be present alongside ${otherType}`, chunk.offset + ChunkPartByteLength.Length));
+    handleWarning(ctx, new DecodeWarning(chunk, `Should not be present alongside ${otherType}`, chunk.offset + ChunkPartByteLength.Length));
   }
 }
 /**
@@ -92,11 +91,11 @@ export function assertChunkMutualExclusion(ctx: IDecodeContext, chunk: IPngChunk
  */
 export function assertChunkCompressionMethod(ctx: IDecodeContext, chunk: Pick<IPngChunk, 'type'>, compressionMethod: number, offset: number) {
   if (compressionMethod !== 0) {
-    handleWarning(ctx, new ChunkError(chunk, `Unknown compression method "${compressionMethod}"`, offset));
+    handleWarning(ctx, new DecodeWarning(chunk, `Unknown compression method "${compressionMethod}"`, offset));
   }
 }
 
-export class ChunkError extends Error implements IDecodeWarning {
+export class DecodeWarning extends Error {
   constructor(
     chunk: Pick<IPngChunk, 'type'>,
     message: string,
