@@ -23,10 +23,10 @@ describe('pngParser.signature', () => {
   it('should throw when the data doesn\'t match the fixed 8-byte header', () => {
     throws(() => {
       verifyPngSignature(dataViewFromArray([0x41, 0x4D]));
-    });
+    }, new Error('Not enough bytes in file for png signature (2)'));
     throws(() => {
       verifyPngSignature(dataViewFromArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]));
-    });
+    }, new Error('Png signature is not correct (0x0000000000000000 !== 0x89504e470d0a1a0a)'));
   });
   it('should verify for valid headers', () => {
     verifyPngSignature(dataViewFromArray([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]));

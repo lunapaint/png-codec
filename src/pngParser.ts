@@ -16,14 +16,25 @@ export function verifyPngSignature(dataView: DataView): void {
   if (dataView.byteLength < 7) {
     throw new Error(`Not enough bytes in file for png signature (${dataView.byteLength})`);
   }
-  assert1b(dataView, 0, 0x89);
-  assert1b(dataView, 1, 0x50);
-  assert1b(dataView, 2, 0x4E);
-  assert1b(dataView, 3, 0x47);
-  assert1b(dataView, 4, 0x0D);
-  assert1b(dataView, 5, 0x0A);
-  assert1b(dataView, 6, 0x1A);
-  assert1b(dataView, 7, 0x0A);
+  const isCorrect = (
+    dataView.getUint8(0) === 0x89 &&
+    dataView.getUint8(1) === 0x50 &&
+    dataView.getUint8(2) === 0x4E &&
+    dataView.getUint8(3) === 0x47 &&
+    dataView.getUint8(4) === 0x0D &&
+    dataView.getUint8(5) === 0x0A &&
+    dataView.getUint8(6) === 0x1A &&
+    dataView.getUint8(7) === 0x0A
+  );
+  if (!isCorrect) {
+    const actual = formatHexAssertion(Array.from(new Uint8Array(dataView.buffer).slice(dataView.byteOffset, dataView.byteOffset + 8)));
+    const expected = formatHexAssertion([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+    throw new Error(`Png signature is not correct (${actual} !== ${expected})`);
+  }
+}
+
+function formatHexAssertion(actual: number[]) {
+  return `0x${actual.map(e => e.toString(16).padStart(2, '0')).join('')}`;
 }
 
 const defaultLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
