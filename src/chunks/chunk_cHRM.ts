@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, DecodeWarning } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, DecodeWarning } from '../assert.js';
 import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../types.js';
 
 /**
@@ -33,7 +33,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (whitePoint.x > 1 || whitePoint.y > 1) {
-    throw new DecodeWarning(chunk, `Invalid white point (${whitePoint.x},${whitePoint.y})`, offset);
+    throw createChunkDecodeWarning(chunk, `Invalid white point (${whitePoint.x},${whitePoint.y})`, offset);
   }
   offset += 8;
   const red = {
@@ -41,7 +41,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (red.x > 1 || red.y > 1) {
-    throw new DecodeWarning(chunk, `Invalid red (${red.x},${red.y})`, offset);
+    throw createChunkDecodeWarning(chunk, `Invalid red (${red.x},${red.y})`, offset);
   }
   offset += 8;
   const green = {
@@ -49,7 +49,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (green.x > 1 || green.y > 1) {
-    throw new DecodeWarning(chunk, `Invalid green (${green.x},${green.y})`, offset);
+    throw createChunkDecodeWarning(chunk, `Invalid green (${green.x},${green.y})`, offset);
   }
   offset += 8;
   const blue = {
@@ -57,7 +57,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (blue.x > 1 || blue.y > 1) {
-    throw new DecodeWarning(chunk, `Invalid blue (${blue.x},${blue.y})`, offset);
+    throw createChunkDecodeWarning(chunk, `Invalid blue (${blue.x},${blue.y})`, offset);
   }
 
   return {

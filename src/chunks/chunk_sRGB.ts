@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, DecodeWarning } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, DecodeWarning } from '../assert.js';
 import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
 
 /**
@@ -30,7 +30,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       renderingIntent = byte;
       break;
     default:
-      throw new DecodeWarning(chunk, `Invalid rendering intent "${byte}"`, offset);
+      throw createChunkDecodeWarning(chunk, `Invalid rendering intent "${byte}"`, offset);
   }
 
   return {

@@ -14,7 +14,7 @@ import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPng
  * Spec: https://www.w3.org/TR/PNG/#11iTXt
  */
 export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataInternationalTextualData {
-  assertChunkDataLengthGte(chunk, 6);
+  assertChunkDataLengthGte(ctx, chunk, 6);
 
   // Format:
   // Keyword:            1-79 bytes (character string)

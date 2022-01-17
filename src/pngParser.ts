@@ -4,8 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { DecodeError } from '../typings/api.js';
 import { convert16BitTo8BitData } from './array.js';
-import { DecodeWarning, handleWarning } from './assert.js';
+import { createChunkDecodeWarning, DecodeWarning, handleWarning } from './assert.js';
 import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
 import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
@@ -122,7 +123,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
     const chunk = chunks[i];
     switch (chunk.type) {
       case KnownChunkTypes.IHDR:
-        handleWarning(ctx, new DecodeWarning(chunk, `Multiple IHDR chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
+        handleWarning(ctx, createChunkDecodeWarning(chunk, `Multiple IHDR chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
         break;
       case KnownChunkTypes.IDAT: {
         const dataChunks = [chunk];
@@ -148,9 +149,13 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
         if (parseChunkTypes.includes(chunk.type)) {
           try {
             ctx.metadata.push((await getChunkDecoder(chunk.type as KnownChunkTypes)).parseChunk(ctx, header, chunk));
-          } catch (e: any) {
-            // TODO: Check Error type, re-throw if unexpected
-            handleWarning(ctx, e as Error);
+          } catch (e: unknown) {
+            if (e instanceof DecodeWarning) {
+              handleWarning(ctx, e);
+            } else {
+              // Re-throw decode errors or unexpected errors
+              throw e;
+            }
           }
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {

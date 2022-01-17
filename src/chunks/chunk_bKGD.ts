@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, DecodeWarning } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, DecodeWarning } from '../assert.js';
 import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../types.js';
 
 /**
@@ -42,7 +42,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       break;
     }
     default:
-      throw new DecodeWarning(chunk, `Unrecognized color type "${header.colorType}"`, offset);
+      throw createChunkDecodeWarning(chunk, `Unrecognized color type "${header.colorType}"`, offset);
   }
 
   assertChunkDataLengthEquals(ctx, chunk, expectedLength);

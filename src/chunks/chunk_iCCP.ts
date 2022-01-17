@@ -18,7 +18,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   assertChunkMutualExclusion(ctx, chunk, KnownChunkTypes.sRGB);
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.PLTE);
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
-  assertChunkDataLengthGte(chunk, 3);
+  assertChunkDataLengthGte(ctx, chunk, 3);
 
   const chunkDataOffset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const maxOffset = chunkDataOffset + chunk.dataLength; // Ensures reading outside this chunk is not allowed
