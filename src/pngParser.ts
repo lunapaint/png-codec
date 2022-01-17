@@ -6,9 +6,9 @@
 
 import { convert16BitTo8BitData } from './array.js';
 import { ChunkError, handleWarning } from './assert.js';
-import { parseChunk_IDAT } from './chunks/chunk_IDAT.js';
-import { parseChunk_IEND } from './chunks/chunk_IEND.js';
-import { parseChunk_IHDR } from './chunks/chunk_IHDR.js';
+import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
+import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
+import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from './crc32.js';
 import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata } from './types.js';
 
@@ -103,7 +103,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
   const chunks = readChunks(ctx);
 
   // Parse the header
-  const header = parseChunk_IHDR(ctx, chunks[0]);
+  const header = parseChunkIHDR(ctx, chunks[0]);
 
   // Load supported chunks to read
   let parseChunkTypes: ReadonlyArray<string>;
@@ -134,7 +134,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
           width: header.width,
           height: header.height,
           // HACK: Not sure why TS doesn't like unioned typed arrays
-          data: parseChunk_IDAT(ctx, header, dataChunks) as any
+          data: parseChunkIDAT(ctx, header, dataChunks) as any
         };
         break;
       }
@@ -142,7 +142,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
         ctx.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(ctx, header, chunk);
         break;
       case KnownChunkTypes.IEND:
-        parseChunk_IEND(ctx, header, chunk);
+        parseChunkIEND(ctx, header, chunk);
         break;
       default:
         if (parseChunkTypes.includes(chunk.type)) {

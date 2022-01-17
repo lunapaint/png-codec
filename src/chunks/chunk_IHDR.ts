@@ -16,7 +16,7 @@ import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceM
  * dimensions and bit depth, this information is used when looking at later chunks and it's required
  * that this chunk is the first chunk in the datastream.
  */
-export function parseChunk_IHDR(ctx: IDecodeContext, chunk: IPngChunk): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk(ctx: IDecodeContext, chunk: IPngChunk): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
   assertChunkDataLengthEquals(ctx, chunk, 13);
 
   let offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
@@ -31,10 +31,9 @@ export function parseChunk_IHDR(ctx: IDecodeContext, chunk: IPngChunk): IPngHead
   if (!isValidBitDepth(bitDepth)) {
     throw new ChunkError(chunk, `Bit depth "${bitDepth}" is not valid`);
   }
-  // TODO: This check doesn't apply if the image has a palette
-  // if (!isValidColorType(colorType, bitDepth)) {
-  //   throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`);
-  // }
+  if (!isValidColorType(colorType, bitDepth)) {
+    throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`);
+  }
   assertChunkCompressionMethod(ctx, chunk, compressionMethod);
   if (filterMethod !== 0) {
     handleWarning(ctx, new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`));
@@ -64,9 +63,9 @@ function isValidBitDepth(bitDepth: number): bitDepth is BitDepth {
 
 function isValidColorType(colorType: number, bitDepth: number): colorType is ColorType {
   return (
-    (colorType === 0 && bitDepth >= 1 && bitDepth <= 8) ||
-    (colorType === 2 && bitDepth >= 1 && bitDepth <= 16) ||
-    (colorType === 3 && bitDepth >= 8 && bitDepth <= 16) ||
+    (colorType === 0 && bitDepth >= 1 && bitDepth <= 16) ||
+    (colorType === 2 && bitDepth >= 8 && bitDepth <= 16) ||
+    (colorType === 3 && bitDepth >= 1 && bitDepth <= 8) ||
     (colorType === 4 && bitDepth >= 8 && bitDepth <= 16) ||
     (colorType === 6 && bitDepth >= 8 && bitDepth <= 16)
   );

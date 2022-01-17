@@ -33,7 +33,6 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (whitePoint.x > 1 || whitePoint.y > 1) {
-    // TODO: This should be a warning
     throw new ChunkError(chunk, `Invalid white point (${whitePoint.x},${whitePoint.y})`);
   }
   offset += 8;
@@ -42,7 +41,6 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (red.x > 1 || red.y > 1) {
-    // TODO: This should be a warning
     throw new ChunkError(chunk, `Invalid red (${red.x},${red.y})`);
   }
   offset += 8;
@@ -51,7 +49,6 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (green.x > 1 || green.y > 1) {
-    // TODO: This should be a warning
     throw new ChunkError(chunk, `Invalid green (${green.x},${green.y})`);
   }
   offset += 8;
@@ -60,7 +57,6 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     y: ctx.view.getUint32(offset + 4) / 100000,
   };
   if (blue.x > 1 || blue.y > 1) {
-    // TODO: This should be a warning
     throw new ChunkError(chunk, `Invalid blue (${blue.x},${blue.y})`);
   }
 

@@ -12,7 +12,7 @@ import { IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownC
  *
  * Spec: https://www.w3.org/TR/PNG/#11IDAT
  */
-export function parseChunk_IEND(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): void { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): void {
   assertChunkFollows(ctx, chunk, KnownChunkTypes.IDAT);
   assertChunkDataLengthEquals(ctx, chunk, 0);
 }

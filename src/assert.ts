@@ -8,9 +8,8 @@ import { IDecodeContext, IPngChunk, KnownChunkTypes } from './types.js';
 
 /**
  * Assert the given chunk type already exists.
+ * @param ctx The decode context.
  * @param chunk The chunk being checked.
- * @param ctx The partial decoded png.
- * @param strictMode Whether strict decoding is enabled.
  */
 export function assertChunkSinglular(ctx: IDecodeContext, chunk: Pick<IPngChunk, 'type'>) {
   if (ctx.parsedChunks.has(chunk.type)) {
@@ -20,6 +19,7 @@ export function assertChunkSinglular(ctx: IDecodeContext, chunk: Pick<IPngChunk,
 
 /**
  * Assert a chunk's data length does not equal an expected value.
+ * @param ctx The decode context.
  * @param chunk The chunk being checked.
  * @param expected The expected data length of the chunk.
  */
@@ -48,10 +48,9 @@ export function assertChunkDataLengthGte(chunk: Pick<IPngChunk, 'type' | 'dataLe
 
 /**
  * Assert the chunk precedes another chunk type, ie. the other chunk type has not yet been parsed.
+ * @param ctx The decode context.
  * @param chunk The chunk being checked.
  * @param typeAfter The chunk type that `type` must precede.
- * @param ctx The partial decoded png.
- * @param strictMode Whether strict decoding is enabled.
  */
 export function assertChunkPrecedes(ctx: IDecodeContext, chunk: Pick<IPngChunk, 'type'>, typeAfter: KnownChunkTypes) {
   if (ctx.parsedChunks.has(typeAfter)) {
@@ -61,9 +60,9 @@ export function assertChunkPrecedes(ctx: IDecodeContext, chunk: Pick<IPngChunk, 
 
 /**
  * Assert the chunk follows another chunk type, ie. the other chunk type has not yet been parsed.
+ * @param ctx The decode context.
  * @param chunk The chunk being checked.
  * @param typeAfter The chunk type that `type` must precede.
- * @param ctx The partial decoded png.
  */
 export function assertChunkFollows(ctx: IDecodeContext, chunk: Pick<IPngChunk, 'type'>, typeAfter: KnownChunkTypes) {
   // Follows assertions are always errors by design
@@ -74,10 +73,9 @@ export function assertChunkFollows(ctx: IDecodeContext, chunk: Pick<IPngChunk, '
 
 /**
  * Assert the chunk does not exist alongside another chunk type, ie. the other chunk type has not yet been parsed.
+ * @param ctx The decode context.
  * @param chunk The chunk being checked.
  * @param otherType The chunk type that cannot be existed beside.
- * @param ctx The partial decoded png.
- * @param strictMode Whether strict decoding is enabled.
  */
 export function assertChunkMutualExclusion(ctx: IDecodeContext, chunk: Pick<IPngChunk, 'type'>, otherType: KnownChunkTypes) {
   if (ctx.parsedChunks.has(otherType)) {
@@ -86,10 +84,10 @@ export function assertChunkMutualExclusion(ctx: IDecodeContext, chunk: Pick<IPng
 }
 /**
  * Assert the chunk compression method is valid.
+ * @param ctx The decode context.
  * @param chunk The chunk being checked.
  * @param compressionMethod The chunk's compression method, only `0` (zlib datastream with deflate
  * compression) is valid.
- * @param strictMode Whether strict decoding is enabled.
  */
 export function assertChunkCompressionMethod(ctx: IDecodeContext, chunk: Pick<IPngChunk, 'type'>, compressionMethod: number) {
   if (compressionMethod !== 0) {
@@ -105,6 +103,8 @@ export class ChunkError extends Error {
 
 /**
  * Handles an error, throwing in strict mode or adding to the warnings array otherwise.
+ * @param ctx The decode context.
+ * @param error The error to handle.
  */
 export function handleWarning(ctx: IDecodeContext, error: Error) {
   if (ctx.options.strictMode) {

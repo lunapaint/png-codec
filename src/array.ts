@@ -7,6 +7,7 @@
 /**
  * Converts a 16-bit buffer to a 8-bit buffer by dropping the least significant byte from each
  * 16-bit word.
+ * @param data The data array to convert.
  */
 export function convert16BitTo8BitData(data: Uint16Array): Uint8Array {
   const view8Bit = new Uint8Array(data.buffer);
