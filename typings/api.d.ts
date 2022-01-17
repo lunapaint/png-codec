@@ -66,7 +66,7 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
    * Strict mode can be enabled via {@link IDecodePngOptions.strictMode} which will throw an error when
    * any warning is encountered.
    */
-  warnings?: Error[];
+  warnings?: DecodeWarning[];
 
   /**
    * Any informational messages when decoding. These are things of note but not important enough to
