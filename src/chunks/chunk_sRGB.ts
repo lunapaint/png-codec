@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, DecodeWarning } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
+import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
 
 /**
  * `sRGB` Standard RGB color space

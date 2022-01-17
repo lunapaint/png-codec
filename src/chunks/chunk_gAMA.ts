@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, DecodeWarning, handleWarning } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
+import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, handleWarning } from '../assert.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataGamma, KnownChunkTypes } from '../types.js';
 
 /**
  * `gAMA` Image Gamma

@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, DecodeWarning, handleWarning } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
+import { assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, handleWarning } from '../assert.js';
+import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
 
 /**
  * `PLTE` Palette
@@ -76,6 +76,7 @@ class PngPalette implements IPngPaletteInternal {
   private _checkIndex(colorIndex: number) {
     // any out-of-range pixel value found in the image data is an error.
     if (colorIndex < 0 || colorIndex * 3 > this._length - 3) {
+      // This is a regular error as it is exposed on the API
       throw new Error(`Palette does not contain color index "${colorIndex}"`);
     }
   }

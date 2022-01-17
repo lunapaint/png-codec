@@ -4,9 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { assertChunkPrecedes, createChunkDecodeWarning } from '../assert.js';
 import { readText } from '../text.js';
-import { assertChunkPrecedes, createChunkDecodeWarning, DecodeWarning } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
 
 /**
  * `sPLT` Suggested palette

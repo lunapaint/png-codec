@@ -4,9 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { readText } from '../text.js';
 import { assertChunkDataLengthGte } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
+import { readText } from '../text.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
 
 /**
  * `tEXt` Textual data

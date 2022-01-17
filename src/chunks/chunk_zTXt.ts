@@ -4,9 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { assertChunkCompressionMethod, assertChunkDataLengthGte } from '../assert.js';
 import { readText } from '../text.js';
-import { assertChunkCompressionMethod, assertChunkDataLengthGte, DecodeWarning } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
 
 /**
  * `zTXt` Textual data

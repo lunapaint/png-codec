@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataExif } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataExif } from '../types.js';
 
 /**
  * `eXIf` Exchangeable image file format

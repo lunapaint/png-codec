@@ -4,33 +4,32 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { DecodeError } from '../typings/api.js';
 import { convert16BitTo8BitData } from './array.js';
-import { createChunkDecodeWarning, DecodeWarning, handleWarning } from './assert.js';
+import { createChunkDecodeWarning, DecodeError, DecodeWarning, handleWarning } from './assert.js';
 import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
 import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from './crc32.js';
 import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata } from './types.js';
 
-export function verifyPngSignature(dataView: DataView): void {
-  if (dataView.byteLength < 7) {
-    throw new Error(`Not enough bytes in file for png signature (${dataView.byteLength})`);
+export function verifyPngSignature(ctx: Pick<IDecodeContext, 'view' | 'warnings'>): void {
+  if (ctx.view.byteLength < 7) {
+    throw new DecodeError(ctx, `Not enough bytes in file for png signature (${ctx.view.byteLength})`, 0);
   }
   const isCorrect = (
-    dataView.getUint8(0) === 0x89 &&
-    dataView.getUint8(1) === 0x50 &&
-    dataView.getUint8(2) === 0x4E &&
-    dataView.getUint8(3) === 0x47 &&
-    dataView.getUint8(4) === 0x0D &&
-    dataView.getUint8(5) === 0x0A &&
-    dataView.getUint8(6) === 0x1A &&
-    dataView.getUint8(7) === 0x0A
+    ctx.view.getUint8(0) === 0x89 &&
+    ctx.view.getUint8(1) === 0x50 &&
+    ctx.view.getUint8(2) === 0x4E &&
+    ctx.view.getUint8(3) === 0x47 &&
+    ctx.view.getUint8(4) === 0x0D &&
+    ctx.view.getUint8(5) === 0x0A &&
+    ctx.view.getUint8(6) === 0x1A &&
+    ctx.view.getUint8(7) === 0x0A
   );
   if (!isCorrect) {
-    const actual = formatHexAssertion(Array.from(new Uint8Array(dataView.buffer).slice(dataView.byteOffset, dataView.byteOffset + 8)));
+    const actual = formatHexAssertion(Array.from(new Uint8Array(ctx.view.buffer).slice(ctx.view.byteOffset, ctx.view.byteOffset + 8)));
     const expected = formatHexAssertion([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
-    throw new Error(`Png signature is not correct (${actual} !== ${expected})`);
+    throw new DecodeError(ctx, `Png signature is not correct (${actual} !== ${expected})`, 0);
   }
 }
 
@@ -81,7 +80,9 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (ctx: IDe
     case KnownChunkTypes.tEXt: return import(`./chunks/chunk_tEXt.js`);
     case KnownChunkTypes.tRNS: return import(`./chunks/chunk_tRNS.js`);
     case KnownChunkTypes.zTXt: return import(`./chunks/chunk_zTXt.js`);
-    default: throw new Error(`Could not get decoder for chunk type "${type}"`);
+    default:
+      // Throw a regular error as this is unexpected
+      throw new Error(`Could not get decoder for chunk type "${type}"`);
   }
 }
 
@@ -98,7 +99,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
   };
 
   // Verify file header, throwing if it's invalid
-  verifyPngSignature(ctx.view);
+  verifyPngSignature(ctx);
 
   // Read chunks
   const chunks = readChunks(ctx);
@@ -160,7 +161,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
         } else {
           if (!allLazyChunkTypes.includes(chunk.type)) {
             if (!chunk.isAncillary) {
-              throw new Error(`Unrecognized critical chunk type "${chunk.type}"`);
+              throw new DecodeError(ctx, `Unrecognized critical chunk type "${chunk.type}"`, chunk.offset + ChunkPartByteLength.Length);
             } else {
               ctx.info.push(`Unrecognized chunk type "${chunk.type}"`);
             }
@@ -173,7 +174,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
 
   // Validation
   if (!ctx.image) {
-    throw new Error('Failed to decode, no IDAT');
+    throw new DecodeError(ctx, 'Failed to decode, no IDAT chunk', 0);
   }
 
   // Convert to a 32-bit image if required
@@ -214,25 +215,25 @@ export function readChunks(ctx: IDecodeContext): IPngChunk[] {
     hasData ||= chunk.type === KnownChunkTypes.IDAT;
   }
   if (chunks[0].type !== KnownChunkTypes.IHDR) {
-    throw new Error(`First chunk is not IHDR`);
+    throw new DecodeError(ctx, `First chunk is not IHDR`, chunks[0].offset + ChunkPartByteLength.Type);
   }
   if (chunks[chunks.length - 1].type !== KnownChunkTypes.IEND) {
-    handleWarning(ctx, new Error('Last chunk is not IEND'));
+    handleWarning(ctx, new DecodeError(ctx, 'Last chunk is not IEND', chunks[chunks.length - 1].offset + ChunkPartByteLength.Type));
   }
   if (!hasData) {
-    throw new Error('No IDAT chunk');
+    throw new DecodeError(ctx, 'No IDAT chunk', 0);
   }
   return chunks;
 }
 
 export function readChunk(ctx: IDecodeContext, offset: number): IPngChunk {
   if (ctx.view.byteLength < offset + ChunkPartByteLength.Length) {
-    throw new Error(`EOF while reading chunk length for chunk starting at offset ${offset}`);
+    throw new DecodeError(ctx, `EOF while reading chunk length`, offset);
   }
 
   const dataLength = ctx.view.getUint32(offset);
   if (ctx.view.byteLength < offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type) {
-    throw new Error(`EOF while reading chunk type for chunk starting at offset ${offset}`);
+    throw new DecodeError(ctx, `EOF while reading chunk type`, offset);
   }
 
   const type = String.fromCharCode(
@@ -242,14 +243,14 @@ export function readChunk(ctx: IDecodeContext, offset: number): IPngChunk {
     ctx.view.getUint8(offset + 7)
   );
   if (ctx.view.byteLength < offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength + ChunkPartByteLength.CRC) {
-    throw new Error(`EOF while reading chunk "${type}" starting at offset ${offset}`);
+    throw new DecodeError(ctx, `EOF while reading chunk "${type}"`, offset);
   }
 
   // Verify crc
   const actualCrc = ctx.view.getUint32(offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength) >>> 0;
   const expectedCrc = crc32(ctx.view, offset + ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
   if (actualCrc !== expectedCrc) {
-    handleWarning(ctx, new Error(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`));
+    handleWarning(ctx, new DecodeWarning(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`, offset));
   }
 
   return {

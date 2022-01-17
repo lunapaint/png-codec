@@ -22,14 +22,14 @@ async function dataViewFromFile(file: string): Promise<DataView> {
 describe('pngParser.signature', () => {
   it('should throw when the data doesn\'t match the fixed 8-byte header', () => {
     throws(() => {
-      verifyPngSignature(dataViewFromArray([0x41, 0x4D]));
+      verifyPngSignature({ view: dataViewFromArray([0x41, 0x4D]), warnings: [] });
     }, new Error('Not enough bytes in file for png signature (2)'));
     throws(() => {
-      verifyPngSignature(dataViewFromArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]));
+      verifyPngSignature({ view: dataViewFromArray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), warnings: [] });
     }, new Error('Png signature is not correct (0x0000000000000000 !== 0x89504e470d0a1a0a)'));
   });
   it('should verify for valid headers', () => {
-    verifyPngSignature(dataViewFromArray([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]));
+    verifyPngSignature({ view: dataViewFromArray([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), warnings: [] });
   });
   it('should verify the header of valid png suite entries', async () => {
     // TODO: Create helpers for iterating over fixture files
@@ -37,7 +37,7 @@ describe('pngParser.signature', () => {
     for (const file of testFiles) {
       // Ignore non-png and corrupt png files
       if (file.endsWith('png') && !file.startsWith('x')) {
-        verifyPngSignature(await dataViewFromFile(join(pngSuiteRoot, file)));
+        verifyPngSignature({ view: await dataViewFromFile(join(pngSuiteRoot, file)), warnings: [] });
       }
     }
   });
@@ -52,7 +52,7 @@ describe('pngParser.signature', () => {
     ];
     for (const file of testFiles) {
       const view = await dataViewFromFile(join(pngSuiteRoot, file));
-      throws(() => verifyPngSignature(view));
+      throws(() => verifyPngSignature({ view, warnings: [] }));
     }
   });
 });

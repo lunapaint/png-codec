@@ -100,12 +100,14 @@ export function createChunkDecodeError(ctx: IDecodeContext, chunk: IPngChunk, me
 }
 
 export class DecodeError extends Error {
+  readonly warnings: DecodeWarning[];
   constructor(
-    ctx: IDecodeContext,
+    ctx: Pick<IDecodeContext, 'warnings'>,
     message: string,
     readonly offset: number
   ) {
     super(message);
+    this.warnings = ctx.warnings;
   }
 }
 
@@ -124,7 +126,7 @@ export class DecodeWarning extends Error {
  * @param ctx The decode context.
  * @param error The error to handle.
  */
-export function handleWarning(ctx: IDecodeContext, error: Error) {
+export function handleWarning(ctx: IDecodeContext, error: DecodeWarning) {
   if (ctx.options.strictMode) {
     throw error;
   }

@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeWarning, DecodeWarning, handleWarning } from '../assert.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IPngHeaderDetails, InterlaceMethod, IPngChunk, IDecodeContext, IDecodePngOptions } from '../types.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeWarning, handleWarning } from '../assert.js';
+import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../types.js';
 
 /**
  * `IHDR` Image Header

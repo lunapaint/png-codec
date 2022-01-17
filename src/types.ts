@@ -40,6 +40,7 @@ export {
 import {
   BitDepth,
   ColorType,
+  DecodeWarning,
   IDecodePngOptions,
   IImage32,
   IImage64,
@@ -59,7 +60,7 @@ export interface IDecodeContext {
   parsedChunks: Set<string>;
   metadata: PngMetadata[];
   info: string[];
-  warnings: Error[];
+  warnings: DecodeWarning[];
   options: IDecodePngOptions;
 }
 

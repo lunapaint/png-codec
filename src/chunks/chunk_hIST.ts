@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkFollows, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataHistogram, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataHistogram, KnownChunkTypes } from '../types.js';
 
 /**
  * `hIST` Image histogram
