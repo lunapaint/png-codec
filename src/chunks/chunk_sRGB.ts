@@ -30,7 +30,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       renderingIntent = byte;
       break;
     default:
-      throw new ChunkError(chunk, `Invalid rendering intent "${byte}"`);
+      throw new ChunkError(chunk, `Invalid rendering intent "${byte}"`, offset);
   }
 
   return {

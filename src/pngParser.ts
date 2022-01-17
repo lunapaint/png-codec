@@ -122,7 +122,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
     const chunk = chunks[i];
     switch (chunk.type) {
       case KnownChunkTypes.IHDR:
-        handleWarning(ctx, new ChunkError(chunk, `Multiple IHDR chunks not allowed`));
+        handleWarning(ctx, new ChunkError(chunk, `Multiple IHDR chunks not allowed`, chunk.offset + ChunkPartByteLength.Length));
         break;
       case KnownChunkTypes.IDAT: {
         const dataChunks = [chunk];

@@ -42,7 +42,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       break;
     }
     default:
-      throw new ChunkError(chunk, `Unrecognized color type "${header.colorType}"`);
+      throw new ChunkError(chunk, `Unrecognized color type "${header.colorType}"`, offset);
   }
 
   assertChunkDataLengthEquals(ctx, chunk, expectedLength);

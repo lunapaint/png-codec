@@ -22,25 +22,34 @@ export function parseChunk(ctx: IDecodeContext, chunk: IPngChunk): IPngHeaderDet
   let offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const width = ctx.view.getUint32(offset); offset += 4;
   const height = ctx.view.getUint32(offset); offset += 4;
-  const bitDepth = ctx.view.getUint8(offset++);
-  const colorType = ctx.view.getUint8(offset++);
-  const compressionMethod = ctx.view.getUint8(offset++);
-  const filterMethod = ctx.view.getUint8(offset++);
-  const interlaceMethod = ctx.view.getUint8(offset++);
 
+  const bitDepth = ctx.view.getUint8(offset);
   if (!isValidBitDepth(bitDepth)) {
-    throw new ChunkError(chunk, `Bit depth "${bitDepth}" is not valid`);
+    throw new ChunkError(chunk, `Bit depth "${bitDepth}" is not valid`, offset);
   }
+  offset++;
+
+  const colorType = ctx.view.getUint8(offset);
   if (!isValidColorType(colorType, bitDepth)) {
-    throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`);
+    throw new ChunkError(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`, offset);
   }
-  assertChunkCompressionMethod(ctx, chunk, compressionMethod);
+  offset++;
+
+  const compressionMethod = ctx.view.getUint8(offset);
+  assertChunkCompressionMethod(ctx, chunk, compressionMethod, offset);
+  offset++;
+
+  const filterMethod = ctx.view.getUint8(offset);
   if (filterMethod !== 0) {
-    handleWarning(ctx, new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`));
+    handleWarning(ctx, new ChunkError(chunk, `Filter method "${filterMethod}" is not valid`, offset));
   }
+  offset++;
+
+  const interlaceMethod = ctx.view.getUint8(offset);
   if (!isValidInterlaceMethod(interlaceMethod)) {
-    handleWarning(ctx, new ChunkError(chunk, `Interlace method "${interlaceMethod}" is not valid`));
+    handleWarning(ctx, new ChunkError(chunk, `Interlace method "${interlaceMethod}" is not valid`, offset));
   }
+  offset++;
 
   return {
     width,

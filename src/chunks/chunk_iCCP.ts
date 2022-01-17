@@ -29,8 +29,9 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   offset += readResult.bytesRead;
   const name = readResult.text;
 
-  const compressionMethod = ctx.view.getUint8(offset++);
-  assertChunkCompressionMethod(ctx, chunk, compressionMethod);
+  const compressionMethod = ctx.view.getUint8(offset);
+  assertChunkCompressionMethod(ctx, chunk, compressionMethod, offset);
+  offset++;
 
   const data = new Uint8Array(ctx.view.buffer.slice(ctx.view.byteOffset + offset, ctx.view.byteOffset + maxOffset));
 
