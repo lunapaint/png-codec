@@ -4,9 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { assertChunkCompressionMethod, assertChunkDataLengthGte } from '../assert.js';
 import { readText } from '../text.js';
-import { assertChunkCompressionMethod, assertChunkDataLengthGte, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCompressedTextualData } from '../types.js';
 
 /**
  * `zTXt` Textual data
@@ -14,7 +14,7 @@ import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPng
  * Spec: https://www.w3.org/TR/PNG/#11tEXt
  */
 export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataCompressedTextualData {
-  assertChunkDataLengthGte(chunk, 6);
+  assertChunkDataLengthGte(ctx, chunk, 6);
 
   // Format:
   // Keyword:            1-79 bytes (character string)
@@ -30,8 +30,9 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   offset += readResult.bytesRead;
   const keyword = readResult.text;
 
-  const compressionMethod = ctx.view.getUint8(offset++);
-  assertChunkCompressionMethod(ctx, chunk, compressionMethod);
+  const compressionMethod = ctx.view.getUint8(offset);
+  assertChunkCompressionMethod(ctx, chunk, compressionMethod, offset);
+  offset++;
 
   readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, false, true);
   offset += readResult.bytesRead;

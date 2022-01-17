@@ -4,9 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { assertChunkPrecedes, createChunkDecodeWarning } from '../assert.js';
 import { readText } from '../text.js';
-import { assertChunkPrecedes, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../types.js';
 
 /**
  * `sPLT` Suggested palette
@@ -32,7 +32,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   const entriesOffset = (chunk.dataLength - (offset - dataStartOffset));
   const entryCount = entriesOffset / entrySize;
   if (entryCount % 1 !== 0) {
-    throw new ChunkError(chunk, `Invalid data length: ${entriesOffset} should be divisible by entry size ${entrySize}`);
+    throw createChunkDecodeWarning(chunk, `Invalid data length: ${entriesOffset} should be divisible by entry size ${entrySize}`, offset);
   }
 
   const entries: IPngMetadataSuggestedPaletteEntry[] = [];

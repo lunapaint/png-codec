@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkPrecedes, assertChunkSinglular, ChunkError, handleWarning } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
+import { assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, handleWarning } from '../assert.js';
+import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../types.js';
 
 /**
  * `PLTE` Palette
@@ -19,22 +19,24 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.tRNS);
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
 
+  let offset = chunk.offset + ChunkPartByteLength.Length;
   // This chunk shall appear for colour type 3, and may appear for colour types 2 and 6; it shall not appear for colour types 0 and 4.
   if (header.colorType === ColorType.Grayscale || header.colorType === ColorType.GrayacaleAndAlpha) {
-    throw new ChunkError(chunk, `Color type "${header.colorType}" cannot have a palette`);
+    throw createChunkDecodeWarning(chunk, `Color type "${header.colorType}" cannot have a palette`, offset);
   }
 
+  offset += ChunkPartByteLength.Type;
   if (chunk.dataLength === 0) {
-    throw new ChunkError(chunk, 'Cannot have 0 entries');
+    throw createChunkDecodeWarning(chunk, 'Cannot have 0 entries', offset);
   }
 
   // A chunk length not divisible by 3 is an error.
   if (chunk.dataLength % 3 !== 0) {
-    throw new ChunkError(chunk, `Chunk length must be divisible by 3 (actual "${chunk.dataLength}")`);
+    throw createChunkDecodeWarning(chunk, `Chunk length must be divisible by 3 (actual "${chunk.dataLength}")`, offset);
   }
 
   if (chunk.dataLength / 3 > 256) {
-    handleWarning(ctx, new ChunkError(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`));
+    handleWarning(ctx, createChunkDecodeWarning(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`, offset));
   }
 
   // TODO: The number of palette entries shall not exceed the range that can be represented in the image bit depth (for example, 24 = 16 for a bit depth of 4).
@@ -74,6 +76,7 @@ class PngPalette implements IPngPaletteInternal {
   private _checkIndex(colorIndex: number) {
     // any out-of-range pixel value found in the image data is an error.
     if (colorIndex < 0 || colorIndex * 3 > this._length - 3) {
+      // This is a regular error as it is exposed on the API
       throw new Error(`Palette does not contain color index "${colorIndex}"`);
     }
   }

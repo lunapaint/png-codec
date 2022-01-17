@@ -6,7 +6,7 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthGte, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../types.js';
 
 /**
  * `iCCP` Embedded ICC profile
@@ -18,7 +18,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   assertChunkMutualExclusion(ctx, chunk, KnownChunkTypes.sRGB);
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.PLTE);
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
-  assertChunkDataLengthGte(chunk, 3);
+  assertChunkDataLengthGte(ctx, chunk, 3);
 
   const chunkDataOffset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
   const maxOffset = chunkDataOffset + chunk.dataLength; // Ensures reading outside this chunk is not allowed
@@ -29,8 +29,9 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   offset += readResult.bytesRead;
   const name = readResult.text;
 
-  const compressionMethod = ctx.view.getUint8(offset++);
-  assertChunkCompressionMethod(ctx, chunk, compressionMethod);
+  const compressionMethod = ctx.view.getUint8(offset);
+  assertChunkCompressionMethod(ctx, chunk, compressionMethod, offset);
+  offset++;
 
   const data = new Uint8Array(ctx.view.buffer.slice(ctx.view.byteOffset + offset, ctx.view.byteOffset + maxOffset));
 

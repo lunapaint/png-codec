@@ -4,9 +4,9 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { readText } from '../text.js';
 import { assertChunkDataLengthGte } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
+import { readText } from '../text.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../types.js';
 
 /**
  * `tEXt` Textual data
@@ -14,7 +14,7 @@ import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPng
  * Spec: https://www.w3.org/TR/PNG/#11tEXt
  */
 export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataTextualData {
-  assertChunkDataLengthGte(chunk, 6);
+  assertChunkDataLengthGte(ctx, chunk, 6);
 
   // Format:
   // Keyword:            1-79 bytes (character string)

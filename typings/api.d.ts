@@ -12,6 +12,10 @@
  *
  * @param data The complete png file data to decode.
  * @param options Options to configure how decoding happens.
+ *
+ * @throws A {@link DecodeError} when an error is encountered or a {@link DecodeWarning} when a
+ * warning is encountered in strict mode. In Typescript, `instanceof` can be used to narrow the type
+ * safely.
  */
 export function decodePng(data: Readonly<Uint8Array>): Promise<IDecodedPng<IImage32 | IImage64>>;
 export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions & { force32: true }): Promise<IDecodedPng<IImage32>>;
@@ -683,4 +687,29 @@ export interface IPngMetadataTransparency {
    *   palette entries.
    */
   transparency: number | [number, number, number] | number[];
+}
+
+/**
+ * A critical error occurred during decoding.
+ */
+export class DecodeError extends Error {
+  /**
+   * The byte offset of the error in the datastream.
+   */
+  offset: number;
+
+  /**
+   * A list of decode warnings that have been encountered so far.
+   */
+  warnings: DecodeWarning[];
+}
+
+/**
+ * A warning occurred during decoding.
+ */
+export class DecodeWarning extends Error {
+  /**
+   * The byte offset of the error in the datastream.
+   */
+  offset: number;
 }

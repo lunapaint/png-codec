@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, ChunkError } from '../assert.js';
-import { ChunkPartByteLength, IDecodePngOptions, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
+import { assertChunkDataLengthEquals, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataStandardRgbColorSpace, KnownChunkTypes, RenderingIntent } from '../types.js';
 
 /**
  * `sRGB` Standard RGB color space
@@ -30,7 +30,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       renderingIntent = byte;
       break;
     default:
-      throw new ChunkError(chunk, `Invalid rendering intent "${byte}"`);
+      throw createChunkDecodeWarning(chunk, `Invalid rendering intent "${byte}"`, offset);
   }
 
   return {

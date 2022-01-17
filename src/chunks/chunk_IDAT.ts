@@ -5,7 +5,8 @@
  */
 
 import * as pako from 'pako';
-import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPaletteInternal, InterlaceMethod, IDecodeContext, IPngMetadataTransparency, IDecodePngOptions } from '../types.js';
+import { createChunkDecodeError, DecodeError } from '../assert.js';
+import { ChunkPartByteLength, ColorType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../types.js';
 
 /**
  * `IDAT` Image Data
@@ -19,16 +20,16 @@ import { IPngChunk, ChunkPartByteLength, IPngHeaderDetails, ColorType, IPngPalet
  */
 export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunks: IPngChunk[]): Uint8Array | Uint16Array {
   // Decompress the chunk data.
-  const decompressed = decompress(ctx.view, chunks);
+  const decompressed = decompress(ctx, chunks);
 
   // Remove the filter, leaving the packed format. For example an 8-bit grayscale and alpha
   // filter would give an array where each pixel is represented by 2 bytes; grayscale (0-255) and
   // alpha (0-255). This is done for each deinterlace pass if the image is interlaced.
   let packed: Uint8Array;
   if (header.interlaceMethod === InterlaceMethod.Adam7) {
-    packed = deinterlaceAdam7(header, decompressed);
+    packed = deinterlaceAdam7(ctx, header, decompressed);
   } else {
-    packed = defilter(header, decompressed);
+    packed = defilter(ctx, header, decompressed);
   }
 
   // Apply the tRNS chunk if needed
@@ -36,7 +37,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
 
   // Map the packed buffer into a new 8-bit rgba buffer. This applies alpha for indexed color type
   // as well.
-  const result = mapPackedDataToRgba(header, packed, ctx.palette, trnsChunk);
+  const result = mapPackedDataToRgba(ctx, header, packed, ctx.palette, trnsChunk);
 
   // Apply the tRNS if it still needed
   if (trnsChunk && (header.colorType === ColorType.Grayscale || header.colorType === ColorType.Truecolor)) {
@@ -49,15 +50,15 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
 /**
  * Decompresses the chunk's data using the inflate algorithm.
  */
-function decompress(dataView: DataView, chunks: IPngChunk[]): Uint8Array {
+function decompress(ctx: IDecodeContext, chunks: IPngChunk[]): Uint8Array {
   const inflator = new pako.Inflate();
   let offset = 0;
   for (const chunk of chunks) {
     offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;
-    inflator.push(dataView.buffer.slice(dataView.byteOffset + offset, dataView.byteOffset + offset + chunk.dataLength));
+    inflator.push(ctx.view.buffer.slice(ctx.view.byteOffset + offset, ctx.view.byteOffset + offset + chunk.dataLength));
   }
   if (inflator.err) {
-    throw new Error('IDAT: Inflate error: ' + inflator.msg);
+    throw createChunkDecodeError(ctx, chunks[0], `Inflate error: ${inflator.msg}`, chunks[0].offset);
   }
   return inflator.result as Uint8Array;
 }
@@ -66,6 +67,7 @@ function decompress(dataView: DataView, chunks: IPngChunk[]): Uint8Array {
  * Defilters the decompressed data, returning a packed format (not RGBA image format).
  */
 function defilter(
+  ctx: IDecodeContext,
   header: IPngHeaderDetails,
   decompressed: Uint8Array,
   start: number = 0,
@@ -91,7 +93,7 @@ function defilter(
     // Get and validate filter type
     const filterType = decompressed[lineOffset++];
     if (!isValidFilterType) {
-      throw new Error(`IDAT: Invalid filter type ${filterType}`);
+      throw new DecodeError(ctx, `IDAT: Invalid filter type ${filterType}`, 0);
     }
 
     // Get the filter function for this line, caching it for later lines
@@ -246,7 +248,6 @@ function buildDefilterFunction(bpp: number, bpl: number, bitDepth: number, width
       ) % 256;
     };
   }
-  throw new Error(`Unsupported filter type ${filterType}`);
 }
 
 function paethPredicator(a: number, b: number, c: number): number {
@@ -285,12 +286,7 @@ function getChannelCount(colorType: ColorType): number {
   }
 }
 
-function deinterlaceAdam7(header: IPngHeaderDetails, decompressed: Uint8Array): Uint8Array {
-
-
-  // console.log('decompressed', decompressed);
-
-
+function deinterlaceAdam7(ctx: IDecodeContext, header: IPngHeaderDetails, decompressed: Uint8Array): Uint8Array {
   const bppFloat = getBytesPerPixelFloat(header);
   // Each line of data is guaranteed to start on a new byte
   const bplCeiled = Math.ceil(header.width * bppFloat);
@@ -346,7 +342,7 @@ function deinterlaceAdam7(header: IPngHeaderDetails, decompressed: Uint8Array): 
     }
 
     // Defilter this pass' sub-image
-    const passPacked = defilter(header, decompressed, dataPointer, passWidth, passHeight);
+    const passPacked = defilter(ctx, header, decompressed, dataPointer, passWidth, passHeight);
 
     // Fill in result using the defiltered sub-image
     let i = 0;
@@ -379,7 +375,7 @@ function deinterlaceAdam7(header: IPngHeaderDetails, decompressed: Uint8Array): 
   return result;
 }
 
-function mapPackedDataToRgba(header: IPngHeaderDetails, packed: Uint8Array, palette: IPngPaletteInternal | undefined, trnsChunk: IPngMetadataTransparency | undefined) {
+function mapPackedDataToRgba(ctx: IDecodeContext, header: IPngHeaderDetails, packed: Uint8Array, palette: IPngPaletteInternal | undefined, trnsChunk: IPngMetadataTransparency | undefined) {
   const result = new (header.bitDepth === 16 ? Uint16Array : Uint8Array)(header.width * header.height * 4);
   let i = 0;
   const bpp = getBytesPerPixel(header);
@@ -459,7 +455,7 @@ function mapPackedDataToRgba(header: IPngHeaderDetails, packed: Uint8Array, pale
 
     case ColorType.Indexed: {
       if (!palette) {
-        throw new Error('IDAT: Cannot decode indexed color type without a palette');
+        throw new DecodeError(ctx, 'IDAT: Cannot decode indexed color type without a palette', 0);
       }
       // TODO: Lower bit depth support
       switch (header.bitDepth) {
