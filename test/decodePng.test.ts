@@ -12,7 +12,7 @@ import { KnownChunkTypes } from '../out/types.js';
 
 const pngSuiteRoot = 'test/pngsuite/png';
 
-describe('pngParser', () => {
+describe('decodePng', () => {
   describe('Buffer.byteOffset, Buffer.byteLength', () => {
     it('should decoded an array with byteOffset and byteLength set', async () => {
       const originalTypedArray = await fs.promises.readFile(join(pngSuiteRoot, `cs3n2c16.png`));

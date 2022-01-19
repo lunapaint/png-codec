@@ -6,7 +6,7 @@
 
 import { throws } from 'assert';
 import { join } from 'path';
-import { verifyPngSignature } from '../out/pngParser.js';
+import { verifyPngSignature } from '../out/pngDecoder.js';
 import * as fs from 'fs';
 
 const pngSuiteRoot = 'test/pngsuite/png';
@@ -19,7 +19,7 @@ async function dataViewFromFile(file: string): Promise<DataView> {
   return new DataView(new Uint8Array(await fs.promises.readFile(file)).buffer);
 }
 
-describe('pngParser.signature', () => {
+describe('verifyPngSignature', () => {
   it('should throw when the data doesn\'t match the fixed 8-byte header', () => {
     throws(() => {
       verifyPngSignature({ view: dataViewFromArray([0x41, 0x4D]), warnings: [] });

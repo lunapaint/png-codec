@@ -12,7 +12,7 @@ const imageTestSuiteRoot = 'test/imagetestsuite/png';
 // errors match exactly when there is only a single problem with the file, but when there are
 // multiple problems just throw as refactoring the codebase could change the order of errors but not
 // be incorrect.
-describe('pngParser.integration Image Test Suite', () => {
+describe('Image Test Suite', () => {
 
   describe('chunk ordering', () => {
     createTests([

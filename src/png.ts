@@ -13,5 +13,5 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
 export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>> {
   // The decoder is dynamically imported here so only the decoder will be loaded when invoked when
   // code splitting is enabled, not the encoder.
-  return (await import('./pngParser.js')).decodePng(data, options);
+  return (await import('./pngDecoder.js')).decodePng(data, options);
 }

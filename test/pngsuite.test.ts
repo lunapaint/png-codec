@@ -25,7 +25,7 @@ function generateSuggestedPalette(): IPngMetadataSuggestedPaletteEntry[] {
   return entries;
 }
 
-describe('pngParser.integration PngSuite', () => {
+describe('PngSuite', () => {
   describe('Basic formats', () => {
     createTests([
       ['basn0g01', 'black & white'],
