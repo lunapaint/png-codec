@@ -17,54 +17,54 @@ describe('Image Test Suite', () => {
   describe('chunk ordering', () => {
     createTests([
       ['0301fde58080883e938b604cab9768ea', 'sRGB must precede PLTE', { shouldThrow: 'sRGB: Must precede PLTE', strictMode: true }],
-      ['0301fde58080883e938b604cab9768ea', 'should decode with warnings', { expectedWarnings: ['sRGB: Must precede PLTE'], skipDataAssertion: true }],
+      ['0301fde58080883e938b604cab9768ea', 'should decode with warnings', { expectedWarnings: ['sRGB: Must precede PLTE'], expectedDimensions: { width: 48, height: 48 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['18bd8bf75e7a9b40b961dd501654ce0e', 'hIST must precede IDAT', { shouldThrow: 'hIST: Must precede IDAT', strictMode: true }],
-      ['18bd8bf75e7a9b40b961dd501654ce0e', 'should decode with warnings', { expectedWarnings: ['hIST: Must precede IDAT'], skipDataAssertion: true }],
+      ['18bd8bf75e7a9b40b961dd501654ce0e', 'should decode with warnings', { expectedWarnings: ['hIST: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
       ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { shouldThrow: 'sBIT: Must precede IDAT', strictMode: true }],
-      ['31e3bc3eb811cff582b5feee2494fed8', 'should decode with warnings', { expectedWarnings: ['sBIT: Must precede IDAT'], skipDataAssertion: true }],
+      ['31e3bc3eb811cff582b5feee2494fed8', 'should decode with warnings', { expectedWarnings: ['sBIT: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['429104334d1fb6a58e17307883c17608', 'sBIT must precede PLTE', { shouldThrow: 'sBIT: Must precede PLTE', strictMode: true }],
-      ['429104334d1fb6a58e17307883c17608', 'should decode with warnings', { expectedWarnings: ['sBIT: Must precede PLTE'], skipDataAssertion: true }],
+      ['429104334d1fb6a58e17307883c17608', 'should decode with warnings', { expectedWarnings: ['sBIT: Must precede PLTE'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['42ec8668adb5dbc6581393f463976510', 'tRNS must precede IDAT', { shouldThrow: 'tRNS: Must precede IDAT', strictMode: true }],
-      ['42ec8668adb5dbc6581393f463976510', 'should decode with warnings', { expectedWarnings: ['tRNS: Must precede IDAT'], skipDataAssertion: true }],
+      ['42ec8668adb5dbc6581393f463976510', 'should decode with warnings', { expectedWarnings: ['tRNS: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['5b689479bd7e527c2385a40437272607', 'sRGB must precede IDAT', { shouldThrow: 'sRGB: Must precede IDAT', strictMode: true }],
-      ['5b689479bd7e527c2385a40437272607', 'should decode with warnings', { expectedWarnings: ['sRGB: Must precede IDAT'], skipDataAssertion: true }],
+      ['5b689479bd7e527c2385a40437272607', 'should decode with warnings', { expectedWarnings: ['sRGB: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['71714b783e01aec455b5a4a760326ccc', 'iCCP must precede PLTE', { shouldThrow: 'iCCP: Must precede PLTE', strictMode: true }],
-      ['71714b783e01aec455b5a4a760326ccc', 'should decode with warnings', { expectedWarnings: ['iCCP: Must precede PLTE'], skipDataAssertion: true }],
+      ['71714b783e01aec455b5a4a760326ccc', 'should decode with warnings', { expectedWarnings: ['iCCP: Must precede PLTE'], expectedDimensions: { width: 48, height: 48 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['7b9abb94ace0278f943a6df29d0ca652', 'gAMA must precede PLTE', { shouldThrow: 'gAMA: Must precede PLTE', strictMode: true }],
-      ['7b9abb94ace0278f943a6df29d0ca652', 'should decode with warnings', { expectedWarnings: ['gAMA: Must precede PLTE'], skipDataAssertion: true }],
+      ['7b9abb94ace0278f943a6df29d0ca652', 'should decode with warnings', { expectedWarnings: ['gAMA: Must precede PLTE'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['829b05b759b2977bc3eb970ab256d867', 'iCCP must precede IDAT', { shouldThrow: 'iCCP: Must precede IDAT', strictMode: true }],
-      ['829b05b759b2977bc3eb970ab256d867', 'should decode with warnings', { expectedWarnings: ['iCCP: Must precede IDAT'], skipDataAssertion: true }],
+      ['829b05b759b2977bc3eb970ab256d867', 'should decode with warnings', { expectedWarnings: ['iCCP: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['b3ac9fdb7239f42c734921dfe790291b', 'cHRM must precede PLTE', { shouldThrow: 'cHRM: Must precede PLTE', strictMode: true }],
-      ['b3ac9fdb7239f42c734921dfe790291b', 'should decode with warnings', { expectedWarnings: ['cHRM: Must precede PLTE'], skipDataAssertion: true }],
+      ['b3ac9fdb7239f42c734921dfe790291b', 'should decode with warnings', { expectedWarnings: ['cHRM: Must precede PLTE'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['c1a4baf5d7c68d366d4d4f948f7295be', 'gAMA must precede IDAT', { shouldThrow: 'gAMA: Must precede IDAT', strictMode: true }],
-      ['c1a4baf5d7c68d366d4d4f948f7295be', 'should decode with warnings', { expectedWarnings: ['gAMA: Must precede IDAT'], skipDataAssertion: true }],
+      ['c1a4baf5d7c68d366d4d4f948f7295be', 'should decode with warnings', { expectedWarnings: ['gAMA: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['c5c030bf52b9b2d8c45c88988fafff4f', 'bKGD must precede IDAT', { shouldThrow: 'bKGD: Must precede IDAT', strictMode: true }],
-      ['c5c030bf52b9b2d8c45c88988fafff4f', 'should decode with warnings', { expectedWarnings: ['bKGD: Must precede IDAT'], skipDataAssertion: true }],
+      ['c5c030bf52b9b2d8c45c88988fafff4f', 'should decode with warnings', { expectedWarnings: ['bKGD: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
@@ -72,7 +72,7 @@ describe('Image Test Suite', () => {
         'Unrecognized chunk type "oFFs"',
         'Unrecognized chunk type "pCAL"',
         'Unrecognized chunk type "sCAL"'
-      ], skipDataAssertion: true }],
+      ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
