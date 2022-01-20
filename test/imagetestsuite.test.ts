@@ -75,7 +75,7 @@ describe('Image Test Suite', () => {
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
-      ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true],
+      ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true], // TODO: Support sTER?
     ], imageTestSuiteRoot);
   });
 
@@ -104,7 +104,7 @@ describe('Image Test Suite', () => {
       ['463d3570f92a6b6ecba0cc4fd9a7a384', 'should decode with warnings', { expectedWarnings: ['PLTE: Multiple PLTE chunks not allowed'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['5beaadc10dfdbf61124e98fdf8a5c191', 'multiple sTER not allowed', true],
+      ['5beaadc10dfdbf61124e98fdf8a5c191', 'multiple sTER not allowed', true], // TODO: Support sTER?
     ], imageTestSuiteRoot);
     createTests([
       ['611b294df9cf794eeaa1ffcc620bf6a4', 'multiple oFFs not allowed', true], // TODO: Support oFFs?
@@ -173,7 +173,7 @@ describe('Image Test Suite', () => {
       ['b583e48e218193e4c287f033931a6314', 'invalid number of PLTE entries (0)', { shouldThrow: 'PLTE: Cannot have 0 entries' }],
     ], imageTestSuiteRoot);
     createTests([
-      ['c0a76d267196727887d45de4889bec33', 'invalid oFFs length', true],
+      ['c0a76d267196727887d45de4889bec33', 'invalid oFFs length', true], // TODO: Support oFFs?
     ], imageTestSuiteRoot);
     createTests([
       ['d92428f3fc9c806b0a4373b54e06785e', 'invalid tIME length', { shouldThrow: 'tIME: Invalid data length: 9 !== 7', strictMode: true }],
@@ -194,13 +194,13 @@ describe('Image Test Suite', () => {
 
   describe('invalid chunk data property value', () => {
     createTests([
-      ['4389427591c18bf36e748172640862c3', 'invalid sTER layout mode', true], // TODO: Support sTER
+      ['4389427591c18bf36e748172640862c3', 'invalid sTER layout mode', true], // TODO: Support sTER?
     ], imageTestSuiteRoot);
     createTests([
       ['6399623892b45aa4901aa6e702c7a62d', 'invalid negative sCAL value(s)', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
-      ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', true],
+      ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', true], // TODO: Support sCAL?
     ], imageTestSuiteRoot);
     createTests([
       ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid', strictMode: true }],
@@ -211,7 +211,7 @@ describe('Image Test Suite', () => {
       ['a1d1aafb5bca660229f8e9fc65291eab', 'should decode with warnings', { expectedWarnings: ['IHDR: Unknown compression method "128"'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['d45b0dbbb808df6486f8a13ea44ea174', 'invalid oFFs unit specifier (2)', true],
+      ['d45b0dbbb808df6486f8a13ea44ea174', 'invalid oFFs unit specifier (2)', true], // TODO: Support oFFS?
     ], imageTestSuiteRoot);
     createTests([
       ['f5e7b9db8e8d002a26304f5c81889ee1', 'EOF while reading IHDR data', { shouldThrow: 'EOF while reading chunk "IHDR"' }],
