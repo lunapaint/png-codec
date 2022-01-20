@@ -8,7 +8,7 @@ You can try it out on [`vscode.dev`](https://vscode.dev/) by installing the Luna
 ## Features
 
 - **Performance**: Just like Luna Paint, performance is a priority. This includes code splitting such that code that parses optional chunks are only loaded as needed.
-- **Correctness**: The library passes [PngSuite](http://www.schaik.com/pngsuite/), the "official" test suite for PNG files.
+- **Correctness**: The library is tested with over 500 tests from [PngSuite](https://github.com/lunapaint/pngsuite), [imagetestsuite](https://github.com/lunapaint/imagetestsuite) and internal unit tests.
 - **Simple API**: The API is a well documented [TypeScript declaration file](https://github.dev/lunapaint/png-codec/blob/main/typings/api.d.ts).
 - **Metadata**: All supported metadata is exposed on the API such as text, gamma, default background color, etc.
 - **Readable Codebase**: A big part of this was a learning exercise for me so I put some effort in to make the code as readable as possible to help others on the same journey.
