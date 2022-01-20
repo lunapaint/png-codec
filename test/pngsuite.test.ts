@@ -41,10 +41,10 @@ describe('PngSuite', () => {
       ['basn3p02', '2 bit (4 color) paletted'],
       ['basn3p04', '4 bit (16 color) paletted'],
       ['basn3p08', '8 bit (256 color) paletted'],
-      ['basn4a08', '8 bit grayscale + 8 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['basn4a16', '16 bit grayscale + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['basn6a08', '3x8 bits rgb color + 8 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['basn6a16', '3x16 bits rgb color + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['basn4a08', '8 bit grayscale + 8 bit alpha-channel'],
+      ['basn4a16', '16 bit grayscale + 16 bit alpha-channel'],
+      ['basn6a08', '3x8 bits rgb color + 8 bit alpha-channel'],
+      ['basn6a16', '3x16 bits rgb color + 16 bit alpha-channel'],
     ], pngSuiteRoot);
   });
   describe('Interlacing', () => {
@@ -62,10 +62,10 @@ describe('PngSuite', () => {
       ['basi3p02', '2 bit (4 color) paletted'],
       ['basi3p04', '4 bit (16 color) paletted'],
       ['basi3p08', '8 bit (256 color) paletted'],
-      ['basi4a08', '8 bit grayscale + 8 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['basi4a16', '16 bit grayscale + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['basi6a08', '3x8 bits rgb color + 8 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['basi6a16', '3x16 bits rgb color + 16 bit alpha-channel', true], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['basi4a08', '8 bit grayscale + 8 bit alpha-channel'],
+      ['basi4a16', '16 bit grayscale + 16 bit alpha-channel'],
+      ['basi6a08', '3x8 bits rgb color + 8 bit alpha-channel'],
+      ['basi6a16', '3x16 bits rgb color + 16 bit alpha-channel'],
     ], pngSuiteRoot);
   });
   describe('Odd sizes', () => {
@@ -110,18 +110,18 @@ describe('PngSuite', () => {
   });
   describe('Background colors', () => {
     createTests([
-      ['bgai4a08', '8 bit grayscale, alpha, no background chunk, interlaced', { skipDataAssertion: true, includesMetadata: { bKGD: undefined } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['bgai4a08', '8 bit grayscale, alpha, no background chunk, interlaced', { includesMetadata: { bKGD: undefined } }],
       ['bgai4a16', '16 bit grayscale, alpha, no background chunk, interlaced', { includesMetadata: { bKGD: undefined } }],
-      ['bgai4a16', '16 bit grayscale, alpha, no background chunk, interlaced [converted to 8 bit]', { skipDataAssertion: true, forceBitDepth8: true, customFile: 'bgai4a16_to8' }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['bgan6a08', '3x8 bits rgb color, alpha, no background chunk', { skipDataAssertion: true, includesMetadata: { bKGD: undefined } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['bgai4a16', '16 bit grayscale, alpha, no background chunk, interlaced [converted to 8 bit]', { forceBitDepth8: true, customFile: 'bgai4a16_to8' }],
+      ['bgan6a08', '3x8 bits rgb color, alpha, no background chunk', { includesMetadata: { bKGD: undefined } }],
       ['bgan6a16', '3x16 bits rgb color, alpha, no background chunk', { includesMetadata: { bKGD: undefined } }],
-      ['bgan6a16', '3x16 bits rgb color, alpha, no background chunk [converted to 8 bit]', { skipDataAssertion: true, forceBitDepth8: true, customFile: 'bgan6a16_to8' }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['bgbn4a08', '8 bit grayscale, alpha, black background chunk', { skipDataAssertion: true, includesMetadata: { bKGD: { type: 'bKGD', color: 0 } } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['bgan6a16', '3x16 bits rgb color, alpha, no background chunk [converted to 8 bit]', { forceBitDepth8: true, customFile: 'bgan6a16_to8' }],
+      ['bgbn4a08', '8 bit grayscale, alpha, black background chunk', { includesMetadata: { bKGD: { type: 'bKGD', color: 0 } } }],
       ['bggn4a16', '16 bit grayscale, alpha, gray background chunk', { includesMetadata: { bKGD: { type: 'bKGD', color: 43908 } } }],
-      ['bggn4a16', '16 bit grayscale, alpha, gray background chunk [converted to 8 bit]', { skipDataAssertion: true, forceBitDepth8: true, customFile: 'bggn4a16_to8' }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
-      ['bgwn6a08', '3x8 bits rgb color, alpha, white background chunk', { skipDataAssertion: true, includesMetadata: { bKGD: { type: 'bKGD', color: [255, 255, 255] } } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['bggn4a16', '16 bit grayscale, alpha, gray background chunk [converted to 8 bit]', { forceBitDepth8: true, customFile: 'bggn4a16_to8' }],
+      ['bgwn6a08', '3x8 bits rgb color, alpha, white background chunk', { includesMetadata: { bKGD: { type: 'bKGD', color: [255, 255, 255] } } }],
       ['bgyn6a16', '3x16 bits rgb color, alpha, yellow background chunk', { includesMetadata: { bKGD: { type: 'bKGD', color: [65535, 65535, 0] } } }],
-      ['bgyn6a16', '3x16 bits rgb color, alpha, yellow background chunk [converted to 8 bit]', { skipDataAssertion: true, forceBitDepth8: true, customFile: 'bgyn6a16_to8' }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['bgyn6a16', '3x16 bits rgb color, alpha, yellow background chunk [converted to 8 bit]', { forceBitDepth8: true, customFile: 'bgyn6a16_to8' }],
     ], pngSuiteRoot);
   });
   describe('Transparency', () => {
@@ -192,7 +192,7 @@ describe('PngSuite', () => {
     createTests([
       ['pp0n2c16', 'six-cube palette-chunk in true-color image', { includesMetadata: { sPLT: undefined } }],
       ['pp0n2c16', 'six-cube palette-chunk in true-color image [converted to 8 bit]', { forceBitDepth8: true, customFile: 'pp0n2c16_to8' }],
-      ['pp0n6a08', 'six-cube palette-chunk in true-color+alpha image', { skipDataAssertion: true, includesMetadata: { sPLT: undefined } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['pp0n6a08', 'six-cube palette-chunk in true-color+alpha image', { includesMetadata: { sPLT: undefined } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
       ['ps1n0g08', 'six-cube suggested palette (1 byte) in grayscale image', {
         includesMetadata: {
           sPLT: [
@@ -652,7 +652,7 @@ describe('PngSuite', () => {
       ['xcrn0g04', 'added cr bytes', { shouldThrow: true }],
       ['xlfn0g04', 'added lf bytes', { shouldThrow: true }],
       ['xhdn0g08', 'incorrect IHDR checksum', { shouldThrow: true, strictMode: true }],
-      ['xhdn0g08', 'incorrect IHDR checksum', { skipDataAssertion: true }],
+      ['xhdn0g08', 'incorrect IHDR checksum', { expectedWarnings: ['CRC for chunk "IHDR" at offset 0x8 doesn\'t match (0x4353554d !== 0x56112528)'] }],
       ['xc1n0g08', 'color type 1', { shouldThrow: true }],
       ['xc9n2c08', 'color type 9', { shouldThrow: true }],
       ['xd0n2c08', 'bit-depth 0', { shouldThrow: true }],
@@ -660,7 +660,7 @@ describe('PngSuite', () => {
       ['xd9n2c08', 'bit-depth 99', { shouldThrow: true }],
       ['xdtn0g01', 'missing IDAT chunk', { shouldThrow: true }],
       ['xcsn0g01', 'incorrect IDAT checksum', { shouldThrow: true, strictMode: true }],
-      ['xcsn0g01', 'incorrect IDAT checksum', { skipDataAssertion: true }],
+      ['xcsn0g01', 'incorrect IDAT checksum', { expectedWarnings: ['CRC for chunk "IDAT" at offset 0x31 doesn\'t match (0x4353554d !== 0xd02f14c9)'] }],
     ], pngSuiteRoot);
   });
 });
