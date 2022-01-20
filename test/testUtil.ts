@@ -60,7 +60,14 @@ export function createTests(testCases: TestCase[], fixture: string) {
     const description = t[1];
     const shouldSkip = typeof t[2] === 'boolean' ? t[2] : false;
     const options = typeof t[2] === 'object' ? t[2] : {};
-    (shouldSkip ? it.skip : it)(`${name}${options.strictMode ? ' [strict]' : ''} - ${description}`, async () => {
+    let annotation = '';
+    if (options.strictMode) {
+      annotation += ' [strict]';
+    }
+    if (options.skipDataAssertion) {
+      annotation += ' [DATA CHECK SKIPPED]';
+    }
+    (shouldSkip ? it.skip : it)(`${name}${annotation} - ${description}`, async () => {
       const data = new Uint8Array(await fs.promises.readFile(join(fixture, `${name}.png`)));
       if (options.shouldThrow) {
         try {
