@@ -659,7 +659,6 @@ describe('Image Test Suite', () => {
   });
 
   describe('valid files', () => {
-    // TODO: Test metadata
     createTests([
       ['0839d93f8e77e21acd0ac40a80b14b7b', '350x490, 24-bit RGB, non-interlaced, -2.5% (Adobe Photoshop CS2 Windows)', { expectedDimensions: { width: 350, height: 490 }, expectedInfo: ['Unrecognized chunk type "vpAg"'] }]
     ], imageTestSuiteRoot);
