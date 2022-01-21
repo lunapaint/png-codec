@@ -11,7 +11,7 @@ import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPng
 /**
  * `sCAL` Physical scale of image subject
  *
- * Spec: https://www.w3.org/TR/PNG/#11sCAL
+ * Spec: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.sCAL
  */
 export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataPhysicalScaleOfImageSubject {
   assertChunkSinglular(ctx, chunk);
@@ -33,7 +33,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   switch (unitTypeByte) {
     case 0: unitType = 'meter'; break;
     case 1: unitType = 'radian'; break;
-    default: throw createChunkDecodeWarning(chunk, 'Invalid sCAL unit type', offset);
+    default: throw createChunkDecodeWarning(chunk, `Invalid sCAL unit type ("${unitTypeByte}")`, offset);
   }
   offset++;
 

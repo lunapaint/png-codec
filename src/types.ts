@@ -24,6 +24,7 @@ export {
   IPngMetadataHistogram,
   IPngMetadataInternationalTextualData,
   IPngMetadataLastModificationTime,
+  IPngMetadataOffset,
   IPngMetadataPhysicalPixelDimensions,
   IPngMetadataPhysicalScaleOfImageSubject,
   IPngMetadataSignificantBits,

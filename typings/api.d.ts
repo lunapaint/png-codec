@@ -223,6 +223,7 @@ export const enum KnownChunkTypes {
   iCCP = 'iCCP',
   iTXt = 'iTXt',
   tIME = 'tIME',
+  oFFs = 'oFFs',
   pHYs = 'pHYs',
   sBIT = 'sBIT',
   sCAL = 'sCAL',
@@ -260,6 +261,7 @@ export type PngMetadata =
   IPngMetadataHistogram |
   IPngMetadataInternationalTextualData |
   IPngMetadataLastModificationTime |
+  IPngMetadataOffset |
   IPngMetadataPhysicalPixelDimensions |
   IPngMetadataPhysicalScaleOfImageSubject |
   IPngMetadataSignificantBits |
@@ -482,6 +484,27 @@ export interface IPngMetadataLastModificationTime {
    * The last modification time.
    */
   value: Date;
+}
+
+/**
+ * A metadata entry that defines the image's offset. This could be for example the position on a printed page at which
+ * the image should be output when printed alone, or the image's location with respect to a larger screen.
+ */
+export interface IPngMetadataOffset {
+  /**
+   * The type of metadata, this is typically the name of the chunk from which is originates.
+   */
+  type: 'oFFs';
+
+  /**
+   * The offset.
+   */
+  offset: { x: number, y: number };
+
+  /**
+   * The unit type of the offset.
+   */
+  unitType: 'pixel' | 'micrometer';
 }
 
 /**
