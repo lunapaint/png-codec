@@ -386,9 +386,20 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['c-m1-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: 'CRC for chunk "wEND" at offset 0x7d9 doesn\'t match (0xae426082 !== 0xbeb6ef10)', strictMode: true }],
-      ['c-m2-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: 'Cannot read property \'0\' of undefined' }], // TODO: Improve this error
+      ['c-m1-8f2b481b7fd9bd745e620b7c01a18df2', 'should decode with warnings', { expectedWarnings: [
+        'CRC for chunk "wEND" at offset 0x7d9 doesn\'t match (0xae426082 !== 0xbeb6ef10)',
+        'Last chunk is not IEND',
+        'tEXt: No null character after text'
+      ], expectedInfo: ['Unrecognized chunk type "wEND"'], expectedDimensions: { width: 73, height: 31 } }],
+      ['c-m2-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: 'IDAT: Failed to decompress data chunks' }],
       ['m1-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: 'CRC for chunk "tEXt" at offset 0x67 doesn\'t match (0xeede1190 !== 0x53f53b16)', strictMode: true }],
-      ['m2-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: 'Cannot read property \'0\' of undefined' }], // TODO: Improve this error
+      ['m1-8f2b481b7fd9bd745e620b7c01a18df2', 'should decode with warnings', { expectedWarnings: [
+        'CRC for chunk "tEXt" at offset 0x67 doesn\'t match (0xeede1190 !== 0x53f53b16)',
+        'CRC for chunk "wEND" at offset 0x7d9 doesn\'t match (0xae426082 !== 0xbeb6ef10)',
+        'Last chunk is not IEND',
+        'tEXt: No null character after text'
+      ], expectedInfo: ['Unrecognized chunk type "wEND"'], expectedDimensions: { width: 73, height: 31 } }],
+      ['m2-8f2b481b7fd9bd745e620b7c01a18df2', 'should throw', { shouldThrow: 'IDAT: Failed to decompress data chunks' }],
     ], imageTestSuiteRoot);
     createTests([
       ['9032e447e32e09aef5b7de2fab42494d', 'should throw', { shouldThrow: 'CRC for chunk "IHDR" at offset 0x89 doesn\'t match (0xae426082 !== 0xa8a1ae0a)', strictMode: true }],

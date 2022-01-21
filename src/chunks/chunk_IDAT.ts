@@ -60,6 +60,9 @@ function decompress(ctx: IDecodeContext, chunks: IPngChunk[]): Uint8Array {
   if (inflator.err) {
     throw createChunkDecodeError(ctx, chunks[0], `Inflate error: ${inflator.msg}`, chunks[0].offset);
   }
+  if (inflator.result === undefined) {
+    throw new DecodeError(ctx, 'IDAT: Failed to decompress data chunks', 0);
+  }
   return inflator.result as Uint8Array;
 }
 
