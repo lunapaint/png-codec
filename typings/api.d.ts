@@ -225,6 +225,7 @@ export const enum KnownChunkTypes {
   tIME = 'tIME',
   pHYs = 'pHYs',
   sBIT = 'sBIT',
+  sCAL = 'sCAL',
   sPLT = 'sPLT',
   sRGB = 'sRGB',
   tEXt = 'tEXt',
@@ -260,6 +261,7 @@ export type PngMetadata =
   IPngMetadataInternationalTextualData |
   IPngMetadataLastModificationTime |
   IPngMetadataPhysicalPixelDimensions |
+  IPngMetadataPhysicalScaleOfImageSubject |
   IPngMetadataSignificantBits |
   IPngMetadataStandardRgbColorSpace |
   IPngMetadataSuggestedPalette |
@@ -485,7 +487,7 @@ export interface IPngMetadataLastModificationTime {
 /**
  * A metadata entry that defines the intended pixel size or aspect ratio of the image.
  */
-export interface IPngMetadataPhysicalPixelDimensions {
+ export interface IPngMetadataPhysicalPixelDimensions {
   /**
    * The type of metadata, this is typically the name of the chunk from which is originates.
    */
@@ -500,6 +502,27 @@ export interface IPngMetadataPhysicalPixelDimensions {
    * The unit type of the dimensions.
    */
   unitType: 'meter' | 'unknown';
+}
+
+/**
+ * A metadata entry that defines the physical scale of the subject within the image. This is often
+ * used for maps, floor plans, etc.
+ */
+ export interface IPngMetadataPhysicalScaleOfImageSubject {
+  /**
+   * The type of metadata, this is typically the name of the chunk from which is originates.
+   */
+  type: 'sCAL';
+
+  /**
+   * The number of pixels per unit for each dimension.
+   */
+  pixelsPerUnit: { x: number, y: number };
+
+  /**
+   * The unit type of the dimensions.
+   */
+  unitType: 'meter' | 'radian';
 }
 
 /**

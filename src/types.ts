@@ -25,6 +25,7 @@ export {
   IPngMetadataInternationalTextualData,
   IPngMetadataLastModificationTime,
   IPngMetadataPhysicalPixelDimensions,
+  IPngMetadataPhysicalScaleOfImageSubject,
   IPngMetadataSignificantBits,
   IPngMetadataStandardRgbColorSpace,
   IPngMetadataSuggestedPalette,

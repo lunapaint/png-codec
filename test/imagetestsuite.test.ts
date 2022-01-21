@@ -24,7 +24,14 @@ describe('Image Test Suite', () => {
       ['18bd8bf75e7a9b40b961dd501654ce0e', 'should decode with warnings', { expectedWarnings: ['hIST: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', true], // TODO: Support sCAL?
+      ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', { shouldThrow: 'sCAL: Must precede IDAT', strictMode: true }],
+      ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', { expectedWarnings: [
+        'pHYs: Must precede IDAT',
+        'sCAL: Must precede IDAT'
+      ], expectedInfo: [
+        'Unrecognized chunk type "oFFs"',
+        'Unrecognized chunk type "pCAL"'
+      ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['31e3bc3eb811cff582b5feee2494fed8', 'sBIT must precede IDAT', { shouldThrow: 'sBIT: Must precede IDAT', strictMode: true }],
@@ -68,10 +75,12 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'pHYs must precede IDAT', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
-      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'should decode with warnings', { expectedWarnings: ['pHYs: Must precede IDAT'], expectedInfo: [
+      ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'should decode with warnings', { expectedWarnings: [
+        'pHYs: Must precede IDAT',
+        'sCAL: Must precede IDAT'
+      ], expectedInfo: [
         'Unrecognized chunk type "oFFs"',
         'Unrecognized chunk type "pCAL"',
-        'Unrecognized chunk type "sCAL"'
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
@@ -97,7 +106,11 @@ describe('Image Test Suite', () => {
       ['13f665c09e4b03cdbe2fff3015ec8aa7', 'should decode with warnings', { expectedWarnings: ['bKGD: Multiple bKGD chunks not allowed'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['1bcc34d49e56a2fba38490db206328b8', 'multiple sCAL not allowed', true], // TODO: Support sCAL?
+      ['1bcc34d49e56a2fba38490db206328b8', 'multiple sCAL not allowed', { shouldThrow: 'sCAL: Multiple sCAL chunks not allowed', strictMode: true }],
+      ['1bcc34d49e56a2fba38490db206328b8', 'should decode with warnings', { expectedWarnings: ['sCAL: Multiple sCAL chunks not allowed'], expectedInfo: [
+        'Unrecognized chunk type "oFFs"',
+        'Unrecognized chunk type "pCAL"'
+      ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { shouldThrow: 'PLTE: Multiple PLTE chunks not allowed', strictMode: true }],
@@ -197,10 +210,15 @@ describe('Image Test Suite', () => {
       ['4389427591c18bf36e748172640862c3', 'invalid sTER layout mode', true], // TODO: Support sTER?
     ], imageTestSuiteRoot);
     createTests([
-      ['6399623892b45aa4901aa6e702c7a62d', 'invalid negative sCAL value(s)', true], // TODO: Support sCAL?
+      ['6399623892b45aa4901aa6e702c7a62d', 'invalid negative sCAL value(s)', { shouldThrow: 'sCAL: Values cannot be negative (1, -1)', strictMode: true }],
+      ['6399623892b45aa4901aa6e702c7a62d', 'should decode with warnings', { expectedWarnings: ['sCAL: Values cannot be negative (1, -1)'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', true], // TODO: Support sCAL?
+      ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', { shouldThrow: 'sCAL: Invalid character in floating point number ("Q.527777777778e-04")', strictMode: true }],
+      ['8905ba870cd5d3327a8310fa437aa076', 'should decode with warnings', { expectedWarnings: ['sCAL: Invalid character in floating point number ("Q.527777777778e-04")'], expectedInfo: [
+        'Unrecognized chunk type "oFFs"',
+        'Unrecognized chunk type "pCAL"'
+      ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid', strictMode: true }],
@@ -513,10 +531,12 @@ describe('Image Test Suite', () => {
       ['bd927c8547634cdbdd22af0afe818a9b', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { shouldThrow: 'pHYs: Must precede IDAT', strictMode: true }],
-      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { expectedWarnings: ['pHYs: Must precede IDAT'], expectedInfo: [
+      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { shouldThrow: 'sCAL: Must precede IDAT', strictMode: true }],
+      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { expectedWarnings: [
+        'pHYs: Must precede IDAT',
+        'sCAL: Must precede IDAT'
+      ], expectedInfo: [
         'Unrecognized chunk type "pCAL"',
-        'Unrecognized chunk type "sCAL"',
         'Unrecognized chunk type "oFFs"'
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
