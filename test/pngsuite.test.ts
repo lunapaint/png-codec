@@ -192,7 +192,7 @@ describe('PngSuite', () => {
     createTests([
       ['pp0n2c16', 'six-cube palette-chunk in true-color image', { includesMetadata: { sPLT: undefined } }],
       ['pp0n2c16', 'six-cube palette-chunk in true-color image [converted to 8 bit]', { forceBitDepth8: true, customFile: 'pp0n2c16_to8' }],
-      ['pp0n6a08', 'six-cube palette-chunk in true-color+alpha image', { includesMetadata: { sPLT: undefined } }], // TODO: Alpha cannot be tested properly until the native png/bmp parser is put in place in order to get it to retain color channels even when alpha = 0.
+      ['pp0n6a08', 'six-cube palette-chunk in true-color+alpha image', { includesMetadata: { sPLT: undefined } }],
       ['ps1n0g08', 'six-cube suggested palette (1 byte) in grayscale image', {
         includesMetadata: {
           sPLT: [
