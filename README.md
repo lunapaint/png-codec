@@ -56,6 +56,7 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 | [iTXt]  | International textual data             |
 | [pHYs]  | Physical pixel dimensions              |
 | [sBIT]  | Significant bits                       | Since the decoded buffer uses a minimum of uint8, this is only when the significant bits are in the range of 9-15.
+| [sCAL]  | Physical scale of image subject        | Extension to the PNG 1.2 Specification v1.2.0
 | [sPLT]  | Suggested palette                      |
 | [sRGB]  | Standard RGB colour space              |
 | [tEXt]  | Textual data                           |
@@ -101,6 +102,7 @@ The library has the single dependency [pako](https://github.com/nodeca/pako) whi
 [iTXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11iTXt
 [pHYs]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11pHYs
 [sBIT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sBIT
+[sCAL]: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.sCAL
 [sPLT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sPLT
 [sRGB]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sRGB
 [tEXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tEXt
