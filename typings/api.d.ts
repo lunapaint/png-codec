@@ -229,6 +229,7 @@ export const enum KnownChunkTypes {
   sCAL = 'sCAL',
   sPLT = 'sPLT',
   sRGB = 'sRGB',
+  sTER = 'sTER',
   tEXt = 'tEXt',
   tRNS = 'tRNS',
   zTXt = 'zTXt',
@@ -259,6 +260,7 @@ export type PngMetadata =
   IPngMetadataExif |
   IPngMetadataGamma |
   IPngMetadataHistogram |
+  IPngMetadataIndicatorOfStereoImage |
   IPngMetadataInternationalTextualData |
   IPngMetadataLastModificationTime |
   IPngMetadataOffset |
@@ -428,6 +430,51 @@ export interface IPngMetadataEmbeddedIccProfile {
    * The raw bytes of the embedded ICC profile.
    */
   data: Uint8Array;
+}
+
+/**
+ * A metadata entry that indicates the image contains a stereo pair of subimages where the images
+ * are presented side-by-side with one subimage intended for the left eye and the other for the
+ * right eye. This metadata entry does not split the resulting image but enables the program decoding
+ * the image to split it manually if needed.
+ *
+ * The left edge of the right subimage must be on a column that is evenly divisible by eight, such
+ * that if interlacing is employed, the two images will have coordinated interlacing. Padding
+ * columns between the two subimages must be introduced by the encoder if necessary.
+ */
+ export interface IPngMetadataIndicatorOfStereoImage {
+  /**
+   * The type of metadata, this is typically the name of the chunk from which is originates.
+   */
+  type: 'sTER';
+
+  /**
+   * The layout mode of the two subimages, each defined below:
+   *
+   * - `cross-fuse`: The right-eye image appears on the left and the left-eye image appears on the
+   *   right, suitable for cross-eyed free viewing.
+   * - `diverging-fuse`: The left-eye images appears on the left and the right-eye image appears on
+   *   on the right, suitable for divergent (wall-eyed) free viewing.
+   *
+   * ```
+   * |         |           |         |
+   * |  first  |  optional |  second |
+   * |←       →|←         →|←       →|
+   * |  image  |  padding  |  image  |
+   * |         |           |         |
+   * ```
+   */
+  layoutMode: 'cross-fuse' | 'diverging-fuse';
+
+  /**
+   * The width of the individual subimages.
+   */
+  subimageWidth: number;
+
+  /**
+   * The number of pixels of padding in between the images.
+   */
+  padding: number;
 }
 
 /**

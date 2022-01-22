@@ -56,6 +56,7 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
   KnownChunkTypes.sCAL,
   KnownChunkTypes.sPLT,
   KnownChunkTypes.sRGB,
+  KnownChunkTypes.sTER,
   KnownChunkTypes.tEXt,
   KnownChunkTypes.tRNS,
   KnownChunkTypes.zTXt,
@@ -81,6 +82,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (ctx: IDe
     case KnownChunkTypes.sCAL: return import(`./chunks/chunk_sCAL.js`);
     case KnownChunkTypes.sPLT: return import(`./chunks/chunk_sPLT.js`);
     case KnownChunkTypes.sRGB: return import(`./chunks/chunk_sRGB.js`);
+    case KnownChunkTypes.sTER: return import(`./chunks/chunk_sTER.js`);
     case KnownChunkTypes.tEXt: return import(`./chunks/chunk_tEXt.js`);
     case KnownChunkTypes.tRNS: return import(`./chunks/chunk_tRNS.js`);
     case KnownChunkTypes.zTXt: return import(`./chunks/chunk_zTXt.js`);

@@ -22,6 +22,7 @@ export {
   IPngMetadataExif,
   IPngMetadataGamma,
   IPngMetadataHistogram,
+  IPngMetadataIndicatorOfStereoImage,
   IPngMetadataInternationalTextualData,
   IPngMetadataLastModificationTime,
   IPngMetadataOffset,

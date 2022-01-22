@@ -82,7 +82,8 @@ describe('Image Test Suite', () => {
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
-      ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', true], // TODO: Support sTER?
+      ['f6266c0e9c2f7db9fab0f84562f63b6c', 'sTER must precede IDAT', { shouldThrow: 'sTER: Must precede IDAT', strictMode: true }],
+      ['f6266c0e9c2f7db9fab0f84562f63b6c', 'should decode with warnings', { expectedWarnings: ['sTER: Must precede IDAT'] }],
     ], imageTestSuiteRoot);
   });
 
@@ -114,7 +115,8 @@ describe('Image Test Suite', () => {
       ['463d3570f92a6b6ecba0cc4fd9a7a384', 'should decode with warnings', { expectedWarnings: ['PLTE: Multiple PLTE chunks not allowed'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['5beaadc10dfdbf61124e98fdf8a5c191', 'multiple sTER not allowed', true], // TODO: Support sTER?
+      ['5beaadc10dfdbf61124e98fdf8a5c191', 'multiple sTER not allowed', { shouldThrow: 'sTER: Multiple sTER chunks not allowed', strictMode: true }],
+      ['5beaadc10dfdbf61124e98fdf8a5c191', 'should decode with warnings', { expectedWarnings: ['sTER: Multiple sTER chunks not allowed'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['611b294df9cf794eeaa1ffcc620bf6a4', 'multiple oFFs not allowed', { shouldThrow: 'oFFs: Multiple oFFs chunks not allowed', strictMode: true, expectedInfo: [
@@ -158,7 +160,8 @@ describe('Image Test Suite', () => {
 
   describe('invalid chunk length', () => {
     createTests([
-      ['073c98872b81d1004d750f18a4b5f732', 'invalid sTER length', true] // TODO: Support sTER?
+      ['073c98872b81d1004d750f18a4b5f732', 'invalid sTER length', { shouldThrow: 'sTER: Invalid data length: 2 !== 1', strictMode: true }],
+      ['073c98872b81d1004d750f18a4b5f732', 'should decode with warnings', { expectedWarnings: ['sTER: Invalid data length: 2 !== 1'] }]
     ], imageTestSuiteRoot);
     createTests([
       ['0b7d50ac449fd59eb3de00647636d0c9', 'invalid cHRM length', { shouldThrow: 'cHRM: Invalid data length: 31 !== 32', strictMode: true }],
@@ -212,7 +215,8 @@ describe('Image Test Suite', () => {
 
   describe('invalid chunk data property value', () => {
     createTests([
-      ['4389427591c18bf36e748172640862c3', 'invalid sTER layout mode', true], // TODO: Support sTER?
+      ['4389427591c18bf36e748172640862c3', 'invalid sTER layout mode', { shouldThrow: 'sTER: Invalid layout mode "2"', strictMode: true }],
+      ['4389427591c18bf36e748172640862c3', 'invalid sTER layout mode', { expectedWarnings: ['sTER: Invalid layout mode "2"'] }],
     ], imageTestSuiteRoot);
     createTests([
       ['6399623892b45aa4901aa6e702c7a62d', 'invalid negative sCAL value(s)', { shouldThrow: 'sCAL: Values cannot be negative (1, -1)', strictMode: true }],

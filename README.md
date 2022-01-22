@@ -59,6 +59,7 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 | [sCAL]  | Physical scale of image subject        | Extension to the PNG 1.2 Specification v1.2.0
 | [sPLT]  | Suggested palette                      |
 | [sRGB]  | Standard RGB colour space              |
+| [sTER]  | Indicator of stereo image              |
 | [tEXt]  | Textual data                           |
 | [tIME]  | Image last-modification time           |
 | [tRNS]  | Transparency                           | Since this chunk modifies the resulting image, you cannot skip this chunk.
