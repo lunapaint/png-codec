@@ -314,8 +314,14 @@ export interface IPngMetadataCalibrationOfPixelValues {
    */
   type: 'pCAL';
 
+  /**
+   * The name of the calibration mapping.
+   */
   calibrationName: string;
 
+  /**
+   * The unit name of the resulting data.
+   */
   unitName: string;
 
   /**
@@ -340,10 +346,19 @@ export interface IPngMetadataCalibrationOfPixelValues {
    */
   equationType: 'linear-mapping' | 'base-e exponential mapping' | 'arbitrary-base exponential mapping' | 'hyperbolic mapping';
 
+  /**
+   * The `x0` value in {@link IPngMetadataCalibrationOfPixelValues.equationType}.
+   */
   x0: number;
 
+  /**
+   * The `x1` value in {@link IPngMetadataCalibrationOfPixelValues.equationType}.
+   */
   x1: number;
 
+  /**
+   * The `p0...pn` values in {@link IPngMetadataCalibrationOfPixelValues.equationType}.
+   */
   params: number[];
 }
 
