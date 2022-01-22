@@ -15,6 +15,7 @@ export {
   IImage64,
   InterlaceMethod,
   IPngChunk,
+  IPngDetails,
   IPngMetadataBackgroundColor,
   IPngMetadataCalibrationOfPixelValues,
   IPngMetadataChromaticity,

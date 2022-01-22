@@ -9,7 +9,8 @@ import * as fs from 'fs';
 import { createRequire } from 'module';
 import { join } from 'path';
 import { decodePng } from '../out/png.js';
-import { PngMetadata } from '../typings/api';
+import { IPngHeaderDetails } from '../src/types.js';
+import { IPngDetails, PngMetadata } from '../typings/api';
 
 export interface ITestOptions {
   /**
@@ -19,6 +20,7 @@ export interface ITestOptions {
   strictMode?: boolean;
   includesMetadata?: { [type: string]: PngMetadata | PngMetadata[] | ((e: PngMetadata) => boolean) | undefined };
   expectedDimensions?: { width: number, height: number };
+  expectedDetails?: Partial<IPngDetails>;
   /**
    * The expected info messages for the test, note that undefined will be treated as [] for this
    * property to ensure all info messages are tested.
@@ -110,14 +112,26 @@ export function createTests(testCases: TestCase[], fixture: string) {
         deepStrictEqual(actualWarnings, options.expectedWarnings.sort());
       }
 
-      if (options.skipDataAssertion) {
-        return;
+      if (options.expectedDetails) {
+        if (options.expectedDetails.bitDepth !== undefined) {
+          strictEqual(decoded.details.bitDepth, options.expectedDetails.bitDepth);
+        }
+        if (options.expectedDetails.colorType !== undefined) {
+          strictEqual(decoded.details.colorType, options.expectedDetails.colorType);
+        }
+        if (options.expectedDetails.interlaceMethod !== undefined) {
+          strictEqual(decoded.details.interlaceMethod, options.expectedDetails.interlaceMethod);
+        }
       }
 
       // Assert dimensions
       const size = name.startsWith('s') ? parseInt(name.substring(1, 3)) : 32;
       strictEqual(decoded.image.width, options.expectedDimensions?.width || size);
       strictEqual(decoded.image.height, options.expectedDimensions?.height || size);
+
+      if (options.skipDataAssertion) {
+        return;
+      }
 
       const actual = Array.from(decoded.image.data);
       const require = createRequire(import.meta.url);

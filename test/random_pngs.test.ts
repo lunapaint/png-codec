@@ -51,8 +51,25 @@ describe('random_pngs', () => {
     describe(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
       const colorTypeCases = testsByColorType.get(colorType)!;
       for (const file of colorTypeCases) {
+        // Note that some properties were optimized away when encoded with lodepng
+        // https://github.com/richgel999/random_pngs/issues/1
+        const expectedWidth = getNumberAtIndex(file, 0);
+        const expectedHeight = getNumberAtIndex(file, 1);
+        const expectedInterlacing = getNumberAtIndex(file, 6);
         createTests([
-          [file, colorType.toString(), { strictMode: true, skipDataAssertion: true, expectedDimensions: { width: 1, height: 1 } }],
+          [file, 'should match file specs', {
+            strictMode: true,
+            skipDataAssertion: true,
+            expectedDimensions: {
+              width: expectedWidth,
+              height: expectedHeight
+            },
+            expectedDetails: {
+              bitDepth: undefined,
+              colorType: undefined,
+              interlaceMethod: expectedInterlacing
+            }
+          }],
         ], suiteRoot);
       }
     });
