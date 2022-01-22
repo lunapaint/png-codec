@@ -102,11 +102,13 @@ The library has the single dependency [pako](https://github.com/nodeca/pako) whi
 [gAMA]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11gAMA
 [hIST]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11hIST
 [iTXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11iTXt
+[pCAL]: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.pCAL
 [pHYs]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11pHYs
 [sBIT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sBIT
 [sCAL]: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.sCAL
 [sPLT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sPLT
 [sRGB]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sRGB
+[sTER]: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.sTER
 [tEXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tEXt
 [tIME]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tIME
 [tRNS]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11tRNS
