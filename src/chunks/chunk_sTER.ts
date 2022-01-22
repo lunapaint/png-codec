@@ -30,15 +30,19 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     default: throw createChunkDecodeWarning(chunk, `Invalid layout mode "${layoutModeByte}"`, offset);
   }
 
-  // Given two subimages with width subimage_width, encoders can calculate the inter-subimage padding and total width W using the following pseudocode:
+  // Given two subimages with width subimage_width, encoders can calculate the inter-subimage
+  // padding and total width W using the following pseudocode:
   //
-  // padding        := 7 - ((subimage_width - 1) mod 8)
-  // W              := 2 * subimage_width + padding
+  //   padding        := 7 - ((subimage_width - 1) mod 8)
+  //   W              := 2 * subimage_width + padding
   //
-  // Given an image with width W, decoders can calculate the subimage width and inter-subimage padding using the following pseudocode:
-  // padding := 15 - ((W - 1) mod 16)
-  // if (padding > 7) then error
-  // subimage_width := (W - padding) / 2
+  // Given an image with width W, decoders can calculate the subimage width and inter-subimage
+  // padding using the following pseudocode:
+  //
+  //   padding := 15 - ((W - 1) mod 16)
+  //   if (padding > 7) then error
+  //   subimage_width := (W - padding) / 2
+  //
   const padding = 15 - ((header.width - 1) % 16);
   if (padding > 7) {
     throw createChunkDecodeWarning(chunk, `Invalid padding value "${padding}" for image width ${header.width}`, offset);
