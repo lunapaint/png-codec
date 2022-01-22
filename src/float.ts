@@ -23,8 +23,8 @@ export function readFloat(ctx: IDecodeContext, chunk: IPngChunk, textDecoder: Te
 
 function isValidFloatingPoint(text: string) {
   return (
-    text.match(/^[+-]?[0-9]+\.[0-9]+([eE][+-][0-9]+)?$/) ||
-    text.match(/^[+-]?[0-9]+\.?([eE][+-][0-9]+)?$/) ||
-    text.match(/^[+-]?\.[0-9]+([eE][+-][0-9]+)?$/)
+    text.match(/^[+-]?[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?$/) ||
+    text.match(/^[+-]?[0-9]+\.?([eE][+-]?[0-9]+)?$/) ||
+    text.match(/^[+-]?\.[0-9]+([eE][+-]?[0-9]+)?$/)
   );
 }

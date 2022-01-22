@@ -54,9 +54,10 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 | [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image.
 | [hIST]  | Image histogram                        |
 | [iTXt]  | International textual data             |
+| [pCAL]  | Calibration of pixel values            | Experimental: limited testing. Extension to the PNG 1.2 Specification v1.2.0.
 | [pHYs]  | Physical pixel dimensions              |
 | [sBIT]  | Significant bits                       | Since the decoded buffer uses a minimum of uint8, this is only when the significant bits are in the range of 9-15.
-| [sCAL]  | Physical scale of image subject        | Extension to the PNG 1.2 Specification v1.2.0
+| [sCAL]  | Physical scale of image subject        | Experimental: limited testing. Extension to the PNG 1.2 Specification v1.2.0.
 | [sPLT]  | Suggested palette                      |
 | [sRGB]  | Standard RGB colour space              |
 | [sTER]  | Indicator of stereo image              |

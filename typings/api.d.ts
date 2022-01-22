@@ -224,6 +224,7 @@ export const enum KnownChunkTypes {
   iTXt = 'iTXt',
   tIME = 'tIME',
   oFFs = 'oFFs',
+  pCAL = 'pCAL',
   pHYs = 'pHYs',
   sBIT = 'sBIT',
   sCAL = 'sCAL',
@@ -254,6 +255,7 @@ type OptionalParsedChunkTypes = Exclude<KnownChunkTypes, DefaultParsedChunkTypes
 
 export type PngMetadata =
   IPngMetadataBackgroundColor |
+  IPngMetadataCalibrationOfPixelValues |
   IPngMetadataChromaticity |
   IPngMetadataCompressedTextualData |
   IPngMetadataEmbeddedIccProfile |
@@ -298,6 +300,51 @@ export interface IPngMetadataBackgroundColor {
    * - `6` (Truecolor and alpha): A number array made up of each color channel (each 0-255).
    */
   color: number | [number, number, number];
+}
+
+/**
+ * A metadata entry that indicates that the image contains physical data other than color values,
+ * for example a 2D temperature field. The resulting data might be used to construct a reference
+ * color bar beside the image, or to extract the original physical data values from the file. It is
+ * not expected to affect the way the pixels are displayed.
+ */
+export interface IPngMetadataCalibrationOfPixelValues {
+  /**
+   * The type of metadata, this is typically the name of the chunk from which is originates.
+   */
+  type: 'pCAL';
+
+  calibrationName: string;
+
+  unitName: string;
+
+  /**
+   * The type of equation to use in order to extract the mapped data.
+   *
+   * - `linear-mapping`:
+   *   ```
+   *   physical_value = p0 + p1 * original_sample / (x1-x0)
+   *   ```
+   * - `base-e exponential mapping`:
+   *   ```
+   *   p0 + p1 * exp(p2 * original_sample / (x1-x0))
+   *   ```
+   * - `arbitrary-base exponential mapping`:
+   *   ```
+   *   physical_value = p0 + p1 * pow(p2, (original_sample / (x1-x0)))
+   *   ```
+   * - `hyperbolic mapping`:
+   *   ```
+   *   physical_value = p0 + p1 * sinh(p2 * (original_sample - p3) / (x1-x0))
+   *   ```
+   */
+  equationType: 'linear-mapping' | 'base-e exponential mapping' | 'arbitrary-base exponential mapping' | 'hyperbolic mapping';
+
+  x0: number;
+
+  x1: number;
+
+  params: number[];
 }
 
 /**

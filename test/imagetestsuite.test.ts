@@ -27,9 +27,8 @@ describe('Image Test Suite', () => {
       ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', { shouldThrow: 'sCAL: Must precede IDAT', strictMode: true }],
       ['1b9a48cf04466108f6f2d225d100edbf', 'sCAL must precede IDAT', { expectedWarnings: [
         'pHYs: Must precede IDAT',
-        'sCAL: Must precede IDAT'
-      ], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
+        'sCAL: Must precede IDAT',
+        'pCAL: Must precede IDAT'
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
@@ -77,8 +76,6 @@ describe('Image Test Suite', () => {
       ['ed5f2464fcaadd4e0a5e905e3ac41ad5', 'should decode with warnings', { expectedWarnings: [
         'pHYs: Must precede IDAT',
         'sCAL: Must precede IDAT'
-      ], expectedInfo: [
-        'Unrecognized chunk type "pCAL"',
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
@@ -106,9 +103,7 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['1bcc34d49e56a2fba38490db206328b8', 'multiple sCAL not allowed', { shouldThrow: 'sCAL: Multiple sCAL chunks not allowed', strictMode: true }],
-      ['1bcc34d49e56a2fba38490db206328b8', 'should decode with warnings', { expectedWarnings: ['sCAL: Multiple sCAL chunks not allowed'], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
-      ], expectedDimensions: { width: 91, height: 69 } }],
+      ['1bcc34d49e56a2fba38490db206328b8', 'should decode with warnings', { expectedWarnings: ['sCAL: Multiple sCAL chunks not allowed'], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['463d3570f92a6b6ecba0cc4fd9a7a384', 'multiple PLTE not allowed', { shouldThrow: 'PLTE: Multiple PLTE chunks not allowed', strictMode: true }],
@@ -119,15 +114,12 @@ describe('Image Test Suite', () => {
       ['5beaadc10dfdbf61124e98fdf8a5c191', 'should decode with warnings', { expectedWarnings: ['sTER: Multiple sTER chunks not allowed'] }],
     ], imageTestSuiteRoot);
     createTests([
-      ['611b294df9cf794eeaa1ffcc620bf6a4', 'multiple oFFs not allowed', { shouldThrow: 'oFFs: Multiple oFFs chunks not allowed', strictMode: true, expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
-      ] }],
-      ['611b294df9cf794eeaa1ffcc620bf6a4', 'multiple oFFs not allowed', { expectedWarnings: ['oFFs: Multiple oFFs chunks not allowed'], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
-      ], expectedDimensions: { width: 91, height: 69 } }],
+      ['611b294df9cf794eeaa1ffcc620bf6a4', 'multiple oFFs not allowed', { shouldThrow: 'oFFs: Multiple oFFs chunks not allowed', strictMode: true }],
+      ['611b294df9cf794eeaa1ffcc620bf6a4', 'multiple oFFs not allowed', { expectedWarnings: ['oFFs: Multiple oFFs chunks not allowed'], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
-      ['64221ffc9050c92b8980326acc0e4194', 'multiple pCAL not allowed', true], // TODO: Support pCAL?
+      ['64221ffc9050c92b8980326acc0e4194', 'multiple pCAL not allowed', { shouldThrow: 'pCAL: Multiple pCAL chunks not allowed', strictMode: true }],
+      ['64221ffc9050c92b8980326acc0e4194', 'multiple pCAL not allowed', { expectedWarnings: ['pCAL: Multiple pCAL chunks not allowed'], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['9bd8a9ed81c5a9190f74496197da7249', 'multiple tIME not allowed', { shouldThrow: 'tIME: Multiple tIME chunks not allowed', strictMode: true }],
@@ -192,9 +184,7 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['c0a76d267196727887d45de4889bec33', 'invalid oFFs length', { shouldThrow: 'oFFs: Invalid data length: 8 !== 9', strictMode: true }],
-      ['c0a76d267196727887d45de4889bec33', 'should decode with warnings', { expectedWarnings: ['oFFs: Invalid data length: 8 !== 9'], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
-      ], expectedDimensions: { width: 91, height: 69 } }],
+      ['c0a76d267196727887d45de4889bec33', 'should decode with warnings', { expectedWarnings: ['oFFs: Invalid data length: 8 !== 9'], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['d92428f3fc9c806b0a4373b54e06785e', 'invalid tIME length', { shouldThrow: 'tIME: Invalid data length: 9 !== 7', strictMode: true }],
@@ -224,9 +214,7 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['8905ba870cd5d3327a8310fa437aa076', 'invalid character (\'Q\' = 0x51) in sCAL', { shouldThrow: 'sCAL: Invalid character in floating point number ("Q.527777777778e-04")', strictMode: true }],
-      ['8905ba870cd5d3327a8310fa437aa076', 'should decode with warnings', { expectedWarnings: ['sCAL: Invalid character in floating point number ("Q.527777777778e-04")'], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
-      ], expectedDimensions: { width: 91, height: 69 } }],
+      ['8905ba870cd5d3327a8310fa437aa076', 'should decode with warnings', { expectedWarnings: ['sCAL: Invalid character in floating point number ("Q.527777777778e-04")'], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['7ce702ec69b7af26b3218d1278520bce', 'IHDR: Filter method "128" is not valid', { shouldThrow: 'IHDR: Filter method "128" is not valid', strictMode: true }],
@@ -238,9 +226,7 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['d45b0dbbb808df6486f8a13ea44ea174', 'invalid oFFs unit specifier (2)', { shouldThrow: 'oFFs: Invalid oFFs unit type ("2")', strictMode: true }],
-      ['d45b0dbbb808df6486f8a13ea44ea174', 'should decode with warnings', { expectedWarnings: ['oFFs: Invalid oFFs unit type ("2")'], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
-      ], expectedDimensions: { width: 91, height: 69 } }],
+      ['d45b0dbbb808df6486f8a13ea44ea174', 'should decode with warnings', { expectedWarnings: ['oFFs: Invalid oFFs unit type ("2")'], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['f5e7b9db8e8d002a26304f5c81889ee1', 'EOF while reading IHDR data', { shouldThrow: 'EOF while reading chunk "IHDR"' }],
@@ -542,13 +528,12 @@ describe('Image Test Suite', () => {
       ['bd927c8547634cdbdd22af0afe818a9b', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { shouldThrow: 'sCAL: Must precede IDAT', strictMode: true }],
-      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { expectedWarnings: [
+      ['bf203e765c98b12f6c2b2c33577c730d', 'should throw', { shouldThrow: 'pCAL: Must precede IDAT', strictMode: true }],
+      ['bf203e765c98b12f6c2b2c33577c730d', 'should decode with warnings', { expectedWarnings: [
         'oFFs: Must precede IDAT',
+        'pCAL: Must precede IDAT',
         'pHYs: Must precede IDAT',
         'sCAL: Must precede IDAT'
-      ], expectedInfo: [
-        'Unrecognized chunk type "pCAL"'
       ], expectedDimensions: { width: 91, height: 69 } }],
     ], imageTestSuiteRoot);
     createTests([

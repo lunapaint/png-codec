@@ -6,7 +6,6 @@
 
 import { assertChunkDataLengthGte, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
 import { readFloat } from '../float.js';
-import { readText } from '../text.js';
 import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalScaleOfImageSubject, KnownChunkTypes } from '../types.js';
 
 /**
