@@ -6,3 +6,6 @@
 	path = test/pngsuite
 	url = https://github.com/lunapaint/pngsuite
 	branch = main
+[submodule "test/random_pngs"]
+	path = test/random_pngs
+	url = https://github.com/lunapaint/random_pngs
