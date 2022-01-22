@@ -5,6 +5,7 @@
  */
 
 import { assertChunkDataLengthGte, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
+import { readFloat } from '../float.js';
 import { readText } from '../text.js';
 import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalScaleOfImageSubject, KnownChunkTypes } from '../types.js';
 
@@ -37,20 +38,14 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
   }
   offset++;
 
-  let readResult: { bytesRead: number, text: string };
-  readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, true);
+  let readResult: { bytesRead: number, value: number };
+  readResult = readFloat(ctx, chunk, textDecoder, offset, maxOffset, true);
   offset += readResult.bytesRead;
-  if (!isValidFloatingPoint(readResult.text)) {
-    throw createChunkDecodeWarning(chunk, `Invalid character in floating point number ("${readResult.text}")`, offset);
-  }
-  const x = parseFloat(readResult.text);
+  const x = readResult.value;
 
-  readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, false);
+  readResult = readFloat(ctx, chunk, textDecoder, offset, maxOffset, false);
   offset += readResult.bytesRead;
-  if (!isValidFloatingPoint(readResult.text)) {
-    throw createChunkDecodeWarning(chunk, `Invalid character in floating point number ("${readResult.text}")`, offset);
-  }
-  const y = parseFloat(readResult.text);
+  const y = readResult.value;
 
   if (x < 0 || y < 0) {
     throw createChunkDecodeWarning(chunk, `Values cannot be negative (${x}, ${y})`, offset);
@@ -61,12 +56,4 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     pixelsPerUnit: { x, y },
     unitType
   };
-}
-
-function isValidFloatingPoint(text: string) {
-  return (
-    text.match(/^[+-]?[0-9]+\.[0-9]+([eE][+-][0-9]+)?$/) ||
-    text.match(/^[+-]?[0-9]+\.?([eE][+-][0-9]+)?$/) ||
-    text.match(/^[+-]?\.[0-9]+([eE][+-][0-9]+)?$/)
-  );
 }
