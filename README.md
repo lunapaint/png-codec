@@ -51,19 +51,21 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 | [bKGD]  | Background color                       |
 | [cHRM]  | Primary chromaticities and white point |
 | [eXIf]  | Exchangeable image file format         | Approved 2017/7
-| [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image.
+| [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image
 | [hIST]  | Image histogram                        |
+| [iCCP]  | Embedded ICC profile                   | Exposes the profile as a byte array
 | [iTXt]  | International textual data             |
-| [pCAL]  | Calibration of pixel values            | Experimental: limited testing. Extension to the PNG 1.2 Specification v1.2.0.
+| [oFFs]  | Image offset                           | 🧪 Limited testing<br>Extension to the PNG 1.2 Specification v1.2.0
+| [pCAL]  | Calibration of pixel values            | 🧪 Limited testing<br>Extension to the PNG 1.2 Specification v1.2.0
 | [pHYs]  | Physical pixel dimensions              |
-| [sBIT]  | Significant bits                       | Since the decoded buffer uses a minimum of uint8, this is only when the significant bits are in the range of 9-15.
-| [sCAL]  | Physical scale of image subject        | Experimental: limited testing. Extension to the PNG 1.2 Specification v1.2.0.
+| [sBIT]  | Significant bits                       | Since the decoded buffer uses a minimum of uint8, this is only when the significant bits are in the range of 9-15
+| [sCAL]  | Physical scale of image subject        | 🧪 Limited testing<br>Extension to the PNG 1.2 Specification v1.2.0
 | [sPLT]  | Suggested palette                      |
 | [sRGB]  | Standard RGB colour space              |
-| [sTER]  | Indicator of stereo image              |
+| [sTER]  | Indicator of stereo image              | 🧪 Limited testing<br>Extension to the PNG 1.2 Specification v1.3.0
 | [tEXt]  | Textual data                           |
 | [tIME]  | Image last-modification time           |
-| [tRNS]  | Transparency                           | Since this chunk modifies the resulting image, you cannot skip this chunk.
+| [tRNS]  | Transparency                           | Since this chunk modifies the resulting image, you cannot skip this chunk
 | [zTXt]  | Compressed textual data                |
 
 
@@ -101,7 +103,9 @@ The library has the single dependency [pako](https://github.com/nodeca/pako) whi
 [eXIf]: http://ftp-osl.osuosl.org/pub/libpng/documents/proposals/eXIf/png-proposed-eXIf-chunk-2017-06-15.html#C.eXIf
 [gAMA]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11gAMA
 [hIST]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11hIST
+[iCCP]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11iCCP
 [iTXt]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11iTXt
+[oFFs]: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.oFFs
 [pCAL]: http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html#C.pCAL
 [pHYs]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11pHYs
 [sBIT]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11sBIT
