@@ -5,7 +5,7 @@
  */
 
 import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeWarning, handleWarning } from '../assert.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../types.js';
+import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, IInitialDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../types.js';
 
 /**
  * `IHDR` Image Header
@@ -16,7 +16,7 @@ import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, InterlaceMeth
  * dimensions and bit depth, this information is used when looking at later chunks and it's required
  * that this chunk is the first chunk in the datastream.
  */
-export function parseChunk(ctx: IDecodeContext, chunk: IPngChunk): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
+export function parseChunk(ctx: IInitialDecodeContext, chunk: IPngChunk): IPngHeaderDetails { // eslint-disable-line @typescript-eslint/naming-convention
   assertChunkDataLengthEquals(ctx, chunk, 13);
 
   let offset = chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type;

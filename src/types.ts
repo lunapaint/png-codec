@@ -50,14 +50,16 @@ import {
   IImage32,
   IImage64,
   InterlaceMethod,
+  IPngChunk,
   IPngPalette,
   PngMetadata
 } from '../typings/api.js';
 
-export interface IDecodeContext {
+export interface IBaseDecodeContext {
   view: DataView;
   image?: IImage32 | IImage64;
   palette?: IPngPaletteInternal;
+  rawChunks?: IPngChunk[];
   /**
    * A Set of chunks already parsed, this can be used to enforce chunk ordering and preventing
    * multiple when only one is allowed.
@@ -67,6 +69,14 @@ export interface IDecodeContext {
   info: string[];
   warnings: DecodeWarning[];
   options: IDecodePngOptions;
+}
+
+export interface IInitialDecodeContext extends IBaseDecodeContext {
+  header?: IPngHeaderDetails;
+}
+
+export interface IDecodeContext extends IBaseDecodeContext {
+  header: IPngHeaderDetails;
 }
 
 export interface IPngHeaderDetails {

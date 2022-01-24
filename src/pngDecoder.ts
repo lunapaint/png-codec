@@ -10,9 +10,9 @@ import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
 import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from './crc32.js';
-import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata } from './types.js';
+import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata, IInitialDecodeContext } from './types.js';
 
-export function verifyPngSignature(ctx: Pick<IDecodeContext, 'view' | 'warnings'>): void {
+export function verifyPngSignature(ctx: IInitialDecodeContext): void {
   if (ctx.view.byteLength < 7) {
     throw new DecodeError(ctx, `Not enough bytes in file for png signature (${ctx.view.byteLength})`, 0);
   }
@@ -95,7 +95,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (ctx: IDe
 }
 
 export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions = {}): Promise<IDecodedPng<IImage32 | IImage64>> {
-  const ctx: IDecodeContext = {
+  const initialCtx: IInitialDecodeContext = {
     view: new DataView(data.buffer, data.byteOffset, data.byteLength),
     image: undefined,
     palette: undefined,
@@ -107,13 +107,20 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
   };
 
   // Verify file header, throwing if it's invalid
-  verifyPngSignature(ctx);
+  verifyPngSignature(initialCtx);
 
   // Read chunks
-  const chunks = readChunks(ctx);
+  const chunks = readChunks(initialCtx);
+  initialCtx.rawChunks = chunks;
 
   // Parse the header
-  const header = parseChunkIHDR(ctx, chunks[0]);
+  const header = parseChunkIHDR(initialCtx, chunks[0]);
+
+  // Update ctx to include header
+  const ctx: IDecodeContext = {
+    ...initialCtx,
+    header
+  };
 
   // Load supported chunks to read
   let parseChunkTypes: ReadonlyArray<string>;
@@ -193,6 +200,8 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
   return {
     image: ctx.image,
     details: {
+      width: header.width,
+      height: header.height,
       bitDepth: header.bitDepth,
       colorType: header.colorType,
       interlaceMethod: header.interlaceMethod
@@ -205,7 +214,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
   };
 }
 
-export function readChunks(ctx: IDecodeContext): IPngChunk[] {
+export function readChunks(ctx: IInitialDecodeContext): IPngChunk[] {
   const chunks: IPngChunk[] = [];
   // The first chunk always starts at offset 8, after the fixed size header
   let offset = 8;
@@ -234,7 +243,7 @@ export function readChunks(ctx: IDecodeContext): IPngChunk[] {
   return chunks;
 }
 
-export function readChunk(ctx: IDecodeContext, offset: number): IPngChunk {
+export function readChunk(ctx: IInitialDecodeContext, offset: number): IPngChunk {
   if (ctx.view.byteLength < offset + ChunkPartByteLength.Length) {
     throw new DecodeError(ctx, `EOF while reading chunk length`, offset);
   }

@@ -4,9 +4,10 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { deepStrictEqual, strictEqual, throws } from 'assert';
+import { deepStrictEqual, fail, strictEqual, throws } from 'assert';
 import { join } from 'path';
 import { decodePng } from '../out/png.js';
+import { DecodeError } from '../out/assert.js';
 import * as fs from 'fs';
 import { KnownChunkTypes } from '../out/types.js';
 
@@ -70,10 +71,35 @@ describe('decodePng', () => {
       const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `s05n3p02.png`)));
       const result = await decodePng(data);
       deepStrictEqual(result.details, {
+        width: 5,
+        height: 5,
         bitDepth: 2,
         colorType: 3,
         interlaceMethod: 0
       });
+    });
+  });
+
+  describe('errors', () => {
+    it('should throw a DecodeError without details when failing in header', async () => {
+      const data = new Uint8Array([1, 2, 3]);
+      try {
+        await decodePng(data);
+      } catch (e: unknown) {
+        if (!(e instanceof DecodeError)) {
+          fail('error not an instance of DecodeError');
+        }
+        strictEqual(e.message, 'Not enough bytes in file for png signature (3)');
+        strictEqual(e.offset, 0);
+        deepStrictEqual(e.partiallyDecodedImage, {
+          details: undefined,
+          info: [],
+          metadata: [],
+          warnings: []
+        });
+        return;
+      }
+      fail('exception expected');
     });
   });
 });

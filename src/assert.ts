@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, KnownChunkTypes } from './types.js';
+import { ChunkPartByteLength, IDecodeContext, IDecodedPng, IInitialDecodeContext, IPngChunk, IPngDetails, KnownChunkTypes } from './types.js';
 
 /**
  * Assert the given chunk type already exists.
@@ -23,7 +23,7 @@ export function assertChunkSinglular(ctx: IDecodeContext, chunk: IPngChunk) {
  * @param chunk The chunk being checked.
  * @param expected The expected data length of the chunk.
  */
-export function assertChunkDataLengthEquals(ctx: IDecodeContext, chunk: IPngChunk, expected: number) {
+export function assertChunkDataLengthEquals(ctx: IInitialDecodeContext, chunk: IPngChunk, expected: number) {
   if (chunk.dataLength !== expected) {
     const error = createChunkDecodeWarning(chunk, `Invalid data length: ${chunk.dataLength} !== ${expected}`, chunk.offset);
     // Only warn if the data is larger
@@ -89,7 +89,7 @@ export function assertChunkMutualExclusion(ctx: IDecodeContext, chunk: IPngChunk
  * @param compressionMethod The chunk's compression method, only `0` (zlib datastream with deflate
  * compression) is valid.
  */
-export function assertChunkCompressionMethod(ctx: IDecodeContext, chunk: IPngChunk, compressionMethod: number, offset: number) {
+export function assertChunkCompressionMethod(ctx: IInitialDecodeContext, chunk: IPngChunk, compressionMethod: number, offset: number) {
   if (compressionMethod !== 0) {
     handleWarning(ctx, createChunkDecodeWarning(chunk, `Unknown compression method "${compressionMethod}"`, offset));
   }
@@ -100,14 +100,26 @@ export function createChunkDecodeError(ctx: IDecodeContext, chunk: IPngChunk, me
 }
 
 export class DecodeError extends Error {
-  readonly warnings: DecodeWarning[];
+  readonly partiallyDecodedImage: Partial<IDecodedPng<any>>;
   constructor(
-    ctx: Pick<IDecodeContext, 'warnings'>,
+    ctx: IInitialDecodeContext | IDecodeContext,
     message: string,
     readonly offset: number
   ) {
     super(message);
-    this.warnings = ctx.warnings;
+    this.partiallyDecodedImage = {
+      details: ('header' in ctx && ctx.header) ? {
+        width: ctx.header.width,
+        height: ctx.header.height,
+        bitDepth: ctx.header.bitDepth,
+        colorType: ctx.header.colorType,
+        interlaceMethod: ctx.header.interlaceMethod
+      } : undefined,
+      info: ctx.info,
+      metadata: ctx.metadata,
+      // TODO: Add chunks
+      warnings: ctx.warnings
+    };
   }
 }
 
@@ -126,7 +138,7 @@ export class DecodeWarning extends Error {
  * @param ctx The decode context.
  * @param error The error to handle.
  */
-export function handleWarning(ctx: IDecodeContext, error: DecodeWarning) {
+export function handleWarning(ctx: IInitialDecodeContext, error: DecodeWarning) {
   if (ctx.options.strictMode) {
     throw error;
   }

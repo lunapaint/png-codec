@@ -114,6 +114,16 @@ export interface IPngPalette {
  */
 export interface IPngDetails {
   /**
+   * The width of the image.
+   */
+  width: number;
+
+  /**
+   * The height of the image.
+   */
+  height: number;
+
+  /**
    * The bit depth defines how many bits are used per channel. The total bits used for each color
    * type is determined by `channels * bits per channel` as shown in the below table:
    *
@@ -854,9 +864,9 @@ export class DecodeError extends Error {
   offset: number;
 
   /**
-   * A list of decode warnings that have been encountered so far.
+   * The partially decoded image which gives access to deocde warnings, dimensions, etc.
    */
-  warnings: DecodeWarning[];
+  partiallyDecodedImage: Partial<IDecodedPng<any>>;
 }
 
 /**
