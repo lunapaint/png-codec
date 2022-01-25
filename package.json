@@ -8,7 +8,8 @@
     "build": "tsc -b ./tsconfig.all.json",
     "watch": "tsc -b -w ./tsconfig.all.json --preserveWatchOutput",
     "lint": "eslint -c .eslintrc.json --max-warnings 0 --ext .ts src/ test/",
-    "test": "mocha ./out-test/**/*.js"
+    "test": "mocha ./out-test/**/*.js",
+    "coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "eslint": "^8.7.0",
     "esm": "^3.2.25",
     "mocha": "^9.1.3",
+    "nyc": "^15.1.0",
     "pako": "^2.0.4",
     "typescript": "^4.5.4"
   }
