@@ -88,6 +88,8 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (ctx: IDe
     case KnownChunkTypes.tEXt: return import(`./chunks/chunk_tEXt.js`);
     case KnownChunkTypes.tRNS: return import(`./chunks/chunk_tRNS.js`);
     case KnownChunkTypes.zTXt: return import(`./chunks/chunk_zTXt.js`);
+    // This is an exception that should never happen in practice, it's only here for a nice error
+    // message if it does.
     /* istanbul ignore next */
     default:
       // Throw a regular error as this is unexpected
@@ -188,7 +190,9 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
     ctx.parsedChunks.add(chunk.type);
   }
 
-  // Validation
+  // Ensure image exists, this shouldn't happen in practice due to IDAT being validated above. It's
+  // mainly here for TS type narrowing and a nice error message if it does happen.
+  /* istanbul ignore next */
   if (!ctx.image) {
     throw new DecodeError(ctx, 'Failed to decode, no IDAT chunk', 0);
   }
