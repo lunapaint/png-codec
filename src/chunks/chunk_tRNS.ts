@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkPrecedes, createChunkDecodeWarning } from '../assert.js';
+import { assertChunkDataLengthEquals, assertChunkFollows, assertChunkPrecedes, createChunkDecodeWarning } from '../assert.js';
 import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../types.js';
 
 /**
@@ -13,8 +13,6 @@ import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDe
  * Spec: https://www.w3.org/TR/PNG/#11tRNS
  */
 export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk): IPngMetadataTransparency {
-  // TODO: PngSuite has tRNS before PLTE?
-  // assertChunkFollows(chunk, KnownChunkTypes.PLTE, decodedPng);
   assertChunkPrecedes(ctx, chunk, KnownChunkTypes.IDAT);
 
   switch (header.colorType) {
@@ -25,11 +23,9 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
       assertChunkDataLengthEquals(ctx, chunk, 6);
       break;
     case ColorType.Indexed:
-      // TODO: PngSuite has tRNS before PLTE?
-      if (ctx.palette) {
-        if (chunk.dataLength > ctx.palette.size) {
-          throw createChunkDecodeWarning(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${ctx.palette.size}`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
-        }
+      assertChunkFollows(ctx, chunk, KnownChunkTypes.PLTE);
+      if (chunk.dataLength > ctx.palette!.size) {
+        throw createChunkDecodeWarning(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${ctx.palette!.size}`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
       }
       break;
     case ColorType.GrayacaleAndAlpha:
