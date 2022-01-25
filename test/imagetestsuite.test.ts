@@ -595,7 +595,7 @@ describe('Image Test Suite', () => {
       ['edf5c1b0aa5b01eea5017290a286a173', 'should throw', { shouldThrow: 'Could not parse chunk after IEND: EOF while reading chunk length', strictMode: true }],
       ['edf5c1b0aa5b01eea5017290a286a173', 'should decode with warnings', { expectedWarnings: [
         'Could not parse chunk after IEND: EOF while reading chunk length'
-      ], expectedDimensions: { width: 103, height: 125 }, skipDataAssertion: true }],
+      ], expectedDimensions: { width: 103, height: 125 } }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-f23a99688fa66359f6186678e6b2f14a', 'should throw', { shouldThrow: true }],
