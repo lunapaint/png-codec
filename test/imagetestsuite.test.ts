@@ -592,7 +592,10 @@ describe('Image Test Suite', () => {
       ['ea01d6c175bb25dc75757cf8a5793822', 'should throw', { shouldThrow: true }],
     ], imageTestSuiteRoot);
     createTests([
-      ['edf5c1b0aa5b01eea5017290a286a173', 'should throw', { shouldThrow: true }],
+      ['edf5c1b0aa5b01eea5017290a286a173', 'should throw', { shouldThrow: 'Could not parse chunk after IEND: EOF while reading chunk length', strictMode: true }],
+      ['edf5c1b0aa5b01eea5017290a286a173', 'should decode with warnings', { expectedWarnings: [
+        'Could not parse chunk after IEND: EOF while reading chunk length'
+      ], expectedDimensions: { width: 103, height: 125 }, skipDataAssertion: true }],
     ], imageTestSuiteRoot);
     createTests([
       ['c-f23a99688fa66359f6186678e6b2f14a', 'should throw', { shouldThrow: true }],

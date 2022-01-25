@@ -224,8 +224,17 @@ export function readChunks(ctx: IInitialDecodeContext): IPngChunk[] {
   // The first chunk always starts at offset 8, after the fixed size header
   let offset = 8;
   let hasData = false;
+  let hasEnd = false;
+  let chunk!: IPngChunk;
   while (offset < ctx.view.byteLength) {
-    const chunk = readChunk(ctx, offset);
+    try {
+      chunk = readChunk(ctx, offset);
+    } catch (e: unknown) {
+      if (!hasEnd || !(e instanceof Error)) {
+        throw e;
+      }
+      handleWarning(ctx, new DecodeWarning('Could not parse chunk after IEND: ' + e.message, offset));
+    }
     // Chunk layout:
     // 4B: Length (l)
     // 4B: Type
@@ -235,12 +244,13 @@ export function readChunks(ctx: IInitialDecodeContext): IPngChunk[] {
     chunks.push(chunk);
 
     hasData ||= chunk.type === KnownChunkTypes.IDAT;
+    hasEnd ||= chunk.type === KnownChunkTypes.IEND;
   }
   if (chunks[0].type !== KnownChunkTypes.IHDR) {
     throw new DecodeError(ctx, `First chunk is not IHDR`, chunks[0].offset + ChunkPartByteLength.Type);
   }
   if (chunks[chunks.length - 1].type !== KnownChunkTypes.IEND) {
-    handleWarning(ctx, new DecodeError(ctx, 'Last chunk is not IEND', chunks[chunks.length - 1].offset + ChunkPartByteLength.Type));
+    handleWarning(ctx, new DecodeWarning('Last chunk is not IEND', chunks[chunks.length - 1].offset + ChunkPartByteLength.Length));
   }
   if (!hasData) {
     throw new DecodeError(ctx, 'No IDAT chunk', 0);
