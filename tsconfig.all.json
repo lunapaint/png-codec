@@ -2,7 +2,8 @@
   "files": [],
   "include": [],
   "references": [
-    { "path": "./src" },
+    { "path": "./src/tsconfig.dev.json" },
+    { "path": "./src/tsconfig.dist.json" },
     { "path": "./test" }
   ]
 }

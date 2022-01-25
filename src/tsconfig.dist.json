@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.dev.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "removeComments": true,
+    "sourceMap": false,
+    "outDir": "../out-dist"
+  }
+}

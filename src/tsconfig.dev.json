@@ -4,14 +4,14 @@
     "composite": true,
     "strict": true,
     "sourceMap": true,
-    "removeComments": true,
+    "removeComments": false,
     "pretty": true,
     "incremental": true,
     "noImplicitOverride": true,
     "module": "CommonJS",
     "target": "ES2020",
     "rootDir": ".",
-    "outDir": "../out",
+    "outDir": "../out-dev",
     "lib": [
       "DOM",
       "ES2020"

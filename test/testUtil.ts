@@ -6,10 +6,8 @@
 
 import { deepStrictEqual, fail, ok, strictEqual } from 'assert';
 import * as fs from 'fs';
-import { createRequire } from 'module';
 import { join } from 'path';
-import { decodePng } from '../out/png.js';
-import { IPngHeaderDetails } from '../src/types.js';
+import { decodePng } from '../out-dev/png.js';
 import { IPngDetails, PngMetadata } from '../typings/api';
 
 export interface ITestOptions {

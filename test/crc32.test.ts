@@ -1,5 +1,5 @@
 import { deepStrictEqual, strictEqual } from 'assert';
-import { crc32, getCrcTable } from '../out/crc32.js';
+import { crc32, getCrcTable } from '../out-dev/crc32.js';
 
 describe('crc32', () => {
   it('table should be generated correctly', () => {

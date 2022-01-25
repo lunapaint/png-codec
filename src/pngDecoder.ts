@@ -88,6 +88,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (ctx: IDe
     case KnownChunkTypes.tEXt: return import(`./chunks/chunk_tEXt.js`);
     case KnownChunkTypes.tRNS: return import(`./chunks/chunk_tRNS.js`);
     case KnownChunkTypes.zTXt: return import(`./chunks/chunk_zTXt.js`);
+    /* istanbul ignore next */
     default:
       // Throw a regular error as this is unexpected
       throw new Error(`Could not get decoder for chunk type "${type}"`);

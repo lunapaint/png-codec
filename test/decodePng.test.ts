@@ -6,10 +6,10 @@
 
 import { deepStrictEqual, fail, strictEqual, throws } from 'assert';
 import { join } from 'path';
-import { decodePng } from '../out/png.js';
-import { DecodeError } from '../out/assert.js';
+import { decodePng } from '../out-dev/png.js';
+import { DecodeError } from '../out-dev/assert.js';
 import * as fs from 'fs';
-import { KnownChunkTypes } from '../out/types.js';
+import { KnownChunkTypes } from '../out-dev/types.js';
 
 const pngSuiteRoot = 'test/pngsuite/png';
 

@@ -2,7 +2,7 @@
   "name": "@lunapaint/png-codec",
   "version": "0.1.0-beta.1",
   "description": "Decode and encode png files in web or node",
-  "main": "out/png.js",
+  "main": "out-dist/png.js",
   "typings": "typings/api.d.ts",
   "scripts": {
     "build": "tsc -b ./tsconfig.all.json",
