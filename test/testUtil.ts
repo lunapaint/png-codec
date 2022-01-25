@@ -134,7 +134,7 @@ export function createTests(testCases: TestCase[], fixture: string) {
       }
 
       const actual = Array.from(decoded.image.data);
-      const require = createRequire(import.meta.url);
+      // const require = createRequire(import.meta.url);
       let expected: number[];
       try {
         expected = require(`../${fixture}/json/${options.customFile || name}.json`);

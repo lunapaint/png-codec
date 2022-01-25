@@ -3,13 +3,12 @@
   "version": "0.1.0-beta.1",
   "description": "Decode and encode png files in web or node",
   "main": "out/png.js",
-  "type": "module",
   "typings": "typings/api.d.ts",
   "scripts": {
     "build": "tsc -b ./tsconfig.all.json",
     "watch": "tsc -b -w ./tsconfig.all.json --preserveWatchOutput",
     "lint": "eslint -c .eslintrc.json --max-warnings 0 --ext .ts src/ test/",
-    "test": "mocha -r esm ./out-test/**/*.js"
+    "test": "mocha ./out-test/**/*.js"
   },
   "repository": {
     "type": "git",

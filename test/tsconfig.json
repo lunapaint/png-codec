@@ -11,7 +11,7 @@
     "pretty": true,
     "incremental": true,
     "noImplicitOverride": true,
-    "module": "ESNext",
+    "module": "CommonJS",
     "target": "ES2020",
     "rootDir": ".",
     "outDir": "../out-test",
