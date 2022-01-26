@@ -1,0 +1,15 @@
+.github/
+.nyc_output/
+.vscode/
+
+out-dev/
+out-test/
+src/
+test/
+
+.editorconfig
+.eslintrc.json
+.gitmodules
+tsconfig.all.json
+CONTRIBUTING.md
+*.tsbuildinfo
