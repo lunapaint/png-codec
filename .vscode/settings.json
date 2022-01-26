@@ -1,4 +1,7 @@
 {
   "typescript.preferences.importModuleSpecifierEnding": "js",
-  "typescript.preferences.quoteStyle": "single"
+  "typescript.preferences.quoteStyle": "single",
+  "files.exclude": {
+    ".nyc_output": true
+  }
 }
