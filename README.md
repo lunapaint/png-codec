@@ -84,7 +84,7 @@ These are the main reasons:
 
 ## Dependencies
 
-The library has the single dependency [pako](https://github.com/nodeca/pako) which provides the compression/decompression capabilities needed to read various png chunks.
+The library has the single runtime dependency [pako](https://github.com/nodeca/pako) which provides the compression/decompression capabilities needed to read various png chunks.
 
 
 ## References
