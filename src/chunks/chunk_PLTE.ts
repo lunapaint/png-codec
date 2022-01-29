@@ -51,10 +51,6 @@ class PngPalette implements IPngPaletteInternal {
     private _length: number,
     private _bitDepth: number
   ) {
-    // TODO: Slice the palette data off the main buffer so it can be freed since the palette will be returned via API.
-    // for (let i = 0; i < this._length / 3; i++) {
-    //   console.log(`Palette color ${i} = ${this._view.getUint8(this._paletteOffset + i * 3)}, ${this._view.getUint8(this._paletteOffset + i * 3 + 1)}, ${this._view.getUint8(this._paletteOffset + i * 3 + 2)}`);
-    // }
   }
 
   get size(): number { return this._length / 3; }
