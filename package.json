@@ -16,7 +16,10 @@
     "url": "git+https://github.com/lunapaint/png-codec.git"
   },
   "keywords": [
-    "image"
+    "decoder",
+    "graphics",
+    "image",
+    "png"
   ],
   "author": "Daniel Imms (http://www.growingwiththeweb.com)",
   "license": "MIT",
@@ -34,7 +37,9 @@
     "esm": "^3.2.25",
     "mocha": "^9.1.3",
     "nyc": "^15.1.0",
-    "pako": "^2.0.4",
     "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "pako": "^2.0.4"
   }
 }
