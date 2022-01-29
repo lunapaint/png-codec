@@ -42,12 +42,6 @@ export interface ITestOptions {
    * exact here as it the image fidelity was reduced and there's no canonical way of doing this.
    */
   forceBitDepth8?: boolean;
-  /**
-   * Ignore rgb channels when alpha is set to 0.
-   *
-   * TODO: Fix any usages of this allowance when hue information is retained.
-   */
-  ignoreTransparentHue?: boolean;
 }
 
 export type TestCase = [name: string, description: string, skip?: boolean] | [name: string, description: string, options: ITestOptions];
@@ -137,7 +131,7 @@ export function createTests(testCases: TestCase[], fixture: string) {
       } catch {
         expected = require(`../${fixture}/../json/${options.customFile || name}.json`);
       }
-      if (options.forceBitDepth8 || options.ignoreTransparentHue) {
+      if (options.forceBitDepth8) {
         for (let i = 0; i < actual.length; i += 4) {
           assertPixel(actual, expected, i, options);
         }
@@ -149,18 +143,6 @@ export function createTests(testCases: TestCase[], fixture: string) {
 }
 
 export function assertPixel(actual: ArrayLike<number>, expected: ArrayLike<number>, i: number, options: ITestOptions) {
-  if (options.ignoreTransparentHue) {
-    if (expected[i + 3] === 0) {
-      if (actual[i + 3] !== expected[i + 3]) {
-        throw new Error(
-          `Alpha value for pixel ${i / 4} differs (index=${i}).\n\n` +
-          `  actual=${Array.prototype.slice.call(actual, i, i + 4)}\n` +
-          `  expected=${Array.prototype.slice.call(expected, i, i + 4)}`
-        );
-      }
-      return;
-    }
-  }
   for (let c = 0; c < 4; c++) {
     const success = (
       (options.forceBitDepth8 && Math.abs(actual[i] - expected[i]) <= 1) ||
