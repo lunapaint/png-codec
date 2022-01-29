@@ -460,7 +460,6 @@ function mapPackedDataToRgba(ctx: IDecodeContext, header: IPngHeaderDetails, pac
       if (!palette) {
         throw new DecodeError(ctx, 'IDAT: Cannot decode indexed color type without a palette', 0);
       }
-      // TODO: Lower bit depth support
       switch (header.bitDepth) {
         case 1:
         case 2:

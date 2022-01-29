@@ -27,8 +27,6 @@ export interface ITestOptions {
   expectedWarnings?: string[];
   /**
    * Whether to skip the data assertion of the test, this is only meant to be used temporarily.
-   *
-   * TODO: Fix any usages of this allowance.
    */
   skipDataAssertion?: boolean;
   /**
