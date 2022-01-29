@@ -95,6 +95,7 @@ describe('decodePng', () => {
           details: undefined,
           info: [],
           metadata: [],
+          rawChunks: undefined,
           warnings: []
         });
         return;

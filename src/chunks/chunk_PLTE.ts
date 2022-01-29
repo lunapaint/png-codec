@@ -39,7 +39,9 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     handleWarning(ctx, createChunkDecodeWarning(chunk, `Too many entries (${chunk.dataLength / 3} > 256)`, offset));
   }
 
-  // TODO: The number of palette entries shall not exceed the range that can be represented in the image bit depth (for example, 24 = 16 for a bit depth of 4).
+  if (chunk.dataLength / 3 > Math.pow(2, header.bitDepth)) {
+    handleWarning(ctx, createChunkDecodeWarning(chunk, `Too many entries for bit depth (${chunk.dataLength / 3} > 2^${header.bitDepth})`, offset));
+  }
 
   return new PngPalette(ctx.view, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type, chunk.dataLength, header.bitDepth);
 }

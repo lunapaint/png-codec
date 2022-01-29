@@ -173,7 +173,10 @@ describe('Image Test Suite', () => {
     ], imageTestSuiteRoot);
     createTests([
       ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { shouldThrow: 'PLTE: Too many entries (257 > 256)', strictMode: true }],
-      ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { expectedWarnings: ['PLTE: Too many entries (257 > 256)'] }],
+      ['579294d4d8110fc64980dd72a5066780', 'invalid number of PLTE entries (257)', { expectedWarnings: [
+        'PLTE: Too many entries (257 > 256)',
+        'PLTE: Too many entries for bit depth (257 > 2^8)'
+      ] }],
     ], imageTestSuiteRoot);
     createTests([
       ['8711007ea5e351755a80cba913d16a32', 'invalid number of sPLT entries (0.6)', { shouldThrow: 'sPLT: Invalid data length: 6 should be divisible by entry size 10', strictMode: true }],
