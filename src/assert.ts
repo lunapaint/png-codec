@@ -95,7 +95,7 @@ export function assertChunkCompressionMethod(ctx: IInitialDecodeContext, chunk: 
   }
 }
 
-export function createChunkDecodeError(ctx: IDecodeContext, chunk: IPngChunk, message: string, offset: number): DecodeError {
+export function createChunkDecodeError(ctx: IInitialDecodeContext | IDecodeContext, chunk: IPngChunk, message: string, offset: number): DecodeError {
   return new DecodeError(ctx, `${chunk.type}: ${message}`, offset);
 }
 
@@ -117,7 +117,7 @@ export class DecodeError extends Error {
       } : undefined,
       info: ctx.info,
       metadata: ctx.metadata,
-      // TODO: Add chunks
+      rawChunks: ctx.rawChunks,
       warnings: ctx.warnings
     };
   }

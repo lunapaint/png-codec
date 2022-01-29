@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { createChunkDecodeWarning } from './assert.js';
+import { createChunkDecodeWarning, handleWarning } from './assert.js';
 import { readText } from './text.js';
 import { IDecodeContext, IPngChunk } from './types.js';
 
@@ -12,7 +12,7 @@ export function readFloat(ctx: IDecodeContext, chunk: IPngChunk, textDecoder: Te
   const readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, readTrailingNull);
   offset += readResult.bytesRead;
   if (!isValidFloatingPoint(readResult.text)) {
-    throw createChunkDecodeWarning(chunk, `Invalid character in floating point number ("${readResult.text}")`, offset);
+    handleWarning(ctx, createChunkDecodeWarning(chunk, `Invalid character in floating point number ("${readResult.text}")`, offset));
   }
   const value = parseFloat(readResult.text);
   return {

@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeWarning, handleWarning } from '../assert.js';
+import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeError, createChunkDecodeWarning, handleWarning } from '../assert.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, IInitialDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../types.js';
 
 /**
@@ -25,13 +25,13 @@ export function parseChunk(ctx: IInitialDecodeContext, chunk: IPngChunk): IPngHe
 
   const bitDepth = ctx.view.getUint8(offset);
   if (!isValidBitDepth(bitDepth)) {
-    throw createChunkDecodeWarning(chunk, `Bit depth "${bitDepth}" is not valid`, offset);
+    throw createChunkDecodeError(ctx, chunk, `Bit depth "${bitDepth}" is not valid`, offset);
   }
   offset++;
 
   const colorType = ctx.view.getUint8(offset);
   if (!isValidColorType(colorType, bitDepth)) {
-    throw createChunkDecodeWarning(chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`, offset);
+    throw createChunkDecodeError(ctx, chunk, `Color type "${colorType}" is not valid with bit depth "${bitDepth}"`, offset);
   }
   offset++;
 
