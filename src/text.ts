@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright (c) 2022 Daniel Imms <http://www.growingwiththeweb.com>
+ * Released under MIT license. See LICENSE in the project root for details.
+ */
+
 import * as pako from 'pako';
 import { createChunkDecodeWarning } from './assert.js';
 import { IDecodeContext, IPngChunk } from './types';

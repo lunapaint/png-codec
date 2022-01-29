@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright (c) 2022 Daniel Imms <http://www.growingwiththeweb.com>
+ * Released under MIT license. See LICENSE in the project root for details.
+ */
+
 import { deepStrictEqual, strictEqual } from 'assert';
 import { crc32, getCrcTable } from '../out-dev/crc32.js';
 

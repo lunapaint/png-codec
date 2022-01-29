@@ -23,12 +23,15 @@ The supported way of installing the project is through npm:
 npm install @lunapaint/png-codec
 ```
 
-Alternatively you could use it as a submodule in git, or download the source from the releases page on GitHub.
+Alternatively, you could add the repo as a git submodule, or download the source from the GitHub [releases page](https://github.com/lunapaint/png-codec/releases).
 
 
 ## API
 
-The API is documented as a TypeScript declaration file. The API is best viewed on [github.dev](https://github.dev/lunapaint/png-codec/blob/main/typings/api.d.ts) which has symbol support out of the box or can be viewed on [github.com](https://github.com/lunapaint/png-codec/blob/main/typings/api.d.ts).
+The API is documented as a TypeScript `.d.ts` declaration file. The view the API:
+
+- [github.dev](https://github.dev/lunapaint/png-codec/blob/main/typings/api.d.ts): View on the web in VS Code, which has symbol support out of the box. Try showing the Outline view and triggering the `Go to Symbol in Editor` command
+- [github.com](https://github.com/lunapaint/png-codec/blob/main/typings/api.d.ts): View the raw file in github.com.
 
 
 ## Chunk support
@@ -51,7 +54,7 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 | [bKGD]  | Background color                       |
 | [cHRM]  | Primary chromaticities and white point |
 | [eXIf]  | Exchangeable image file format         | Approved 2017/7
-| [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image
+| [gAMA]  | Image gamma                            | Gamma values are provided, but are not applied to the resulting image (see [#11](https://github.com/lunapaint/png-codec/issues/11))
 | [hIST]  | Image histogram                        |
 | [iCCP]  | Embedded ICC profile                   | Exposes the profile as a byte array
 | [iTXt]  | International textual data             |
@@ -73,11 +76,11 @@ PNGs are made up of a fixed signature followed by a series of chunks. The follow
 
 These are the main reasons:
 
-- To deeply understand the format, I learn best by doing.
-- To integrate better with Luna Paint and my other existing and future decoders that depend on png (like ico).
+- To deeply understand the format.
+- To integrate better with Luna Paint and my other existing and future decoders that depend on the png format.
 - The scope is limited, this project will eventually be "done" and need minimal maintenance.
 - I didn't want to go the wasm route in Luna Paint (yet?).
-- To have full control over how the code is loaded, Luna Paint uses dynamic imports extensively to reduce the amount of code loaded to combat slow startup times.
+- To have full control over how the code is loaded, for example Luna Paint uses dynamic imports extensively to reduce the amount of code loaded to combat slow startup times.
 - As an educational resource.
 - To have some fun.
 
@@ -91,6 +94,8 @@ The library has the single runtime dependency [pako](https://github.com/nodeca/p
 
 - https://www.w3.org/TR/2003/REC-PNG-20031110
 - http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
+- http://www.libpng.org/pub/png/spec/register/pngext-1.4.0-pdg.html
+- http://ftp-osl.osuosl.org/pub/libpng/documents/proposals/eXIf/png-proposed-eXIf-chunk-2017-06-15.html
 
 
 [IHDR]: https://www.w3.org/TR/2003/REC-PNG-20031110/#11IHDR

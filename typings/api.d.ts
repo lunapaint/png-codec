@@ -219,6 +219,9 @@ export interface IPngChunk {
   isSafeToCopy: boolean;
 }
 
+/**
+ * The set of all chunk types the library is aware of.
+ */
 export const enum KnownChunkTypes {
   /** Image header                           */ IHDR = 'IHDR',
   /** Palette                                */ PLTE = 'PLTE',
@@ -263,6 +266,9 @@ type DefaultParsedChunkTypes =
  */
 type OptionalParsedChunkTypes = Exclude<KnownChunkTypes, DefaultParsedChunkTypes>;
 
+/**
+ * A metadata entry defining information that was encoded as a chunk in the image.
+ */
 export type PngMetadata =
   IPngMetadataBackgroundColor |
   IPngMetadataCalibrationOfPixelValues |
