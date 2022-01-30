@@ -5,6 +5,7 @@
  */
 
 import { crc32 } from './crc32.js';
+import { ByteStream } from './byteStream.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod } from './types.js';
 
 export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<Uint8Array> {
@@ -31,17 +32,17 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
 }
 
 function writePngSignature(): Uint8Array {
-  const result = new Uint8Array(8);
-  const view = new DataView(result.buffer, result.byteOffset, result.byteLength);
-  view.setUint8(0, 0x89);
-  view.setUint8(1, 0x50);
-  view.setUint8(2, 0x4E);
-  view.setUint8(3, 0x47);
-  view.setUint8(4, 0x0D);
-  view.setUint8(5, 0x0A);
-  view.setUint8(6, 0x1A);
-  view.setUint8(7, 0x0A);
-  return result;
+  const stream = new ByteStream(8);
+  stream.writeUint8(0x89);
+  stream.writeUint8(0x50);
+  stream.writeUint8(0x4E);
+  stream.writeUint8(0x47);
+  stream.writeUint8(0x0D);
+  stream.writeUint8(0x0A);
+  stream.writeUint8(0x1A);
+  stream.writeUint8(0x0A);
+  stream.assertAtEnd();
+  return stream.array;
 }
 
 function writeIHDR(
@@ -50,49 +51,41 @@ function writeIHDR(
   colorType: ColorType,
   interlaceMethod: InterlaceMethod
 ): Uint8Array {
-  const dataLength = 13;
-  const { array, view } = initBuffer(ChunkPartByteLength.Length + ChunkPartByteLength.Length + dataLength + ChunkPartByteLength.CRC);
   if (image.width <= 0 || image.height <= 0) {
     throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
   }
 
-  let offset = 0;
+  const dataLength = 13;
+  const stream = new ByteStream(ChunkPartByteLength.Length + ChunkPartByteLength.Length + dataLength + ChunkPartByteLength.CRC);
 
   // Data length
-  view.setUint32(offset, dataLength);
-  offset += ChunkPartByteLength.Length;
+  stream.writeUint32(dataLength);
 
   // Chunk type
-  writeChunkType(view, offset, 'IHDR');
-  offset += ChunkPartByteLength.Type;
+  writeChunkType(stream, 'IHDR');
 
   // Data
-  view.setUint32(offset, image.width);
-  offset += 4;
-  view.setUint32(offset, image.height);
-  offset += 4;
+  stream.writeUint32(image.width);
+  stream.writeUint32(image.height);
   // Bit depth
-  view.setUint8(offset, 8);
-  offset += 1;
+  stream.writeUint8(bitDepth);
   // Color type
-  view.setUint8(offset, ColorType.Truecolor);
-  offset += 1;
+  stream.writeUint8(colorType);
   // Compression method (only 0 is valid)
-  view.setUint8(offset, 0);
-  offset += 1;
+  stream.writeUint8(0);
   // Filter method (only 0 is valid)
-  view.setUint8(offset, 0);
-  offset += 1;
+  stream.writeUint8(0);
   // Interlace method
-  view.setUint8(offset, 0);
-  offset += 1;
+  stream.writeUint8(interlaceMethod);
 
   // CRC
-  const crc = crc32(view, ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
-  view.setUint32(offset, crc);
-  offset += 4;
+  const crc = crc32(stream.view, ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
+  stream.writeUint32(crc);
 
-  return array;
+  // Validation
+  stream.assertAtEnd();
+
+  return stream.array;
 }
 
 function initBuffer(length: number): { array: Uint8Array, view: DataView } {
@@ -101,9 +94,9 @@ function initBuffer(length: number): { array: Uint8Array, view: DataView } {
   return { array, view };
 }
 
-function writeChunkType(view: DataView, offset: number, type: string) {
-  view.setUint8(offset, type.charCodeAt(0));
-  view.setUint8(offset, type.charCodeAt(1));
-  view.setUint8(offset, type.charCodeAt(2));
-  view.setUint8(offset, type.charCodeAt(3));
+function writeChunkType(stream: ByteStream, type: string) {
+  stream.writeUint8(type.charCodeAt(0));
+  stream.writeUint8(type.charCodeAt(1));
+  stream.writeUint8(type.charCodeAt(2));
+  stream.writeUint8(type.charCodeAt(3));
 }
