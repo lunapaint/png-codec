@@ -17,6 +17,6 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   return (await import('./pngDecoder.js')).decodePng(data, options);
 }
 
-export async function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<void> {
+export async function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<Uint8Array> {
   return (await import('./pngEncoder.js')).encodePng(data, options);
 }
