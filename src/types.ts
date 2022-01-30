@@ -11,6 +11,7 @@ export {
   DefaultParsedChunkTypes,
   IDecodedPng,
   IDecodePngOptions,
+  IEncodePngOptions,
   IImage32,
   IImage64,
   InterlaceMethod,

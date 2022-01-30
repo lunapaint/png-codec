@@ -199,6 +199,9 @@ export interface IDecodePngOptions {
   strictMode?: boolean;
 }
 
+export interface IEncodePngOptions {
+}
+
 /**
  * A raw png chunk extracted from the datastream. A png is made up of a fixed signature and then a
  * series of chunks which encode all the information in the png. The {@link IPngChunk.type} of the
