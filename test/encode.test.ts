@@ -8,7 +8,7 @@ import { fail, strictEqual, throws } from 'assert';
 import { encodePng } from '../out-dev/pngEncoder.js';
 
 describe.only('encode', () => {
-  it('should write the fixed 8-byte header', async () => {
+  it('should write the fixed 8-byte signature', async () => {
     const result = await encodePng({
       data: new Uint8Array([255, 0, 0, 255]),
       width: 1,
@@ -22,6 +22,21 @@ describe.only('encode', () => {
     strictEqual(result[5], 0x0A);
     strictEqual(result[6], 0x1A);
     strictEqual(result[7], 0x0A);
+  });
+  describe('IHDR', () => {
+    it('should write chunk as expected', async () => {
+      const view = new DataView((await encodePng({
+        data: new Uint8Array([255, 0, 0, 255]),
+        width: 1,
+        height: 1
+      })).buffer);
+      // IHDR always starts at offset 8, immediately after the signature
+      strictEqual(view.getUint32(8), 13);
+      strictEqual(view.getUint8(12), 73, 'I in IHDR type doesn\'t match');
+      strictEqual(view.getUint8(13), 72, 'H in IHDR type doesn\'t match');
+      strictEqual(view.getUint8(14), 68, 'D in IHDR type doesn\'t match');
+      strictEqual(view.getUint8(15), 82, 'R in IHDR type doesn\'t match');
+    });
   });
   it('should throw when dimensions are 0x0', async () => {
     try {
