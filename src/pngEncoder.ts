@@ -5,6 +5,7 @@
  */
 
 import { ByteStream } from './byteStream.js';
+import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
 import { ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod } from './types.js';
 
@@ -17,6 +18,7 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   // TODO: Support configuring color type
   // TODO: Support configuring interlace method
   sections.push(encodeIHDR(image, 8, ColorType.Truecolor, InterlaceMethod.None));
+  sections.push(encodeIEND());
   console.log('sections', sections);
 
   // Merge sections into a single typed array

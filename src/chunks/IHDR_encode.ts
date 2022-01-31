@@ -9,6 +9,10 @@ import { ByteStream } from '../byteStream.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod } from '../types.js';
 import { writeChunkType } from '../write.js';
 
+const enum Constants {
+  DataLength = 13
+}
+
 export function encodeChunk(
   image: Readonly<IImage32> | Readonly<IImage64>,
   bitDepth: BitDepth,
@@ -19,11 +23,10 @@ export function encodeChunk(
     throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
   }
 
-  const dataLength = 13;
-  const stream = new ByteStream(ChunkPartByteLength.Length + ChunkPartByteLength.Length + dataLength + ChunkPartByteLength.CRC);
+  const stream = new ByteStream(ChunkPartByteLength.Length + ChunkPartByteLength.Length + Constants.DataLength + ChunkPartByteLength.CRC);
 
   // Data length
-  stream.writeUint32(dataLength);
+  stream.writeUint32(Constants.DataLength);
 
   // Chunk type
   writeChunkType(stream, 'IHDR');
@@ -43,8 +46,7 @@ export function encodeChunk(
   stream.writeUint8(interlaceMethod);
 
   // CRC
-  const crc = crc32(stream.view, ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
-  stream.writeUint32(crc);
+  stream.writeUint32(crc32(stream.view, ChunkPartByteLength.Length, ChunkPartByteLength.Type + Constants.DataLength));
 
   // Validation
   stream.assertAtEnd();
