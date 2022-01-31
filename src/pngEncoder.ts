@@ -18,6 +18,7 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   // TODO: Support configuring color type
   // TODO: Support configuring interlace method
   sections.push(encodeIHDR(image, 8, ColorType.Truecolor, InterlaceMethod.None));
+  sections.push(encodeIDAT(image, 8, ColorType.Truecolor, InterlaceMethod.None));
   sections.push(encodeIEND());
   console.log('sections', sections);
 
