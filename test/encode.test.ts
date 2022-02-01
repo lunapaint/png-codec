@@ -17,7 +17,7 @@ const white = [0xFF, 0xFF, 0xFF, 0xFF];
 describe.only('encode', () => {
   it('should write the fixed 8-byte signature', async () => {
     const result = await encodePng({
-      data: new Uint8Array([255, 0, 0, 255]),
+      data: new Uint8Array(red),
       width: 1,
       height: 1
     });
@@ -33,7 +33,7 @@ describe.only('encode', () => {
   describe('IHDR', () => {
     it('should write chunk as expected', async () => {
       const view = new DataView((await encodePng({
-        data: new Uint8Array([255, 0, 0, 255]),
+        data: new Uint8Array(red),
         width: 1,
         height: 1
       })).buffer);
