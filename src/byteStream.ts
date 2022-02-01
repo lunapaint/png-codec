@@ -25,6 +25,11 @@ export class ByteStream {
     this.offset += 4;
   }
 
+  writeArray(values: Uint8Array) {
+    this.array.set(values, this.array.byteOffset + this.offset);
+    this.offset += values.length;
+  }
+
   assertAtEnd() {
     if (this.offset !== this.array.length) {
       throw new Error('Writing finished before expected length of stream');
