@@ -97,3 +97,7 @@ export const enum ChunkPartByteLength {
 export interface IPngPaletteInternal extends IPngPalette {
   setRgba(data: Uint8Array, offset: number, colorIndex: number): void;
 }
+
+export const enum FilterMethod {
+  Adaptive = 0
+}

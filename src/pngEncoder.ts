@@ -5,6 +5,7 @@
  */
 
 import { ByteStream } from './byteStream.js';
+import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
 import { ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod } from './types.js';
