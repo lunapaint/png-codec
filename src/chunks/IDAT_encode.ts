@@ -39,8 +39,8 @@ function calculateDataLength(
   if (bitDepth !== 8) {
     throw new Error('Only bit depth 8 is supported currently');
   }
-  if (colorType !== ColorType.Truecolor && colorType !== ColorType.TruecolorAndAlpha) {
-    throw new Error('Only color type truecolor and truecolor and alpha is supported currently');
+  if (colorType === ColorType.Indexed) {
+    throw new Error('Indexed color type isn\'t supported yet');
   }
   if (interlaceMethod !== InterlaceMethod.None) {
     throw new Error('Only interlace method 0 is supported currently');
@@ -48,10 +48,12 @@ function calculateDataLength(
 
   let channels: number;
   switch (colorType) {
-    case ColorType.Truecolor: channels = 3; break;
+    case ColorType.Grayscale:         channels = 1; break;
+    case ColorType.Truecolor:         channels = 3; break;
+    // case ColorType.Indexed:           channels = 1; break;
+    case ColorType.GrayacaleAndAlpha: channels = 2; break;
     case ColorType.TruecolorAndAlpha: channels = 4; break;
   }
-  // const channels = 3;
   const bytesPerPixel = channels * 1;
   const bytesPerLine = /*Filter type*/1 + bytesPerPixel * image.width;
 
@@ -71,6 +73,20 @@ function writeUncompressedData(
   let x = 0;
   let i = 0;
   switch (colorType) {
+    case ColorType.Grayscale: {
+      for (; y < image.height; y++) {
+        // Filter type
+        stream.writeUint8(0);
+
+        // Data
+        for (x = 0; x < image.width; x++) {
+          // Only use the red channel for grayscale
+          stream.writeUint8(image.data[i++]);
+          i += 3;
+        }
+      }
+      break;
+    }
     case ColorType.Truecolor: {
       for (; y < image.height; y++) {
         // Filter type
@@ -82,6 +98,21 @@ function writeUncompressedData(
           stream.writeUint8(image.data[i++]);
           stream.writeUint8(image.data[i++]);
           i++;
+        }
+      }
+      break;
+    }
+    case ColorType.GrayacaleAndAlpha: {
+      for (; y < image.height; y++) {
+        // Filter type
+        stream.writeUint8(0);
+
+        // Data
+        for (x = 0; x < image.width; x++) {
+          // Only use the red channel for grayscale
+          stream.writeUint8(image.data[i++]);
+          i += 2;
+          stream.writeUint8(image.data[i++]);
         }
       }
       break;

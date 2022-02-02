@@ -14,6 +14,7 @@ const red   = [0xFF, 0x00, 0x00, 0xFF];
 const green = [0x00, 0xFF, 0x00, 0xFF];
 const blue  = [0x00, 0x00, 0xFF, 0xFF];
 const white = [0xFF, 0xFF, 0xFF, 0xFF];
+const black = [0x00, 0x00, 0x00, 0xFF];
 
 describe.only('encode', () => {
   it('should write the fixed 8-byte signature', async () => {
@@ -67,12 +68,17 @@ describe.only('encode', () => {
       ColorType.TruecolorAndAlpha
     ]) {
       // TODO: Support all color types
-      (colorType !== ColorType.Truecolor && colorType !== ColorType.TruecolorAndAlpha ? describe.skip : describe)(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
+      (colorType === ColorType.Indexed ? describe.skip : describe)(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
         it('should be able to decode images encoded with the library', async () => {
           const original = new Uint8Array([
             ...red,  ...green,
             ...blue, ...white
           ]);
+          // Explicitly using a grayscale color type means only the red channel is considered
+          const expected = colorType === ColorType.Grayscale || colorType === ColorType.GrayacaleAndAlpha ? new Uint8Array([
+            ...white, ...black,
+            ...black, ...white
+          ]) : original;
           const data = await encodePng({
             data: original,
             width: 2,
@@ -82,7 +88,7 @@ describe.only('encode', () => {
           });
           const decoded = await decodePng(data, { strictMode: true });
           strictEqual(decoded.details.colorType, colorType);
-          dataArraysEqual(decoded.image.data, original);
+          dataArraysEqual(decoded.image.data, expected);
         });
       });
     }

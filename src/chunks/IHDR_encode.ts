@@ -23,6 +23,7 @@ export function encodeChunk(
     throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
   }
   return writeChunkDataFn('IHDR', Constants.DataLength, stream => {
+    // Dimensions
     stream.writeUint32(image.width);
     stream.writeUint32(image.height);
     // Bit depth

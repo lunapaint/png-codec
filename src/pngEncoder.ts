@@ -26,7 +26,7 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   sections.push(encodeIHDR(image, 8, options?.colorType, InterlaceMethod.None));
   sections.push(encodeIDAT(image, 8, options?.colorType, InterlaceMethod.None));
   sections.push(encodeIEND());
-  console.log('sections', sections);
+  // console.log('sections', sections);
 
   // Merge sections into a single typed array
   const totalLength = sections.reduce((p, c) => p + c.length, 0);
@@ -36,7 +36,7 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
     result.set(s, offset);
     offset += s.length;
   }
-  console.log('result', result);
+  // console.log('result', result);
 
   return result;
 }
