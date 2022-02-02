@@ -59,9 +59,16 @@ describe.only('encode', () => {
     fail('exception expected');
   });
   describe('integration', () => {
-    for (const colorType of [ColorType.Truecolor, ColorType.TruecolorAndAlpha]) {
-      describe(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
-        it('should be able to decode a simple image encoded with the library', async () => {
+    for (const colorType of [
+      ColorType.Grayscale,
+      ColorType.Truecolor,
+      ColorType.Indexed,
+      ColorType.GrayacaleAndAlpha,
+      ColorType.TruecolorAndAlpha
+    ]) {
+      // TODO: Support all color types
+      (colorType !== ColorType.Truecolor && colorType !== ColorType.TruecolorAndAlpha ? describe.skip : describe)(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
+        it('should be able to decode images encoded with the library', async () => {
           const original = new Uint8Array([
             ...red,  ...green,
             ...blue, ...white

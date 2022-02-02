@@ -7,7 +7,7 @@
 import { ByteStream } from '../byteStream.js';
 import { crc32 } from '../crc32.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IImage32, IImage64, InterlaceMethod } from '../types.js';
-import { writeChunkType } from '../write.js';
+import { writeChunk, writeChunkType } from '../write.js';
 import * as pako from 'pako';
 
 export function encodeChunk(
@@ -21,35 +21,12 @@ export function encodeChunk(
   const dataStream = new ByteStream(dataStreamLength);
   writeUncompressedData(dataStream, image, bitDepth, colorType, interlaceMethod);
 
-  // TODO: Compress the data
+  // Compress the data
   const compressed = pako.deflate(dataStream.array);
-  console.log('uncompressed', dataStream.array, 'compressed', compressed);
-
+  // console.log('uncompressed', dataStream.array, 'compressed', compressed);
 
   // Construct the final chunk
-  const dataLength = compressed.length;
-  const streamLength = ChunkPartByteLength.Length + ChunkPartByteLength.Length + dataLength + ChunkPartByteLength.CRC;
-
-  const stream = new ByteStream(streamLength);
-
-  // TODO: Refactor generalized creating chunks into write.ts
-
-  // Data length
-  stream.writeUint32(dataLength);
-
-  // Chunk type
-  writeChunkType(stream, 'IDAT');
-
-  // Data
-  stream.writeArray(compressed);
-
-  // CRC
-  stream.writeUint32(crc32(stream.view, ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength));
-
-  // Validation
-  stream.assertAtEnd();
-
-  return stream.array;
+  return writeChunk('IDAT', compressed);
 }
 
 function calculateDataLength(
