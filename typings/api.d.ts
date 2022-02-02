@@ -201,10 +201,17 @@ export interface IDecodePngOptions {
 
 export interface IEncodePngOptions {
   /**
+   * The bit depth to encode with. When unspecified, the library will scan the image and determine
+   * the best value based on the content, it's best to pass this in if know to avoid the scan
+   * iterating over every pixel in the image.
+   */
+  bitDepth?: BitDepth;
+
+  /**
    * What color type to encode with. When unspecified, the library will scan the image and determine
-   * the best based on the content, it's best to pass this in if know to avoid the scan iterating
-   * over every pixel in the image. When grayscale is used, only the red channel will be considered
-   * when encoding as the image is expected to be a valid grayscale image.
+   * the best value based on the content, it's best to pass this in if know to avoid the scan
+   * iterating over every pixel in the image. When grayscale is used, only the red channel will be
+   * considered when encoding as the image is expected to be a valid grayscale image.
    */
   colorType?: ColorType;
 }

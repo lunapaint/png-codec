@@ -36,8 +36,11 @@ function calculateDataLength(
   interlaceMethod: InterlaceMethod
 ): number {
   // Temporary assertions to throw for unsupported config
-  if (bitDepth !== 8) {
-    throw new Error('Only bit depth 8 is supported currently');
+  if (bitDepth < 8) {
+    throw new Error('Only bit depth 8 and 16 is supported currently');
+  }
+  if (image.data.BYTES_PER_ELEMENT === 2 && bitDepth === 8) {
+    throw new Error('16 to 8 bit conversion isn\'t supported yet');
   }
   if (colorType === ColorType.Indexed) {
     throw new Error('Indexed color type isn\'t supported yet');
@@ -54,7 +57,8 @@ function calculateDataLength(
     case ColorType.GrayacaleAndAlpha: channels = 2; break;
     case ColorType.TruecolorAndAlpha: channels = 4; break;
   }
-  const bytesPerPixel = channels * 1;
+  const bytesPerChannel = bitDepth === 16 ? 2 : 1;
+  const bytesPerPixel = channels * bytesPerChannel;
   const bytesPerLine = /*Filter type*/1 + bytesPerPixel * image.width;
 
   const bytesAllLines = bytesPerLine * image.height;
@@ -81,8 +85,13 @@ function writeUncompressedData(
         // Data
         for (x = 0; x < image.width; x++) {
           // Only use the red channel for grayscale
-          stream.writeUint8(image.data[i++]);
-          i += 3;
+          if (bitDepth === 16) {
+            stream.writeUint16(image.data[i++]);
+            i += 3;
+          } else {
+            stream.writeUint8(image.data[i++]);
+            i += 3;
+          }
         }
       }
       break;
@@ -94,10 +103,17 @@ function writeUncompressedData(
 
         // Data
         for (x = 0; x < image.width; x++) {
-          stream.writeUint8(image.data[i++]);
-          stream.writeUint8(image.data[i++]);
-          stream.writeUint8(image.data[i++]);
-          i++;
+          if (bitDepth === 16) {
+            stream.writeUint16(image.data[i++]);
+            stream.writeUint16(image.data[i++]);
+            stream.writeUint16(image.data[i++]);
+            i++;
+          } else {
+            stream.writeUint8(image.data[i++]);
+            stream.writeUint8(image.data[i++]);
+            stream.writeUint8(image.data[i++]);
+            i++;
+          }
         }
       }
       break;
@@ -110,9 +126,15 @@ function writeUncompressedData(
         // Data
         for (x = 0; x < image.width; x++) {
           // Only use the red channel for grayscale
-          stream.writeUint8(image.data[i++]);
-          i += 2;
-          stream.writeUint8(image.data[i++]);
+          if (bitDepth === 16) {
+            stream.writeUint16(image.data[i++]);
+            i += 2;
+            stream.writeUint16(image.data[i++]);
+          } else {
+            stream.writeUint8(image.data[i++]);
+            i += 2;
+            stream.writeUint8(image.data[i++]);
+          }
         }
       }
       break;
@@ -124,10 +146,17 @@ function writeUncompressedData(
 
         // Data
         for (x = 0; x < image.width; x++) {
-          stream.writeUint8(image.data[i++]);
-          stream.writeUint8(image.data[i++]);
-          stream.writeUint8(image.data[i++]);
-          stream.writeUint8(image.data[i++]);
+          if (bitDepth === 16) {
+            stream.writeUint16(image.data[i++]);
+            stream.writeUint16(image.data[i++]);
+            stream.writeUint16(image.data[i++]);
+            stream.writeUint16(image.data[i++]);
+          } else {
+            stream.writeUint8(image.data[i++]);
+            stream.writeUint8(image.data[i++]);
+            stream.writeUint8(image.data[i++]);
+            stream.writeUint8(image.data[i++]);
+          }
         }
       }
       break;

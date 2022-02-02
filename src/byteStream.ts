@@ -20,6 +20,11 @@ export class ByteStream {
     this.offset += 1;
   }
 
+  writeUint16(value: number) {
+    this.view.setUint16(this.offset, value);
+    this.offset += 2;
+  }
+
   writeUint32(value: number) {
     this.view.setUint32(this.offset, value);
     this.offset += 4;

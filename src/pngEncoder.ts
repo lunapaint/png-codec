@@ -19,12 +19,14 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   if (options.colorType === undefined) {
     options.colorType = ColorType.Truecolor;
   }
+  if (options.bitDepth === undefined) {
+    options.bitDepth = 8;
+  }
 
   // TODO: Support configuring bit depth
-  // TODO: Support configuring color type
   // TODO: Support configuring interlace method
-  sections.push(encodeIHDR(image, 8, options?.colorType, InterlaceMethod.None));
-  sections.push(encodeIDAT(image, 8, options?.colorType, InterlaceMethod.None));
+  sections.push(encodeIHDR(image, options.bitDepth, options.colorType, InterlaceMethod.None));
+  sections.push(encodeIDAT(image, options.bitDepth, options.colorType, InterlaceMethod.None));
   sections.push(encodeIEND());
   // console.log('sections', sections);
 
