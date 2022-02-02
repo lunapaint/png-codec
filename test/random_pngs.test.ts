@@ -5,7 +5,7 @@
  */
 
 import * as fs from 'fs';
-import { createTests } from './testUtil.js';
+import { colorTypeIdToName, createTests } from './testUtil.js';
 
 const suiteRoot = 'test/random_pngs';
 
@@ -19,16 +19,6 @@ function getNumberAtIndex(file: string, index: number): number {
   }
   const regex = new RegExp(text);
   return parseInt(file.match(regex)![1]);
-}
-
-function colorTypeIdToName(id: 0 | 2 | 3 | 4 | 6): string {
-  switch (id) {
-    case 0: return 'greyscale';
-    case 2: return 'truecolor';
-    case 3: return 'indexed';
-    case 4: return 'greyscale and alpha';
-    case 6: return 'truecolor and alpha';
-  }
 }
 
 // The random_pngs repo is a collection of generated lodepng encoded pngs for fuzzing purposed. The
@@ -48,7 +38,7 @@ describe('random_pngs', () => {
     }
   }
   for (const colorType of colorTypes) {
-    describe(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
+    describe(`color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
       const colorTypeCases = testsByColorType.get(colorType)!;
       for (const file of colorTypeCases) {
         // Note that some properties were optimized away when encoded with lodepng

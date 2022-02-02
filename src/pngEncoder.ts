@@ -10,16 +10,21 @@ import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
 import { ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod } from './types.js';
 
-export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<Uint8Array> {
+export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): Promise<Uint8Array> {
   // Create all file sections
   const sections: Uint8Array[] = [];
   sections.push(writePngSignature());
 
+  // TODO: Scan image and detect best color type to use
+  if (options.colorType === undefined) {
+    options.colorType = ColorType.Truecolor;
+  }
+
   // TODO: Support configuring bit depth
   // TODO: Support configuring color type
   // TODO: Support configuring interlace method
-  sections.push(encodeIHDR(image, 8, ColorType.Truecolor, InterlaceMethod.None));
-  sections.push(encodeIDAT(image, 8, ColorType.Truecolor, InterlaceMethod.None));
+  sections.push(encodeIHDR(image, 8, options?.colorType, InterlaceMethod.None));
+  sections.push(encodeIDAT(image, 8, options?.colorType, InterlaceMethod.None));
   sections.push(encodeIEND());
   console.log('sections', sections);
 

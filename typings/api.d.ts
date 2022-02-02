@@ -200,6 +200,11 @@ export interface IDecodePngOptions {
 }
 
 export interface IEncodePngOptions {
+  /**
+   * What color type to encode with. When not used the library will scan the image and determine
+   * the best based on the content.
+   */
+  colorType?: ColorType;
 }
 
 /**

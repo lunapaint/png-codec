@@ -7,11 +7,12 @@
 import { fail, strictEqual } from 'assert';
 import { decodePng } from '../out-dev/pngDecoder.js';
 import { encodePng } from '../out-dev/pngEncoder.js';
-import { dataArraysEqual } from './testUtil.js';
+import { ColorType } from '../typings/api.js';
+import { colorTypeIdToName, dataArraysEqual } from './testUtil.js';
 
-const red = [0xFF, 0x00, 0x00, 0xFF];
+const red   = [0xFF, 0x00, 0x00, 0xFF];
 const green = [0x00, 0xFF, 0x00, 0xFF];
-const blue = [0x00, 0x00, 0xFF, 0xFF];
+const blue  = [0x00, 0x00, 0xFF, 0xFF];
 const white = [0xFF, 0xFF, 0xFF, 0xFF];
 
 describe.only('encode', () => {
@@ -58,18 +59,25 @@ describe.only('encode', () => {
     fail('exception expected');
   });
   describe('integration', () => {
-    it('should be able to decode a simple image encoded with the library', async () => {
-      const original = new Uint8Array([
-        ...red,  ...green,
-        ...blue, ...white
-      ]);
-      const data = await encodePng({
-        data: original,
-        width: 2,
-        height: 2
+    for (const colorType of [ColorType.Truecolor, ColorType.TruecolorAndAlpha]) {
+      describe(`Color type ${colorTypeIdToName(colorType)} (${colorType})`, () => {
+        it('should be able to decode a simple image encoded with the library', async () => {
+          const original = new Uint8Array([
+            ...red,  ...green,
+            ...blue, ...white
+          ]);
+          const data = await encodePng({
+            data: original,
+            width: 2,
+            height: 2
+          }, {
+            colorType
+          });
+          const decoded = await decodePng(data, { strictMode: true });
+          strictEqual(decoded.details.colorType, colorType);
+          dataArraysEqual(decoded.image.data, original);
+        });
       });
-      const decoded = await decodePng(data, { strictMode: true });
-      dataArraysEqual(decoded.image.data, original);
-    });
+    }
   });
 });

@@ -62,14 +62,19 @@ function calculateDataLength(
   if (bitDepth !== 8) {
     throw new Error('Only bit depth 8 is supported currently');
   }
-  if (colorType !== ColorType.Truecolor) {
-    throw new Error('Only color type truecolor is supported currently');
+  if (colorType !== ColorType.Truecolor && colorType !== ColorType.TruecolorAndAlpha) {
+    throw new Error('Only color type truecolor and truecolor and alpha is supported currently');
   }
   if (interlaceMethod !== InterlaceMethod.None) {
     throw new Error('Only interlace method 0 is supported currently');
   }
 
-  const channels = 3;
+  let channels: number;
+  switch (colorType) {
+    case ColorType.Truecolor: channels = 3; break;
+    case ColorType.TruecolorAndAlpha: channels = 4; break;
+  }
+  // const channels = 3;
   const bytesPerPixel = channels * 1;
   const bytesPerLine = /*Filter type*/1 + bytesPerPixel * image.width;
 
@@ -88,17 +93,38 @@ function writeUncompressedData(
   let y = 0;
   let x = 0;
   let i = 0;
-  for (; y < image.height; y++) {
-    // Filter type
-    stream.writeUint8(0);
+  switch (colorType) {
+    case ColorType.Truecolor: {
+      for (; y < image.height; y++) {
+        // Filter type
+        stream.writeUint8(0);
 
-    // Data
-    for (x = 0; x < image.width; x++) {
-      // TODO: Make a simple increment
-      i = (y * image.width + x) * 4;
-      stream.writeUint8(image.data[i    ]);
-      stream.writeUint8(image.data[i + 1]);
-      stream.writeUint8(image.data[i + 2]);
+        // Data
+        for (x = 0; x < image.width; x++) {
+          stream.writeUint8(image.data[i++]);
+          stream.writeUint8(image.data[i++]);
+          stream.writeUint8(image.data[i++]);
+          i++;
+        }
+      }
+      break;
     }
+    case ColorType.TruecolorAndAlpha: {
+      for (; y < image.height; y++) {
+        // Filter type
+        stream.writeUint8(0);
+
+        // Data
+        for (x = 0; x < image.width; x++) {
+          stream.writeUint8(image.data[i++]);
+          stream.writeUint8(image.data[i++]);
+          stream.writeUint8(image.data[i++]);
+          stream.writeUint8(image.data[i++]);
+        }
+      }
+      break;
+    }
+    default:
+      throw new Error(`Color type "${colorType}" not supported yet`);
   }
 }
