@@ -52,7 +52,7 @@ function calculateDataLength(
     case ColorType.Grayscale:         channels = 1; break;
     case ColorType.Truecolor:         channels = 3; break;
     case ColorType.Indexed:           channels = 1; break;
-    case ColorType.GrayacaleAndAlpha: channels = 2; break;
+    case ColorType.GrayscaleAndAlpha: channels = 2; break;
     case ColorType.TruecolorAndAlpha: channels = 4; break;
   }
   const bytesPerChannel = bitDepth === 16 ? 2 : 1;
@@ -146,7 +146,7 @@ function writeUncompressedData(
       }
       break;
     }
-    case ColorType.GrayacaleAndAlpha: {
+    case ColorType.GrayscaleAndAlpha: {
       for (; y < image.height; y++) {
         // Filter type
         stream.writeUint8(0);

@@ -21,7 +21,7 @@ export function isValidColorType(colorType: number, bitDepth: number): colorType
     (colorType === ColorType.Grayscale         && bitDepth >= 1 && bitDepth <= 16) ||
     (colorType === ColorType.Truecolor         && bitDepth >= 8 && bitDepth <= 16) ||
     (colorType === ColorType.Indexed           && bitDepth >= 1 && bitDepth <=  8) ||
-    (colorType === ColorType.GrayacaleAndAlpha && bitDepth >= 8 && bitDepth <= 16) ||
+    (colorType === ColorType.GrayscaleAndAlpha && bitDepth >= 8 && bitDepth <= 16) ||
     (colorType === ColorType.TruecolorAndAlpha && bitDepth >= 8 && bitDepth <= 16)
   );
 }
