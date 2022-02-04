@@ -284,7 +284,7 @@ function getChannelCount(colorType: ColorType): number {
     case ColorType.Grayscale: return 1;
     case ColorType.Truecolor: return 3;
     case ColorType.Indexed: return 1;
-    case ColorType.GrayacaleAndAlpha: return 2;
+    case ColorType.GrayscaleAndAlpha: return 2;
     case ColorType.TruecolorAndAlpha: return 4;
   }
 }
@@ -434,7 +434,7 @@ function mapPackedDataToRgba(ctx: IDecodeContext, header: IPngHeaderDetails, pac
       break;
     }
 
-    case ColorType.GrayacaleAndAlpha: {
+    case ColorType.GrayscaleAndAlpha: {
       // Note this color type is not valid with bit depth < 8
       for (let y = 0; y < header.height; y++) {
         for (let x = 0; x < header.width; x++) {

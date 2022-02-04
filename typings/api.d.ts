@@ -162,7 +162,7 @@ export const enum ColorType {
   Grayscale = 0,
   Truecolor = 2,
   Indexed = 3,
-  GrayacaleAndAlpha = 4,
+  GrayscaleAndAlpha = 4,
   TruecolorAndAlpha = 6,
 }
 

@@ -21,7 +21,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
 
   let offset = chunk.offset + ChunkPartByteLength.Length;
   // This chunk shall appear for colour type 3, and may appear for colour types 2 and 6; it shall not appear for colour types 0 and 4.
-  if (header.colorType === ColorType.Grayscale || header.colorType === ColorType.GrayacaleAndAlpha) {
+  if (header.colorType === ColorType.Grayscale || header.colorType === ColorType.GrayscaleAndAlpha) {
     throw createChunkDecodeWarning(chunk, `Color type "${header.colorType}" cannot have a palette`, offset);
   }
 

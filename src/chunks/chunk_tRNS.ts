@@ -28,7 +28,7 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
         throw createChunkDecodeWarning(chunk, `Invalid data length for color type ${header.colorType}: ${chunk.dataLength} > ${ctx.palette!.size}`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
       }
       break;
-    case ColorType.GrayacaleAndAlpha:
+    case ColorType.GrayscaleAndAlpha:
     case ColorType.TruecolorAndAlpha:
       throw createChunkDecodeWarning(chunk, `Chunk invalid when color type has alpha (${header.colorType})`, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type);
   }
