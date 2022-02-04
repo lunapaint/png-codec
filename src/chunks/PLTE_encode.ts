@@ -22,9 +22,9 @@ export function encodeChunk(
   if (image.width <= 0 || image.height <= 0) {
     throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
   }
-  // TODO: Support 16 bit
+  // TODO: Support 16 bit -> 8 bit convertion
   if (bitDepth === 16 || image.data.BYTES_PER_ELEMENT === 2) {
-    throw new Error('16 bit images not yet supported');
+    throw new Error('Cannot encode 16 bit images using indexed color type');
   }
 
   // Create and fill in a Set with colors in the form 0xRRGGBB
@@ -39,8 +39,9 @@ export function encodeChunk(
     colorSet.add(color);
   }
 
-  if (colorSet.size > 256) {
-    throw new Error('Too many colors to encode into indexed image (256)');
+  // Validate palette size
+  if (colorSet.size > Math.pow(2, bitDepth)) {
+    throw new Error(`Too many colors ${colorSet.size} to encode into indexed image (2^${bitDepth} = ${Math.pow(2, bitDepth)})`);
   }
 
   // Fill in array

@@ -75,8 +75,10 @@ describe.only('encode', () => {
         ColorType.GrayacaleAndAlpha,
         ColorType.TruecolorAndAlpha
       ]) {
-        // TODO: Support all color types
-        // (colorType === ColorType.Indexed ? describe.skip : describe)
+        // TODO: Support indexed 16->8 bit conversion?
+        if (colorType === ColorType.Indexed && bitDepth === 16) {
+          continue;
+        }
         describe(`${colorTypeIdToName(colorType)} (${colorType}), bit depth ${bitDepth}`, () => {
           it('should be able to decode images encoded with the library', async () => {
             const original = bitDepth <= 8 ? new Uint8Array([
