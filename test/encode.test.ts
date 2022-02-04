@@ -76,7 +76,8 @@ describe.only('encode', () => {
         ColorType.TruecolorAndAlpha
       ]) {
         // TODO: Support all color types
-        (colorType === ColorType.Indexed ? describe.skip : describe)(`${colorTypeIdToName(colorType)} (${colorType}), bit depth ${bitDepth}`, () => {
+        // (colorType === ColorType.Indexed ? describe.skip : describe)
+        describe(`${colorTypeIdToName(colorType)} (${colorType}), bit depth ${bitDepth}`, () => {
           it('should be able to decode images encoded with the library', async () => {
             const original = bitDepth <= 8 ? new Uint8Array([
               ...red,  ...green,
