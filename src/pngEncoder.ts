@@ -8,33 +8,32 @@ import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
-import { BitDepth, ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from './types.js';
+import { BitDepth, ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal, KnownChunkTypes } from './types.js';
 
 
 const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
-  KnownChunkTypes.PLTE
 ]);
 
 /**
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
  * possible chunk decoders when code splitting is not supported.
  */
-function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
-  image: Readonly<IImage32> | Readonly<IImage64>,
-  bitDepth: BitDepth,
-  colorType: ColorType,
-  interlaceMethod: InterlaceMethod
-) => Uint8Array; }> {
-  switch (type) {
-    case KnownChunkTypes.PLTE: return import(`./chunks/PLTE_encode.js`);
-    // This is an exception that should never happen in practice, it's only here for a nice error
-    // message if it does.
-    /* istanbul ignore next */
-    default:
-      // Throw a regular error as this is unexpected
-      throw new Error(`Could not get encoder for chunk type "${type}"`);
-  }
-}
+// function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
+//   image: Readonly<IImage32> | Readonly<IImage64>,
+//   bitDepth: BitDepth,
+//   colorType: ColorType,
+//   interlaceMethod: InterlaceMethod
+// ) => Uint8Array; }> {
+//   switch (type) {
+//     case KnownChunkTypes.PLTE: return import(`./chunks/PLTE_encode.js`);
+//     // This is an exception that should never happen in practice, it's only here for a nice error
+//     // message if it does.
+//     /* istanbul ignore next */
+//     default:
+//       // Throw a regular error as this is unexpected
+//       throw new Error(`Could not get encoder for chunk type "${type}"`);
+//   }
+// }
 
 export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): Promise<Uint8Array> {
   // Create all file sections
@@ -49,13 +48,17 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
     options.bitDepth = 8;
   }
 
+  let palette: Map<number, number> | undefined;
+
   // TODO: Support configuring bit depth
   // TODO: Support configuring interlace method
   sections.push(encodeIHDR(image, options.bitDepth, options.colorType, InterlaceMethod.None));
   if (options.colorType === ColorType.Indexed) {
-    sections.push((await getChunkDecoder(KnownChunkTypes.PLTE)).encodeChunk(image, options.bitDepth, options.colorType, InterlaceMethod.None));
+    const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(image, options.bitDepth, options.colorType, InterlaceMethod.None);
+    palette = result.palette;
+    sections.push(result.chunkData);
   }
-  sections.push(encodeIDAT(image, options.bitDepth, options.colorType, InterlaceMethod.None));
+  sections.push(encodeIDAT(image, options.bitDepth, options.colorType, InterlaceMethod.None, palette));
   sections.push(encodeIEND());
   // console.log('sections', sections);
 
