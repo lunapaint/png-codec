@@ -16,7 +16,7 @@ async function encode(file) {
   console.log('Encoding: ' + file);
   const originalData = await fs.readFile(file);
   const decoded = await decoder.decodePng(originalData);
-  const encoded = await encoder.encodePng(decoded.image, { colorType: 6 });
+  const encoded = await encoder.encodePng(decoded.image);
   fs.writeFile(join(dirname(file), `${basename(file, '.png')}_png-codec.png`), encoded);
 }
 
