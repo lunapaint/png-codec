@@ -8,8 +8,8 @@ import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
+import { getChannelsForColorType } from './colorTypes.js';
 import { BitDepth, ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal, KnownChunkTypes } from './types.js';
-
 
 const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
 ]);
@@ -42,22 +42,11 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
 
   // TODO: Don't analyze info we don't need
   const ctx = analyze(image, options);
-  console.log('ctx', ctx);
-
-  // TODO: Scan image and detect best color type to use
-  if (options.colorType === undefined) {
-    options.colorType = ColorType.Truecolor;
-  }
-  if (options.bitDepth === undefined) {
-    options.bitDepth = 8;
-  }
-
-  let palette: Map<number, number> | undefined;
 
   // TODO: Support configuring bit depth
   // TODO: Support configuring interlace method
   sections.push(encodeIHDR(ctx, image));
-  if (options.colorType === ColorType.Indexed) {
+  if (ctx.colorType === ColorType.Indexed) {
     const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
     ctx.palette = result.palette;
     sections.push(result.chunkData);
@@ -105,13 +94,13 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
   for (let i = 0; i < indexCount; i += 4) {
     rgbId = (
       image.data[i    ] << 24 |
-      image.data[i    ] << 16 |
-      image.data[i    ] <<  8
+      image.data[i + 1] << 16 |
+      image.data[i + 2] <<  8
     );
-    if (image.data[i    ] < 255) {
+    if (image.data[i + 3] < 255) {
       rgbaId = (
         rgbId |
-        image.data[i    ]
+        image.data[i + 3]
       );
       transparentColorSet.add(rgbaId);
     }
@@ -137,8 +126,8 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
       const channelsForColorType = getChannelsForColorType(colorType);
       // Upgrading to include alpha would add 1 byte for every pixel vs re-stating every color that
       // contains transparency
-      useTransparencyChunk = pixelCount > transparentColorSet.size * channelsForColorType;
-      if (!useTransparencyChunk) {
+      useTransparencyChunk = transparentColorSet.size === 1;
+      if (!useTransparencyChunk && transparentColorSet.size > 1) {
         colorType = colorType === ColorType.Truecolor ? ColorType.TruecolorAndAlpha : ColorType.GrayscaleAndAlpha;
       }
       break;
@@ -157,14 +146,4 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
     transparentColorCount: transparentColorSet.size,
     useTransparencyChunk,
   };
-}
-
-function getChannelsForColorType(colorType: ColorType): number {
-  switch (colorType) {
-    case ColorType.Grayscale:         return 1;
-    case ColorType.Truecolor:         return 3;
-    case ColorType.Indexed:           return 1;
-    case ColorType.GrayscaleAndAlpha: return 2;
-    case ColorType.TruecolorAndAlpha: return 4;
-  }
 }

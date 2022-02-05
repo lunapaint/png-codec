@@ -15,6 +15,9 @@ export function writeChunkType(stream: ByteStream, type: string) {
   stream.writeUint8(type.charCodeAt(3));
 }
 
+/**
+ * Encode a chunk where the data is an existing typed array.
+ */
 export function writeChunk(type: string, data: Uint8Array): Uint8Array {
   const stream = new ByteStream(ChunkPartByteLength.Length + ChunkPartByteLength.Length + data.length + ChunkPartByteLength.CRC);
   // 4 bytes: Data length
@@ -33,6 +36,10 @@ export function writeChunk(type: string, data: Uint8Array): Uint8Array {
   return stream.array;
 }
 
+/**
+ * Encode a chunk where the data length is known ahead of this. This is the faster method for
+ * encoding as only a single buffer needs to be created.
+ */
 export function writeChunkDataFn(type: string, dataLength: number, writeDataFn: (stream: ByteStream) => void): Uint8Array {
   const stream = new ByteStream(ChunkPartByteLength.Length + ChunkPartByteLength.Length + dataLength + ChunkPartByteLength.CRC);
   // 4 bytes: Data length

@@ -23,8 +23,10 @@ export function encodeChunk(
   const compressed = pako.deflate(stream.array);
   // console.log('uncompressed', dataStream.array, 'compressed', compressed);
 
-  // Construct the final chunk
-  return writeChunk('IDAT', compressed);
+  // Construct the final IDAT chunk
+  const chunkIDAT = writeChunk('IDAT', compressed);
+
+  return chunkIDAT;
 }
 
 function calculateDataLength(
