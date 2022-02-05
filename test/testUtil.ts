@@ -190,7 +190,7 @@ export function colorTypeIdToName(id: ColorType): string {
     case ColorType.Grayscale: return 'greyscale';
     case ColorType.Truecolor: return 'truecolor';
     case ColorType.Indexed: return 'indexed';
-    case ColorType.GrayacaleAndAlpha: return 'greyscale and alpha';
+    case ColorType.GrayscaleAndAlpha: return 'greyscale and alpha';
     case ColorType.TruecolorAndAlpha: return 'truecolor and alpha';
   }
 }

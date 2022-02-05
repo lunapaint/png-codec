@@ -72,7 +72,7 @@ describe.only('encode', () => {
         ColorType.Grayscale,
         ColorType.Truecolor,
         ColorType.Indexed,
-        ColorType.GrayacaleAndAlpha,
+        ColorType.GrayscaleAndAlpha,
         ColorType.TruecolorAndAlpha
       ]) {
         // TODO: Support indexed 16->8 bit conversion?
@@ -89,7 +89,7 @@ describe.only('encode', () => {
               ...blue16, ...white16
             ]);
             // Explicitly using a grayscale color type means only the red channel is considered
-            const expected = colorType === ColorType.Grayscale || colorType === ColorType.GrayacaleAndAlpha ? (
+            const expected = colorType === ColorType.Grayscale || colorType === ColorType.GrayscaleAndAlpha ? (
               bitDepth <= 8
                 ? new Uint8Array([
                   ...white, ...black,
