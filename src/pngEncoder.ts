@@ -40,6 +40,10 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   const sections: Uint8Array[] = [];
   sections.push(writePngSignature());
 
+  // TODO: Don't analyze info we don't need
+  const ctx = analyze(image, options);
+  console.log('ctx', ctx);
+
   // TODO: Scan image and detect best color type to use
   if (options.colorType === undefined) {
     options.colorType = ColorType.Truecolor;
@@ -87,4 +91,88 @@ function writePngSignature(): Uint8Array {
   stream.writeUint8(0x0A);
   stream.assertAtEnd();
   return stream.array;
+}
+
+interface IEncodeContext {
+  colorType: ColorType;
+  bitDepth: BitDepth;
+  interlaceMethod: InterlaceMethod;
+  transparentColorCount: number;
+  useTransparencyChunk: boolean;
+}
+
+function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): IEncodeContext {
+  const pixelCount = image.width * image.height;
+  const indexCount = pixelCount * 4;
+  const colorSet = new Set<number>();
+  const transparentColorSet = new Set<number>();
+
+  // Get the number of rgb colors and the number of transparent colors in the image
+  let rgbId = 0;
+  let rgbaId = 0;
+  for (let i = 0; i < indexCount; i += 4) {
+    rgbId = (
+      image.data[i    ] << 24 |
+      image.data[i    ] << 16 |
+      image.data[i    ] <<  8
+    );
+    if (image.data[i    ] < 255) {
+      rgbaId = (
+        rgbId |
+        image.data[i    ]
+      );
+      transparentColorSet.add(rgbaId);
+    }
+    colorSet.add(rgbId);
+  }
+
+  // Determine truecolor or indexed depending on the color count
+  let colorType = options?.colorType;
+  if (colorType === undefined) {
+    if (colorSet.size > 256) {
+      colorType = ColorType.Truecolor;
+    } else {
+      colorType = ColorType.Indexed;
+    }
+  }
+
+  // Determine whether to use the tRNS chunk or upgrade to the "AndAlpha" color type variant if
+  // needed
+  let useTransparencyChunk: boolean;
+  switch (colorType) {
+    case ColorType.Grayscale:
+    case ColorType.Truecolor:
+      const channelsForColorType = getChannelsForColorType(colorType);
+      // Upgrading to include alpha would add 1 byte for every pixel vs re-stating every color that
+      // contains transparency
+      useTransparencyChunk = pixelCount > transparentColorSet.size * channelsForColorType;
+      if (!useTransparencyChunk) {
+        colorType = colorType === ColorType.Truecolor ? ColorType.TruecolorAndAlpha : ColorType.GrayscaleAndAlpha;
+      }
+      break;
+    case ColorType.Indexed:
+      useTransparencyChunk = transparentColorSet.size > 0;
+      break;
+    default:
+      useTransparencyChunk = false;
+  }
+
+
+  return {
+    colorType,
+    bitDepth: image.data.BYTES_PER_ELEMENT === 2 ? 16 : 8,
+    interlaceMethod: InterlaceMethod.None,
+    transparentColorCount: transparentColorSet.size,
+    useTransparencyChunk,
+  };
+}
+
+function getChannelsForColorType(colorType: ColorType): number {
+  switch (colorType) {
+    case ColorType.Grayscale:         return 1;
+    case ColorType.Truecolor:         return 3;
+    case ColorType.Indexed:           return 1;
+    case ColorType.GrayscaleAndAlpha: return 2;
+    case ColorType.TruecolorAndAlpha: return 4;
+  }
 }

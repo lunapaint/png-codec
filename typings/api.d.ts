@@ -199,6 +199,15 @@ export interface IDecodePngOptions {
   strictMode?: boolean;
 }
 
+/**
+ * An optional set of options to encode an image with. The options override the specified property
+ * when encoding, except for the case where it's not possible to encode the image with that option
+ * at which point it will be overridden.
+ *
+ * @example Using the Truecolor color type that contains transparency will use either truecolor with
+ * a tRNS chunk or truecolor and alpha depending on which is smaller.
+ * @example Using the TruecolorAndAlpha color type will always use it.
+ */
 export interface IEncodePngOptions {
   /**
    * The bit depth to encode with. When unspecified, the library will scan the image and determine
@@ -208,10 +217,14 @@ export interface IEncodePngOptions {
   bitDepth?: BitDepth;
 
   /**
-   * What color type to encode with. When unspecified, the library will scan the image and determine
-   * the best value based on the content, it's best to pass this in if know to avoid the scan
-   * iterating over every pixel in the image. When grayscale is used, only the red channel will be
-   * considered when encoding as the image is expected to be a valid grayscale image.
+   * What color type to encode with. Remarks:
+   *
+   * - When unspecified, the library will decide what color type to use.
+   * - When grayscale is used, only the red channel will be considered when encoding as the image is
+   * expected to be a valid grayscale image.
+   * - When grayscale or truecolor are used and transparent colors exist, the resulting image will
+   * be "upgraded" to {@link ColorType.GrayscaleAndAlpha}/{@link ColorType.TruecolorAndAlpha}, or
+   * the `tRNS` chunk will be used, depending on which consumes less bytes.
    */
   colorType?: ColorType;
 }
