@@ -123,9 +123,6 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
   switch (colorType) {
     case ColorType.Grayscale:
     case ColorType.Truecolor:
-      const channelsForColorType = getChannelsForColorType(colorType);
-      // Upgrading to include alpha would add 1 byte for every pixel vs re-stating every color that
-      // contains transparency
       useTransparencyChunk = transparentColorSet.size === 1;
       if (!useTransparencyChunk && transparentColorSet.size > 1) {
         colorType = colorType === ColorType.Truecolor ? ColorType.TruecolorAndAlpha : ColorType.GrayscaleAndAlpha;
