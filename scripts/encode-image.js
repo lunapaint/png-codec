@@ -11,7 +11,6 @@ const { dirname, basename, extname, join } = require('path');
 
 async function encode(file) {
   if (extname(file) !== '.png') {
-    console.log('1', extname(file));
     throw new Error('File must end with .png');
   }
   console.log('Encoding: ' + file);
