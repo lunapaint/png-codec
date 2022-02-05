@@ -6,7 +6,7 @@
 
 import { crc32 } from '../crc32.js';
 import { ByteStream } from '../byteStream.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal } from '../types.js';
+import { BitDepth, ChunkPartByteLength, ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal } from '../types.js';
 import { writeChunkDataFn, writeChunkType } from '../write.js';
 
 const enum Constants {
@@ -14,19 +14,18 @@ const enum Constants {
 }
 
 export function encodeChunk(
-  image: Readonly<IImage32> | Readonly<IImage64>,
-  bitDepth: BitDepth,
-  colorType: ColorType,
-  interlaceMethod: InterlaceMethod
+  ctx: IEncodeContext,
+  image: Readonly<IImage32> | Readonly<IImage64>
 ): { chunkData: Uint8Array, palette: Map<number, number> } {
   if (image.width <= 0 || image.height <= 0) {
     throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
   }
   // TODO: Support 16 bit -> 8 bit convertion
-  if (bitDepth === 16 || image.data.BYTES_PER_ELEMENT === 2) {
+  if (ctx.bitDepth === 16 || image.data.BYTES_PER_ELEMENT === 2) {
     throw new Error('Cannot encode 16 bit images using indexed color type');
   }
 
+  // TODO: Add color set on the context
   // Create and fill in a Set with colors in the form 0xRRGGBB
   const colorSet = new Set<number>();
   const channelCount = image.width * image.height * 4;
@@ -40,8 +39,8 @@ export function encodeChunk(
   }
 
   // Validate palette size
-  if (colorSet.size > Math.pow(2, bitDepth)) {
-    throw new Error(`Too many colors ${colorSet.size} to encode into indexed image (2^${bitDepth} = ${Math.pow(2, bitDepth)})`);
+  if (colorSet.size > Math.pow(2, ctx.bitDepth)) {
+    throw new Error(`Too many colors ${colorSet.size} to encode into indexed image (2^${ctx.bitDepth} = ${Math.pow(2, ctx.bitDepth)})`);
   }
 
   // Fill in array

@@ -6,24 +6,22 @@
 
 import { ByteStream } from '../byteStream.js';
 import { crc32 } from '../crc32.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal } from '../types.js';
+import { BitDepth, ChunkPartByteLength, ColorType, IEncodeContext, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal } from '../types.js';
 import { writeChunk, writeChunkType } from '../write.js';
 import * as pako from 'pako';
 
 export function encodeChunk(
+  ctx: IEncodeContext,
   image: Readonly<IImage32> | Readonly<IImage64>,
-  bitDepth: BitDepth,
-  colorType: ColorType,
-  interlaceMethod: InterlaceMethod,
   palette: Map<number, number> | undefined
 ): Uint8Array {
   // First generate the uncompressed data
-  const dataStreamLength = calculateDataLength(image, bitDepth, colorType, interlaceMethod);
-  const dataStream = new ByteStream(dataStreamLength);
-  writeUncompressedData(dataStream, image, bitDepth, colorType, interlaceMethod, palette);
+  const dataStreamLength = calculateDataLength(ctx, image);
+  const stream = new ByteStream(dataStreamLength);
+  writeUncompressedData(ctx, image, palette, stream);
 
   // Compress the data
-  const compressed = pako.deflate(dataStream.array);
+  const compressed = pako.deflate(stream.array);
   // console.log('uncompressed', dataStream.array, 'compressed', compressed);
 
   // Construct the final chunk
@@ -31,31 +29,29 @@ export function encodeChunk(
 }
 
 function calculateDataLength(
-  image: Readonly<IImage32> | Readonly<IImage64>,
-  bitDepth: BitDepth,
-  colorType: ColorType,
-  interlaceMethod: InterlaceMethod
+  ctx: IEncodeContext,
+  image: Readonly<IImage32> | Readonly<IImage64>
 ): number {
   // Temporary assertions to throw for unsupported config
-  if (bitDepth < 8) {
+  if (ctx.bitDepth < 8) {
     throw new Error('Only bit depth 8 and 16 is supported currently');
   }
-  if (image.data.BYTES_PER_ELEMENT === 2 && bitDepth === 8) {
+  if (image.data.BYTES_PER_ELEMENT === 2 && ctx.bitDepth === 8) {
     throw new Error('16 to 8 bit conversion isn\'t supported yet');
   }
-  if (interlaceMethod !== InterlaceMethod.None) {
+  if (ctx.interlaceMethod !== InterlaceMethod.None) {
     throw new Error('Only interlace method 0 is supported currently');
   }
 
   let channels: number;
-  switch (colorType) {
+  switch (ctx.colorType) {
     case ColorType.Grayscale:         channels = 1; break;
     case ColorType.Truecolor:         channels = 3; break;
     case ColorType.Indexed:           channels = 1; break;
     case ColorType.GrayscaleAndAlpha: channels = 2; break;
     case ColorType.TruecolorAndAlpha: channels = 4; break;
   }
-  const bytesPerChannel = bitDepth === 16 ? 2 : 1;
+  const bytesPerChannel = ctx.bitDepth === 16 ? 2 : 1;
   const bytesPerPixel = channels * bytesPerChannel;
   const bytesPerLine = /*Filter type*/1 + bytesPerPixel * image.width;
 
@@ -65,17 +61,15 @@ function calculateDataLength(
 }
 
 function writeUncompressedData(
-  stream: ByteStream,
+  ctx: IEncodeContext,
   image: Readonly<IImage32> | Readonly<IImage64>,
-  bitDepth: BitDepth,
-  colorType: ColorType,
-  interlaceMethod: InterlaceMethod,
-  palette: Map<number, number> | undefined
+  palette: Map<number, number> | undefined,
+  stream: ByteStream
 ) {
   let y = 0;
   let x = 0;
   let i = 0;
-  switch (colorType) {
+  switch (ctx.colorType) {
     case ColorType.Grayscale: {
       for (; y < image.height; y++) {
         // Filter type
@@ -84,7 +78,7 @@ function writeUncompressedData(
         // Data
         for (x = 0; x < image.width; x++) {
           // Only use the red channel for grayscale
-          if (bitDepth === 16) {
+          if (ctx.bitDepth === 16) {
             stream.writeUint16(image.data[i++]);
             i += 3;
           } else {
@@ -102,7 +96,7 @@ function writeUncompressedData(
 
         // Data
         for (x = 0; x < image.width; x++) {
-          if (bitDepth === 16) {
+          if (ctx.bitDepth === 16) {
             stream.writeUint16(image.data[i++]);
             stream.writeUint16(image.data[i++]);
             stream.writeUint16(image.data[i++]);
@@ -154,7 +148,7 @@ function writeUncompressedData(
         // Data
         for (x = 0; x < image.width; x++) {
           // Only use the red channel for grayscale
-          if (bitDepth === 16) {
+          if (ctx.bitDepth === 16) {
             stream.writeUint16(image.data[i++]);
             i += 2;
             stream.writeUint16(image.data[i++]);
@@ -174,7 +168,7 @@ function writeUncompressedData(
 
         // Data
         for (x = 0; x < image.width; x++) {
-          if (bitDepth === 16) {
+          if (ctx.bitDepth === 16) {
             stream.writeUint16(image.data[i++]);
             stream.writeUint16(image.data[i++]);
             stream.writeUint16(image.data[i++]);
@@ -190,6 +184,6 @@ function writeUncompressedData(
       break;
     }
     default:
-      throw new Error(`Color type "${colorType}" not supported yet`);
+      throw new Error(`Color type "${ctx.colorType}" not supported yet`);
   }
 }

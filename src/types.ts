@@ -80,6 +80,14 @@ export interface IDecodeContext extends IBaseDecodeContext {
   header: IPngHeaderDetails;
 }
 
+export interface IEncodeContext {
+  colorType: ColorType;
+  bitDepth: BitDepth;
+  interlaceMethod: InterlaceMethod;
+  transparentColorCount: number;
+  useTransparencyChunk: boolean;
+}
+
 export interface IPngHeaderDetails {
   width: number;
   height: number;

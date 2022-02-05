@@ -8,7 +8,7 @@ import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
-import { BitDepth, ColorType, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal, KnownChunkTypes } from './types.js';
+import { BitDepth, ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal, KnownChunkTypes } from './types.js';
 
 
 const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
@@ -56,13 +56,13 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
 
   // TODO: Support configuring bit depth
   // TODO: Support configuring interlace method
-  sections.push(encodeIHDR(image, options.bitDepth, options.colorType, InterlaceMethod.None));
+  sections.push(encodeIHDR(ctx, image));
   if (options.colorType === ColorType.Indexed) {
-    const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(image, options.bitDepth, options.colorType, InterlaceMethod.None);
+    const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
     palette = result.palette;
     sections.push(result.chunkData);
   }
-  sections.push(encodeIDAT(image, options.bitDepth, options.colorType, InterlaceMethod.None, palette));
+  sections.push(encodeIDAT(ctx, image, palette));
   sections.push(encodeIEND());
   // console.log('sections', sections);
 
@@ -91,14 +91,6 @@ function writePngSignature(): Uint8Array {
   stream.writeUint8(0x0A);
   stream.assertAtEnd();
   return stream.array;
-}
-
-interface IEncodeContext {
-  colorType: ColorType;
-  bitDepth: BitDepth;
-  interlaceMethod: InterlaceMethod;
-  transparentColorCount: number;
-  useTransparencyChunk: boolean;
 }
 
 function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): IEncodeContext {
