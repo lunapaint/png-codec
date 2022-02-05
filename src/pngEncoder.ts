@@ -59,10 +59,10 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   sections.push(encodeIHDR(ctx, image));
   if (options.colorType === ColorType.Indexed) {
     const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
-    palette = result.palette;
+    ctx.palette = result.palette;
     sections.push(result.chunkData);
   }
-  sections.push(encodeIDAT(ctx, image, palette));
+  sections.push(encodeIDAT(ctx, image));
   sections.push(encodeIEND());
   // console.log('sections', sections);
 

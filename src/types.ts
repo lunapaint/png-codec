@@ -84,6 +84,7 @@ export interface IEncodeContext {
   colorType: ColorType;
   bitDepth: BitDepth;
   interlaceMethod: InterlaceMethod;
+  palette?: Map<number, number>;
   transparentColorCount: number;
   useTransparencyChunk: boolean;
 }

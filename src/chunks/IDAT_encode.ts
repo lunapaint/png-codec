@@ -12,13 +12,12 @@ import * as pako from 'pako';
 
 export function encodeChunk(
   ctx: IEncodeContext,
-  image: Readonly<IImage32> | Readonly<IImage64>,
-  palette: Map<number, number> | undefined
+  image: Readonly<IImage32> | Readonly<IImage64>
 ): Uint8Array {
   // First generate the uncompressed data
   const dataStreamLength = calculateDataLength(ctx, image);
   const stream = new ByteStream(dataStreamLength);
-  writeUncompressedData(ctx, image, palette, stream);
+  writeUncompressedData(ctx, image, stream);
 
   // Compress the data
   const compressed = pako.deflate(stream.array);
@@ -63,7 +62,6 @@ function calculateDataLength(
 function writeUncompressedData(
   ctx: IEncodeContext,
   image: Readonly<IImage32> | Readonly<IImage64>,
-  palette: Map<number, number> | undefined,
   stream: ByteStream
 ) {
   let y = 0;
@@ -112,7 +110,7 @@ function writeUncompressedData(
       break;
     }
     case ColorType.Indexed: {
-      if (!palette) {
+      if (!ctx.palette) {
         throw new Error('Cannot encode indexed file without palette');
       }
       for (; y < image.height; y++) {
@@ -128,7 +126,7 @@ function writeUncompressedData(
           //   i++;
           // } else {
             stream.writeUint8(
-              palette.get(
+              ctx.palette.get(
                 image.data[i    ] << 16 |
                 image.data[i + 1] <<  8 |
                 image.data[i + 2]
