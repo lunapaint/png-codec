@@ -22,6 +22,14 @@ export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions
 export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>>;
 
 /**
+ * Encodes a png file.
+ *
+ * @param data The image data in rgba format.
+ * @param options Options to configure how encoding happens.
+ */
+export function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<Uint8Array>;
+
+/**
  * A png that has been successfully decoded.
  */
 export interface IDecodedPng<T extends IImage32 | IImage64> {

@@ -133,7 +133,6 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
       useTransparencyChunk = false;
   }
 
-
   return {
     colorType,
     bitDepth: image.data.BYTES_PER_ELEMENT === 2 ? 16 : 8,
