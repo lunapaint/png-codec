@@ -110,3 +110,41 @@ export interface IPngPaletteInternal extends IPngPalette {
 export const enum FilterMethod {
   Adaptive = 0
 }
+
+export const enum FilterType {
+  /**
+   * ```
+   * Filt(x) = Orig(x)
+   * Recon(x) = Filt(x)
+   * ```
+   */
+  None = 0,
+  /**
+   * ```
+   * Filt(x) = Orig(x) - Orig(a)
+   * Recon(x) = Filt(x) + Recon(a)
+   * ```
+   */
+  Sub = 1,
+  /**
+   * ```
+   * Filt(x) = Orig(x) - Orig(b)
+   * Recon(x) = Filt(x) + Recon(b)
+   * ```
+   */
+  Up = 2,
+  /**
+   * ```
+   * Filt(x) = Orig(x) - floor((Orig(a) + Orig(b)) / 2)
+   * Recon(x) = Filt(x) + floor((Recon(a) + Recon(b)) / 2)
+   * ```
+   */
+  Average = 3,
+  /**
+   * ```
+   * Filt(x) = Orig(x) - PaethPredictor(Orig(a), Orig(b), Orig(c))
+   * Recon(x) = Filt(x) + PaethPredictor(Recon(a), Recon(b), Recon(c))
+   * ```
+   */
+  Paeth = 4
+}
