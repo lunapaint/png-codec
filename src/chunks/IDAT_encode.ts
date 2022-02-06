@@ -95,7 +95,7 @@ function writeUncompressedData(
     }
     case ColorType.Truecolor: {
       for (; y < image.height; y++) {
-        const filterType = pickFilterType(image, stream.offset, stream);
+        const filterType = pickFilterType(image, y * image.width * 4);
         // Filter type
         stream.writeUint8(filterType);
 
@@ -247,8 +247,7 @@ function writeUncompressedData(
 
 function pickFilterType(
   image: Readonly<IImage32> | Readonly<IImage64>,
-  lineIndex: number,
-  stream: ByteStream
+  lineIndex: number
 ): FilterType {
   if (image.data.BYTES_PER_ELEMENT === 2) {
     console.warn('16 bit images can\'t select filters yet');
