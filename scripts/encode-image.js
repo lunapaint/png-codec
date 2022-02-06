@@ -17,7 +17,9 @@ async function encode(file) {
   const originalData = await fs.readFile(file);
   const decoded = await decoder.decodePng(originalData);
   const encoded = await encoder.encodePng(decoded.image);
-  fs.writeFile(join(dirname(file), `${basename(file, '.png')}_png-codec.png`), encoded);
+  const filename = join(dirname(file), `${basename(file, '.png')}_png-codec.png`);
+  fs.writeFile(filename, encoded);
+  console.log(`wrote ${encoded.length} bytes to ${filename}`);
 }
 
 if (process.argv.length < 3) {
