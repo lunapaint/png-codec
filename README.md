@@ -35,7 +35,7 @@ import { decodePng } from '@lunapaint/png-codec';
 import * as fs from 'fs/promises';
 
 async function decode(filepath) {
-  const data = fs.readFile(filepath);
+  const data = await fs.readFile(filepath);
   const decoded = await decodePng(data);
   console.log('decoded image', decoded.image.data);
   // [r, g, b, a, ...]
