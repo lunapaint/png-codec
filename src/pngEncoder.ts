@@ -107,7 +107,8 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
   // Determine truecolor or indexed depending on the color count
   let colorType = options?.colorType;
   if (colorType === undefined) {
-    if (colorSet.size > 256) {
+    // Use indexed when there are the correct amount of colors only on 8 bit images
+    if (colorSet.size > 256 || image.data.BYTES_PER_ELEMENT === 2) {
       colorType = ColorType.Truecolor;
     } else {
       colorType = ColorType.Indexed;

@@ -122,19 +122,31 @@ describe.only('encode', () => {
     const pngSuiteRoot = 'test/pngsuite/png';
     const files = fs.readdirSync(pngSuiteRoot);
     for (const file of files) {
-      if (!file.startsWith('x')) { // Exclude broken files
-        const skip = file.includes('16'); // TODO: Support 16 bit images
-        (skip ? it.skip : it)(file, async () => {
-          // Decode the file, encode it again, redecode it and check the colors are equal
-          const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
-          const decoded = await decodePng(data);
-          const encoded = await encodePng(decoded.image);
-          await fs.promises.mkdir('out-test/images', { recursive: true });
-          await fs.promises.writeFile(`out-test/images/encoded_${file}`, encoded);
-          const decoded2 = await decodePng(encoded);
-          dataArraysEqual(decoded2.image.data, decoded.image.data);
-        });
+      // Exclude broken files
+      if (file.startsWith('x') && !['xcsn0g01.png', 'xhdn0g08.png'].includes(file)) {
+        continue;
       }
+
+      it(file, async () => {
+        // Decode the file, encode it again, redecode it and check the colors are equal
+        const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
+        const decoded = await decodePng(data);
+        const encoded = await encodePng(decoded.image);
+        await fs.promises.mkdir('out-test/images', { recursive: true });
+        await fs.promises.writeFile(`out-test/images/encoded_${file}`, encoded);
+        const decoded2 = await decodePng(encoded);
+        dataArraysEqual(decoded2.image.data, decoded.image.data);
+      });
     }
   });
+  // describe('imagetestsuite', async () => {
+  //   const pngSuiteRoot = 'test/imagetestsuite/png';
+  //   const files = fs.readdirSync(pngSuiteRoot);
+  //   for (const file of files) {
+  //     // Exclude non-png files
+  //     if (!file.endsWith('.png')) {
+  //       continue;
+  //     }
+  //   }
+  // });
 });
