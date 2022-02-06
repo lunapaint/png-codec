@@ -28,7 +28,21 @@ Alternatively, you could add the repo as a git submodule, or download the source
 
 ## API
 
-The API is documented as a TypeScript `.d.ts` declaration file. The view the API:
+Basic usage:
+
+```ts
+import { decodePng } from '@lunapaint/png-codec';
+import * as fs from 'fs/promises';
+
+async function decode(filepath) {
+  const data = await fs.readFile(filepath);
+  const decoded = await decodePng(data);
+  console.log('decoded image', decoded.image.data);
+  // [r, g, b, a, ...]
+}
+```
+
+The full API is documented as a TypeScript `.d.ts` declaration file. The view the API:
 
 - [github.dev](https://github.dev/lunapaint/png-codec/blob/main/typings/api.d.ts): View on the web in VS Code, which has symbol support out of the box. Try showing the Outline view and triggering the `Go to Symbol in Editor` command
 - [github.com](https://github.com/lunapaint/png-codec/blob/main/typings/api.d.ts): View the raw file in github.com.
