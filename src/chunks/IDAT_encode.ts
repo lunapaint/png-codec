@@ -98,9 +98,8 @@ function writeUncompressedData(
     }
     case ColorType.Truecolor: {
       for (; y < image.height; y++) {
-        const filterType = pickFilterType(image, y * image.width * 4);
-        filterTypes.push(filterType);
         // Filter type
+        const filterType = pickFilterType(image, y * image.width * 4);
         stream.writeUint8(filterType);
 
         // Data
@@ -230,9 +229,10 @@ function writeUncompressedData(
           // } else {
             stream.writeUint8(
               ctx.palette.get(
-                image.data[i    ] << 16 |
-                image.data[i + 1] <<  8 |
-                image.data[i + 2]
+                image.data[i    ] << 24 |
+                image.data[i + 1] << 16 |
+                image.data[i + 2] <<  8 |
+                image.data[i + 3]
               )!
             );
             i += 4;
@@ -287,7 +287,6 @@ function writeUncompressedData(
     default:
       throw new Error(`Color type "${ctx.colorType}" not supported yet`);
   }
-  console.log('Filter types used', filterTypes);
 }
 
 function pickFilterType(

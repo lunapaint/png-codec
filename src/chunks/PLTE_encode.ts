@@ -30,10 +30,12 @@ export function encodeChunk(
   const colorSet = new Set<number>();
   const channelCount = image.width * image.height * 4;
   for (let i = 0; i < channelCount; i += 4) {
+    // Include alpha in this as identical rgb with different alpha will be separate palette entries
     const color = (
-      image.data[i    ] << 16 |
-      image.data[i + 1] <<  8 |
-      image.data[i + 2]
+      image.data[i    ] << 24 |
+      image.data[i + 1] << 16 |
+      image.data[i + 2] <<  8 |
+      image.data[i + 3]
     );
     colorSet.add(color);
   }
@@ -46,9 +48,9 @@ export function encodeChunk(
   // Fill in array
   const chunkData = writeChunkDataFn('PLTE', colorSet.size * 3, stream => {
     for (const color of colorSet.values()) {
+      stream.writeUint8(color >> 24 & 0xFF);
       stream.writeUint8(color >> 16 & 0xFF);
       stream.writeUint8(color >>  8 & 0xFF);
-      stream.writeUint8(color       & 0xFF);
     }
   });
   const view = new DataView(chunkData.buffer, chunkData.byteOffset, chunkData.byteLength);

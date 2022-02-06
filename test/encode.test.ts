@@ -9,6 +9,8 @@ import { decodePng } from '../out-dev/pngDecoder.js';
 import { encodePng } from '../out-dev/pngEncoder.js';
 import { BitDepth, ColorType, IImage32, IImage64 } from '../typings/api.js';
 import { colorTypeIdToName, dataArraysEqual } from './testUtil.js';
+import * as fs from 'fs';
+import { join } from 'path';
 
 const red   = [0xFF, 0x00, 0x00, 0xFF];
 const green = [0x00, 0xFF, 0x00, 0xFF];
@@ -79,40 +81,58 @@ describe.only('encode', () => {
         if (colorType === ColorType.Indexed && bitDepth === 16) {
           continue;
         }
-        describe(`${colorTypeIdToName(colorType)} (${colorType}), bit depth ${bitDepth}`, () => {
-          it('should be able to decode images encoded with the library', async () => {
-            const original = bitDepth <= 8 ? new Uint8Array([
-              ...red,  ...green,
-              ...blue, ...white
-            ]) : new Uint16Array([
-              ...red16,  ...green16,
-              ...blue16, ...white16
-            ]);
-            // Explicitly using a grayscale color type means only the red channel is considered
-            const expected = colorType === ColorType.Grayscale || colorType === ColorType.GrayscaleAndAlpha ? (
-              bitDepth <= 8
-                ? new Uint8Array([
-                  ...white, ...black,
-                  ...black, ...white
-                ])
-                : new Uint16Array([
-                  ...white16, ...black16,
-                  ...black16, ...white16
-                ])
-            ) : original;
-            const data = await encodePng({
-              data: original,
-              width: 2,
-              height: 2
-            } as IImage32 | IImage64, {
-              colorType,
-              bitDepth
-            });
-            const decoded = await decodePng(data, { strictMode: true });
-            strictEqual(decoded.details.colorType, colorType);
-            strictEqual(decoded.details.bitDepth, bitDepth);
-            dataArraysEqual(decoded.image.data, expected);
+        it(`${colorTypeIdToName(colorType)} (${colorType}), bit depth ${bitDepth}`, async () => {
+          const original = bitDepth <= 8 ? new Uint8Array([
+            ...red,  ...green,
+            ...blue, ...white
+          ]) : new Uint16Array([
+            ...red16,  ...green16,
+            ...blue16, ...white16
+          ]);
+          // Explicitly using a grayscale color type means only the red channel is considered
+          const expected = colorType === ColorType.Grayscale || colorType === ColorType.GrayscaleAndAlpha ? (
+            bitDepth <= 8
+              ? new Uint8Array([
+                ...white, ...black,
+                ...black, ...white
+              ])
+              : new Uint16Array([
+                ...white16, ...black16,
+                ...black16, ...white16
+              ])
+          ) : original;
+          const data = await encodePng({
+            data: original,
+            width: 2,
+            height: 2
+          } as IImage32 | IImage64, {
+            colorType,
+            bitDepth
           });
+          const decoded = await decodePng(data, { strictMode: true });
+          console.log('decoded', decoded.image.data);
+          strictEqual(decoded.details.colorType, colorType);
+          strictEqual(decoded.details.bitDepth, bitDepth);
+          dataArraysEqual(decoded.image.data, expected);
+        });
+      }
+    }
+  });
+  describe('pngsuite', async () => {
+    const pngSuiteRoot = 'test/pngsuite/png';
+    const files = fs.readdirSync(pngSuiteRoot);
+    for (const file of files) {
+      if (!file.startsWith('x')) { // Exclude broken files
+        const skip = file.includes('16'); // TODO: Support 16 bit images
+        (skip ? it.skip : it)(file, async () => {
+          // Decode the file, encode it again, redecode it and check the colors are equal
+          const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
+          const decoded = await decodePng(data);
+          const encoded = await encodePng(decoded.image);
+          await fs.promises.mkdir('out-test/images', { recursive: true });
+          await fs.promises.writeFile(`out-test/images/encoded_${file}`, encoded);
+          const decoded2 = await decodePng(encoded);
+          dataArraysEqual(decoded2.image.data, decoded.image.data);
         });
       }
     }

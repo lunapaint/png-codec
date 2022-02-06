@@ -21,26 +21,6 @@ export function encodeChunk(
   const colorSet = new Set<number>();
   const transparentColorSet = new Set<number>();
 
-  // // Get the number of rgb colors and the number of transparent colors in the image
-  // let rgbId = 0;
-  // let rgbaId = 0;
-  // for (let i = 0; i < indexCount; i += 4) {
-  //   rgbId = (
-  //     image.data[i    ] << 24 |
-  //     image.data[i    ] << 16 |
-  //     image.data[i    ] <<  8
-  //   );
-  //   if (image.data[i    ] < 255) {
-  //     rgbaId = (
-  //       rgbId |
-  //       image.data[i    ]
-  //     );
-  //     transparentColorSet.add(rgbaId);
-  //   }
-  //   colorSet.add(rgbId);
-  // }
-
-
   switch (ctx.colorType) {
     case ColorType.Grayscale: {
       // Find the first pixel with non 255 alpha and use it
@@ -79,7 +59,7 @@ export function encodeChunk(
       // Find the first pixel with non 255 alpha and use it
       let i = 0;
       for (; i < indexCount; i += 4) {
-        if (image.data[i    ] < 255) {
+        if (image.data[i + 3] < 255) {
           break;
         }
       }

@@ -18,22 +18,20 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
  * possible chunk decoders when code splitting is not supported.
  */
-// function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
-//   image: Readonly<IImage32> | Readonly<IImage64>,
-//   bitDepth: BitDepth,
-//   colorType: ColorType,
-//   interlaceMethod: InterlaceMethod
-// ) => Uint8Array; }> {
-//   switch (type) {
-//     case KnownChunkTypes.PLTE: return import(`./chunks/PLTE_encode.js`);
-//     // This is an exception that should never happen in practice, it's only here for a nice error
-//     // message if it does.
-//     /* istanbul ignore next */
-//     default:
-//       // Throw a regular error as this is unexpected
-//       throw new Error(`Could not get encoder for chunk type "${type}"`);
-//   }
-// }
+function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
+  ctx: IEncodeContext,
+  image: Readonly<IImage32> | Readonly<IImage64>
+) => Uint8Array; }> {
+  switch (type) {
+    case KnownChunkTypes.tRNS: return import(`./chunks/tRNS_encode.js`);
+    // This is an exception that should never happen in practice, it's only here for a nice error
+    // message if it does.
+    /* istanbul ignore next */
+    default:
+      // Throw a regular error as this is unexpected
+      throw new Error(`Could not get encoder for chunk type "${type}"`);
+  }
+}
 
 export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): Promise<Uint8Array> {
   // Create all file sections
@@ -50,6 +48,9 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
     const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
     ctx.palette = result.palette;
     sections.push(result.chunkData);
+  }
+  if (ctx.useTransparencyChunk) {
+    sections.push((await getChunkDecoder(KnownChunkTypes.tRNS)).encodeChunk(ctx, image));
   }
   sections.push(encodeIDAT(ctx, image));
   sections.push(encodeIEND());
@@ -89,22 +90,18 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
   const transparentColorSet = new Set<number>();
 
   // Get the number of rgb colors and the number of transparent colors in the image
-  let rgbId = 0;
   let rgbaId = 0;
   for (let i = 0; i < indexCount; i += 4) {
-    rgbId = (
+    rgbaId = (
       image.data[i    ] << 24 |
       image.data[i + 1] << 16 |
-      image.data[i + 2] <<  8
+      image.data[i + 2] <<  8 |
+      image.data[i + 3]
     );
     if (image.data[i + 3] < 255) {
-      rgbaId = (
-        rgbId |
-        image.data[i + 3]
-      );
       transparentColorSet.add(rgbaId);
     }
-    colorSet.add(rgbId);
+    colorSet.add(rgbaId);
   }
 
   // Determine truecolor or indexed depending on the color count
