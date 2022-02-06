@@ -4,11 +4,11 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { ByteStream } from '../byteStream.js';
-import { crc32 } from '../crc32.js';
-import { BitDepth, ChunkPartByteLength, ColorType, FilterType, IEncodeContext, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal } from '../types.js';
-import { writeChunk, writeChunkType } from '../write.js';
 import * as pako from 'pako';
+import { ByteStream } from '../byteStream.js';
+import { paethPredicator } from '../paeth.js';
+import { ColorType, FilterType, IEncodeContext, IImage32, IImage64, InterlaceMethod } from '../types.js';
+import { writeChunk } from '../write.js';
 
 export function encodeChunk(
   ctx: IEncodeContext,
@@ -72,6 +72,7 @@ function writeUncompressedData(
 
   // TODO: Allow specifying a filter pattern option for better testing
 
+  const filterTypes: FilterType[] = [];
   let y = 0;
   let x = 0;
   let i = 0;
@@ -98,6 +99,7 @@ function writeUncompressedData(
     case ColorType.Truecolor: {
       for (; y < image.height; y++) {
         const filterType = pickFilterType(image, y * image.width * 4);
+        filterTypes.push(filterType);
         // Filter type
         stream.writeUint8(filterType);
 
@@ -182,6 +184,28 @@ function writeUncompressedData(
               i += 4;
             }
             break;
+          case FilterType.Paeth: {
+            for (x = 0; x < image.width; x++) {
+              // Add 256 to ensure it's positive for modulo
+              stream.writeUint8((image.data[i    ] - paethPredicator(
+                (x === 0 ? 0 : image.data[i     - 4]),
+                (y === 0 ? 0 : image.data[i     - image.width * 4]),
+                ((x === 0 || y === 0) ? 0 : image.data[i    - 4 - image.width * 4])
+              ) + 256) % 256);
+              stream.writeUint8((image.data[i + 1] - paethPredicator(
+                (x === 0 ? 0 : image.data[i + 1 - 4]),
+                (y === 0 ? 0 : image.data[i + 1 - image.width * 4]),
+                ((x === 0 || y === 0) ? 0 : image.data[i + 1 - 4 - image.width * 4])
+              ) + 256) % 256);
+              stream.writeUint8((image.data[i + 2] - paethPredicator(
+                (x === 0 ? 0 : image.data[i + 2 - 4]),
+                (y === 0 ? 0 : image.data[i + 2 - image.width * 4]),
+                ((x === 0 || y === 0) ? 0 : image.data[i + 2 - 4 - image.width * 4])
+              ) + 256) % 256);
+              i += 4;
+            }
+            break;
+          }
           default:
             throw new Error('Only none and sub filter types are supported');
         }
@@ -263,6 +287,7 @@ function writeUncompressedData(
     default:
       throw new Error(`Color type "${ctx.colorType}" not supported yet`);
   }
+  console.log('Filter types used', filterTypes);
 }
 
 function pickFilterType(
@@ -341,6 +366,29 @@ function pickFilterType(
         }
         break;
       }
+      case FilterType.Paeth: {
+        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
+          // Add 256 to ensure it's positive for modulo
+          sum += (
+            ((image.data[i    ] - paethPredicator(
+              (i === lineIndex ? 0 : image.data[i     - 4]),
+              (i < image.width * 4 ? 0 : image.data[i     - image.width * 4]),
+              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i     - (image.width + 1) * 4]),
+            ) + 256) % 256) +
+            ((image.data[i + 1] - paethPredicator(
+              (i === lineIndex ? 0 : image.data[i + 1 - 4]),
+              (i < image.width * 4 ? 0 : image.data[i + 1 - image.width * 4]),
+              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 1 - (image.width + 1) * 4]),
+            ) + 256) % 256) +
+            ((image.data[i + 2] - paethPredicator(
+              (i === lineIndex ? 0 : image.data[i + 2 - 4]),
+              (i < image.width * 4 ? 0 : image.data[i + 2 - image.width * 4]),
+              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 2 - (image.width + 1) * 4]),
+            ) + 256) % 256)
+          );
+        }
+        break;
+      }
       default:
         sum = Infinity;
     }
@@ -354,7 +402,5 @@ function pickFilterType(
       lowestSum = filterSums.get(filterType)!;
     }
   }
-  console.log('filter sums', Array.from(filterSums.values()));
-  console.log('lowest filter type', lowestFilterType);
   return lowestFilterType;
 }
