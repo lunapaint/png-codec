@@ -70,6 +70,8 @@ function writeUncompressedData(
   // - If the image type is Palette, or the bit depth is smaller than 8, then do not filter the image (i.e. use fixed filtering, with the filter None).
   // - (The other case) If the image type is Grayscale or RGB (with or without Alpha), and the bit depth is not smaller than 8, then use adaptive filtering as follows: independently for each row, apply all five filters and select the filter that produces the smallest sum of absolute values per row.
 
+  // TODO: Allow specifying a filter pattern option for better testing
+
   let y = 0;
   let x = 0;
   let i = 0;
@@ -160,6 +162,24 @@ function writeUncompressedData(
                 stream.writeUint8((image.data[i + 2] - image.data[i + 2 - image.width * 4] + 256) % 256);
                 i += 4;
               }
+            }
+            break;
+          case FilterType.Average:
+            for (x = 0; x < image.width; x++) {
+              // Add 256 to ensure it's positive for modulo
+              stream.writeUint8((image.data[i    ] - Math.floor((
+                (x === 0 ? 0 : image.data[i     - 4]) +
+                (y === 0 ? 0 : image.data[i     - image.width * 4])
+              ) / 2) + 256) % 256);
+              stream.writeUint8((image.data[i + 1] - Math.floor((
+                (x === 0 ? 0 : image.data[i + 1 - 4]) +
+                (y === 0 ? 0 : image.data[i + 1 - image.width * 4])
+              ) / 2) + 256) % 256);
+              stream.writeUint8((image.data[i + 2] - Math.floor((
+                (x === 0 ? 0 : image.data[i + 2 - 4]) +
+                (y === 0 ? 0 : image.data[i + 2 - image.width * 4])
+              ) / 2) + 256) % 256);
+              i += 4;
             }
             break;
           default:
@@ -257,7 +277,7 @@ function pickFilterType(
   for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
     let sum = 0;
     switch (filterType) {
-      case FilterType.None:
+      case FilterType.None: {
         for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
           // TODO: This is for truecolor, handle other color types
           sum += (
@@ -266,8 +286,11 @@ function pickFilterType(
             image.data[i + 2]
           );
         }
-      case FilterType.Sub:
+        break;
+      }
+      case FilterType.Sub: {
         // TODO: This is only for truecolor, handle other color types
+        // First pixel in line is a special case
         sum += (
           image.data[lineIndex    ] +
           image.data[lineIndex + 1] +
@@ -281,7 +304,8 @@ function pickFilterType(
           );
         }
         break;
-      case FilterType.Up:
+      }
+      case FilterType.Up: {
         // The first line should not use up as it's essentially just None
         if (lineIndex === 0) {
           sum = Infinity;
@@ -296,6 +320,27 @@ function pickFilterType(
           }
         }
         break;
+      }
+      case FilterType.Average: {
+        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
+          // Add 256 to ensure it's positive for modulo
+          sum += (
+            ((image.data[i    ] - Math.floor((
+              (i === lineIndex ? 0 : image.data[i     - 4]) +
+              (i < image.width * 4 ? 0 : image.data[i     - image.width * 4])
+            ) / 2) + 256) % 256) +
+            ((image.data[i + 1] - Math.floor((
+              (i === lineIndex ? 0 : image.data[i + 1 - 4]) +
+              (i < image.width * 4 ? 0 : image.data[i + 1 - image.width * 4])
+            ) / 2) + 256) % 256) +
+            ((image.data[i + 2] - Math.floor((
+              (i === lineIndex ? 0 : image.data[i + 2 - 4]) +
+              (i < image.width * 4 ? 0 : image.data[i + 2 - image.width * 4])
+            ) / 2) + 256) % 256)
+          );
+        }
+        break;
+      }
       default:
         sum = Infinity;
     }

@@ -6,6 +6,7 @@
 
 import * as pako from 'pako';
 import { createChunkDecodeError, DecodeError } from '../assert.js';
+import { paethPredicator } from '../paeth.js';
 import { ChunkPartByteLength, ColorType, FilterType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../types.js';
 
 /**
@@ -213,20 +214,6 @@ function buildDefilterFunction(bpp: number, bpl: number, bitDepth: number, width
       ) % 256;
     };
   }
-}
-
-function paethPredicator(a: number, b: number, c: number): number {
-  const p = a + b - c;
-  const pa = Math.abs(p - a);
-  const pb = Math.abs(p - b);
-  const pc = Math.abs(p - c);
-  if (pa <= pb && pa <= pc) {
-    return a;
-  }
-  if (pb <= pc) {
-    return b;
-  }
-  return c;
 }
 
 function getBytesPerPixel(header: IPngHeaderDetails): number {
