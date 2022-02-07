@@ -55,6 +55,8 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
     sections.push((await getChunkDecoder(KnownChunkTypes.tRNS)).encodeChunk(ctx, image));
   }
   sections.push(encodeIDAT(ctx, image));
+  // TODO: Allow configuring all chunks explicitly
+  sections.push((await import(`./chunks/tEXt_encode.js`)).encodeChunk(ctx, image, 'Software', 'Luna Paint'));
   sections.push(encodeIEND());
   // console.log('sections', sections);
 
