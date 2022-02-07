@@ -5,6 +5,7 @@
  */
 
 export { DecodeError, DecodeWarning } from './assert.js';
+export { EncodeError, EncodeWarning } from './encode/assert.js';
 import { IDecodedPng, IDecodePngOptions, IEncodePngOptions, IImage32, IImage64 } from './types.js';
 
 // This file is the entry point the the library, it wraps the implementation files using dynamic

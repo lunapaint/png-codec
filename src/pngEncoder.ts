@@ -4,10 +4,13 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { DecodeWarning } from './assert.js';
 import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
+import { handleWarning } from './encode/assert.js';
+import { EncodeError, EncodeWarning } from './png.js';
 import { ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from './types.js';
 
 /**
@@ -30,6 +33,10 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
 }
 
 export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): Promise<Uint8Array> {
+  if (image.data.length !== image.width * image.height * 4) {
+    throw new EncodeError(`Provided image data length (${image.data.length}) is not expected length (${image.width * image.height * 4})`, Math.min(image.data.length, image.width * image.height * 4) - 1);
+  }
+
   // Create all file sections
   const sections: Uint8Array[] = [];
   sections.push(writePngSignature());
@@ -78,7 +85,9 @@ function writePngSignature(): Uint8Array {
   return stream.array;
 }
 
-function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): IEncodeContext {
+function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): IEncodeContext {
+  const warnings: DecodeWarning[] = [];
+
   // TODO: Don't analyze any info we don't need
   const pixelCount = image.width * image.height;
   const indexCount = pixelCount * 4;
@@ -101,7 +110,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
   }
 
   // Determine truecolor or indexed depending on the color count
-  let colorType = options?.colorType;
+  let colorType = options.colorType;
   if (colorType === undefined) {
     // Use indexed when there are the correct amount of colors only on 8 bit images
     if (colorSet.size > 256 || image.data.BYTES_PER_ELEMENT === 2) {
@@ -120,6 +129,9 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
       useTransparencyChunk = transparentColorSet.size === 1;
       if (!useTransparencyChunk && transparentColorSet.size > 1) {
         colorType = colorType === ColorType.Truecolor ? ColorType.TruecolorAndAlpha : ColorType.GrayscaleAndAlpha;
+        if (options.colorType === ColorType.Truecolor) {
+          handleWarning({ options, warnings }, new EncodeWarning(`Cannot encode image as color type Truecolor as it contains ${transparentColorSet.size} transparent colors`, 0));
+        }
       }
       break;
     case ColorType.Indexed:
@@ -135,5 +147,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEnco
     interlaceMethod: InterlaceMethod.None,
     transparentColorCount: transparentColorSet.size,
     useTransparencyChunk,
+    options,
+    warnings: []
   };
 }

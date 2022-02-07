@@ -210,11 +210,15 @@ export interface IDecodePngOptions {
 /**
  * An optional set of options to encode an image with. The options override the specified property
  * when encoding, except for the case where it's not possible to encode the image with that option
- * at which point it will be overridden.
+ * at which point it will be overridden (unless {@link IEncodePngOptions.strictMode} is used).
  *
  * @example Using the Truecolor color type that contains transparency will use either truecolor with
  * a tRNS chunk or truecolor and alpha depending on which is smaller.
  * @example Using the TruecolorAndAlpha color type will always use it.
+ *
+ * @throws An {@link EncodeError} when an error is encountered or a {@link EncodeWarning} when a
+ * warning is encountered in strict mode. In Typescript, `instanceof` can be used to narrow the type
+ * safely.
  */
 export interface IEncodePngOptions {
   /**
@@ -231,10 +235,15 @@ export interface IEncodePngOptions {
    * - When grayscale is used, only the red channel will be considered when encoding as the image is
    * expected to be a valid grayscale image.
    * - When grayscale or truecolor are used and transparent colors exist, the resulting image will
-   * be "upgraded" to {@link ColorType.GrayscaleAndAlpha}/{@link ColorType.TruecolorAndAlpha}, or
-   * the `tRNS` chunk will be used, depending on which consumes less bytes.
+   * be "upgraded" to {@link ColorType.GrayscaleAndAlpha}/{@link ColorType.TruecolorAndAlpha} or the
+   * `tRNS` chunk will be used, depending on which consumes less bytes.
    */
   colorType?: ColorType;
+
+  /**
+   * Enabled strict encoding which will throw when
+   */
+  strictMode?: boolean;
 }
 
 /**
@@ -918,7 +927,27 @@ export class DecodeError extends Error {
  */
 export class DecodeWarning extends Error {
   /**
+   * The byte offset of the warning in the datastream.
+   */
+  offset: number;
+}
+
+/**
+ * A critical error occurred during encoding.
+ */
+export class EncodeError extends Error {
+  /**
    * The byte offset of the error in the datastream.
+   */
+  offset: number;
+}
+
+/**
+ * A warning occurred during encoding.
+ */
+export class EncodeWarning extends Error {
+  /**
+   * The byte offset of the warning in the datastream.
    */
   offset: number;
 }

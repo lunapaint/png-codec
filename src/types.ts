@@ -47,7 +47,9 @@ import {
   BitDepth,
   ColorType,
   DecodeWarning,
+  EncodeWarning,
   IDecodePngOptions,
+  IEncodePngOptions,
   IImage32,
   IImage64,
   InterlaceMethod,
@@ -87,6 +89,8 @@ export interface IEncodeContext {
   palette?: Map<number, number>;
   transparentColorCount: number;
   useTransparencyChunk: boolean;
+  options: IEncodePngOptions;
+  warnings: EncodeWarning[];
 }
 
 export interface IPngHeaderDetails {
