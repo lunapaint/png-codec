@@ -169,15 +169,15 @@ function writeUncompressedData(
             for (x = 0; x < image.width; x++) {
               // Add 256 to ensure it's positive for modulo
               stream.writeUint8((image.data[i    ] - Math.floor((
-                (x === 0 ? 0 : image.data[i     - 4]) +
+                (x === 0 ? 0 : image.data[i     - 4]              ) +
                 (y === 0 ? 0 : image.data[i     - image.width * 4])
               ) / 2) + 256) % 256);
               stream.writeUint8((image.data[i + 1] - Math.floor((
-                (x === 0 ? 0 : image.data[i + 1 - 4]) +
+                (x === 0 ? 0 : image.data[i + 1 - 4]              ) +
                 (y === 0 ? 0 : image.data[i + 1 - image.width * 4])
               ) / 2) + 256) % 256);
               stream.writeUint8((image.data[i + 2] - Math.floor((
-                (x === 0 ? 0 : image.data[i + 2 - 4]) +
+                (x === 0 ? 0 : image.data[i + 2 - 4]              ) +
                 (y === 0 ? 0 : image.data[i + 2 - image.width * 4])
               ) / 2) + 256) % 256);
               i += 4;
@@ -187,18 +187,18 @@ function writeUncompressedData(
             for (x = 0; x < image.width; x++) {
               // Add 256 to ensure it's positive for modulo
               stream.writeUint8((image.data[i    ] - paethPredicator(
-                (x === 0 ? 0 : image.data[i     - 4]),
-                (y === 0 ? 0 : image.data[i     - image.width * 4]),
+                (x === 0              ? 0 : image.data[i     - 4]                 ),
+                (y === 0              ? 0 : image.data[i     - image.width * 4]   ),
                 ((x === 0 || y === 0) ? 0 : image.data[i    - 4 - image.width * 4])
               ) + 256) % 256);
               stream.writeUint8((image.data[i + 1] - paethPredicator(
-                (x === 0 ? 0 : image.data[i + 1 - 4]),
-                (y === 0 ? 0 : image.data[i + 1 - image.width * 4]),
+                (x === 0              ? 0 : image.data[i + 1 - 4]                  ),
+                (y === 0              ? 0 : image.data[i + 1 - image.width * 4]    ),
                 ((x === 0 || y === 0) ? 0 : image.data[i + 1 - 4 - image.width * 4])
               ) + 256) % 256);
               stream.writeUint8((image.data[i + 2] - paethPredicator(
-                (x === 0 ? 0 : image.data[i + 2 - 4]),
-                (y === 0 ? 0 : image.data[i + 2 - image.width * 4]),
+                (x === 0              ? 0 : image.data[i + 2 - 4]                  ),
+                (y === 0              ? 0 : image.data[i + 2 - image.width * 4]    ),
                 ((x === 0 || y === 0) ? 0 : image.data[i + 2 - 4 - image.width * 4])
               ) + 256) % 256);
               i += 4;
@@ -297,6 +297,10 @@ function pickFilterType(
     console.warn('16 bit images can\'t select filters yet');
     return FilterType.None;
   }
+
+  // (... + 256) % 256 is used below to ensure it's positive for modulo as the numbers are encoded
+  // as unsigned ints.
+
   const filterSums: Map<FilterType, number> = new Map();
   for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
     let sum = 0;
@@ -335,7 +339,6 @@ function pickFilterType(
           sum = Infinity;
         } else {
           for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-            // Add 256 to ensure it's positive for modulo
             sum += (
               ((image.data[i    ] - image.data[i     - image.width * 4] + 256) % 256) +
               ((image.data[i + 1] - image.data[i + 1 - image.width * 4] + 256) % 256) +
@@ -347,18 +350,17 @@ function pickFilterType(
       }
       case FilterType.Average: {
         for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-          // Add 256 to ensure it's positive for modulo
           sum += (
             ((image.data[i    ] - Math.floor((
-              (i === lineIndex ? 0 : image.data[i     - 4]) +
+              (i === lineIndex     ? 0 : image.data[i     - 4]              ) +
               (i < image.width * 4 ? 0 : image.data[i     - image.width * 4])
             ) / 2) + 256) % 256) +
             ((image.data[i + 1] - Math.floor((
-              (i === lineIndex ? 0 : image.data[i + 1 - 4]) +
+              (i === lineIndex     ? 0 : image.data[i + 1 - 4]              ) +
               (i < image.width * 4 ? 0 : image.data[i + 1 - image.width * 4])
             ) / 2) + 256) % 256) +
             ((image.data[i + 2] - Math.floor((
-              (i === lineIndex ? 0 : image.data[i + 2 - 4]) +
+              (i === lineIndex     ? 0 : image.data[i + 2 - 4]              ) +
               (i < image.width * 4 ? 0 : image.data[i + 2 - image.width * 4])
             ) / 2) + 256) % 256)
           );
@@ -367,21 +369,20 @@ function pickFilterType(
       }
       case FilterType.Paeth: {
         for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-          // Add 256 to ensure it's positive for modulo
           sum += (
             ((image.data[i    ] - paethPredicator(
-              (i === lineIndex ? 0 : image.data[i     - 4]),
-              (i < image.width * 4 ? 0 : image.data[i     - image.width * 4]),
+              (i === lineIndex                          ? 0 : image.data[i     - 4]                    ),
+              (i < image.width * 4                      ? 0 : image.data[i     - image.width * 4]      ),
               ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i     - (image.width + 1) * 4]),
             ) + 256) % 256) +
             ((image.data[i + 1] - paethPredicator(
-              (i === lineIndex ? 0 : image.data[i + 1 - 4]),
-              (i < image.width * 4 ? 0 : image.data[i + 1 - image.width * 4]),
+              (i === lineIndex                          ? 0 : image.data[i + 1 - 4]                    ),
+              (i < image.width * 4                      ? 0 : image.data[i + 1 - image.width * 4]      ),
               ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 1 - (image.width + 1) * 4]),
             ) + 256) % 256) +
             ((image.data[i + 2] - paethPredicator(
-              (i === lineIndex ? 0 : image.data[i + 2 - 4]),
-              (i < image.width * 4 ? 0 : image.data[i + 2 - image.width * 4]),
+              (i === lineIndex                          ? 0 : image.data[i + 2 - 4]                    ),
+              (i < image.width * 4                      ? 0 : image.data[i + 2 - image.width * 4]      ),
               ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 2 - (image.width + 1) * 4]),
             ) + 256) % 256)
           );
