@@ -31,7 +31,7 @@ Alternatively, you could add the repo as a git submodule, or download the source
 Basic usage:
 
 ```ts
-import { decodePng } from '@lunapaint/png-codec';
+import { decodePng, encodePng } from '@lunapaint/png-codec';
 import * as fs from 'fs/promises';
 
 async function decode(filepath) {
@@ -39,6 +39,13 @@ async function decode(filepath) {
   const decoded = await decodePng(data);
   console.log('decoded image', decoded.image.data);
   // [r, g, b, a, ...]
+}
+
+async function encode(data, width, height, filepath) {
+  const encoded = await encodePng({ data, width, height });
+  await fs.writeFile(filepath, encoded);
+  console.log('encoded image', encoded);
+  // [...binary data]
 }
 ```
 

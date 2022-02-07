@@ -8,11 +8,7 @@ import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
-import { getChannelsForColorType } from './colorTypes.js';
-import { BitDepth, ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, IPngPaletteInternal, KnownChunkTypes } from './types.js';
-
-const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
-]);
+import { ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from './types.js';
 
 /**
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
@@ -38,7 +34,6 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   const sections: Uint8Array[] = [];
   sections.push(writePngSignature());
 
-  // TODO: Don't analyze info we don't need
   const ctx = analyze(image, options);
 
   // TODO: Support configuring bit depth
@@ -84,6 +79,7 @@ function writePngSignature(): Uint8Array {
 }
 
 function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): IEncodeContext {
+  // TODO: Don't analyze any info we don't need
   const pixelCount = image.width * image.height;
   const indexCount = pixelCount * 4;
   const colorSet = new Set<number>();
