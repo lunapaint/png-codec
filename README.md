@@ -48,9 +48,9 @@ The full API is documented as a TypeScript `.d.ts` declaration file. The view th
 - [github.com](https://github.com/lunapaint/png-codec/blob/main/typings/api.d.ts): View the raw file in github.com.
 
 
-## Chunk support
+## Decoder chunk support
 
-PNGs are made up of a fixed signature followed by a series of chunks. The following chunks are supported, with some notes provided where applicable:
+PNGs are made up of a fixed signature followed by a series of chunks. The following chunks can be decoded supported, with some notes provided where applicable:
 
 **Critical chunks:**
 
