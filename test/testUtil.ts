@@ -185,8 +185,9 @@ export function dataArraysEqual(actual: ArrayLike<number>, expected: ArrayLike<n
   deepStrictEqual(actual, expected);
 }
 
-export function colorTypeIdToName(id: ColorType): string {
+export function colorTypeIdToName(id: ColorType | undefined): string {
   switch (id) {
+    case undefined: return 'undefined';
     case ColorType.Grayscale: return 'greyscale';
     case ColorType.Truecolor: return 'truecolor';
     case ColorType.Indexed: return 'indexed';

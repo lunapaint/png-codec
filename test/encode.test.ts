@@ -69,8 +69,9 @@ describe.only('encode', () => {
   describe('integration', () => {
     // TODO: Add test for undefined options
     // TODO: Support other bit depths
-    for (const bitDepth of [8, 16] as BitDepth[]) {
+    for (const bitDepth of [undefined, 8, 16] as (BitDepth | undefined)[]) {
       for (const colorType of [
+        undefined,
         ColorType.Grayscale,
         ColorType.Truecolor,
         ColorType.Indexed,
@@ -82,7 +83,7 @@ describe.only('encode', () => {
           continue;
         }
         it(`${colorTypeIdToName(colorType)} (${colorType}), bit depth ${bitDepth}`, async () => {
-          const original = bitDepth <= 8 ? new Uint8Array([
+          const original = (bitDepth === undefined || bitDepth <= 8) ? new Uint8Array([
             ...red,  ...green,
             ...blue, ...white
           ]) : new Uint16Array([
@@ -91,7 +92,7 @@ describe.only('encode', () => {
           ]);
           // Explicitly using a grayscale color type means only the red channel is considered
           const expected = colorType === ColorType.Grayscale || colorType === ColorType.GrayscaleAndAlpha ? (
-            bitDepth <= 8
+            (bitDepth === undefined || bitDepth <= 8)
               ? new Uint8Array([
                 ...white, ...black,
                 ...black, ...white
@@ -110,9 +111,16 @@ describe.only('encode', () => {
             bitDepth
           });
           const decoded = await decodePng(data, { strictMode: true });
-          console.log('decoded', decoded.image.data);
-          strictEqual(decoded.details.colorType, colorType);
-          strictEqual(decoded.details.bitDepth, bitDepth);
+          if (colorType === undefined) {
+            strictEqual(decoded.details.colorType, bitDepth === 16 ? ColorType.Truecolor : ColorType.Indexed);
+          } else {
+            strictEqual(decoded.details.colorType, colorType);
+          }
+          if (bitDepth === undefined) {
+            strictEqual(decoded.details.bitDepth, 8);
+          } else {
+            strictEqual(decoded.details.bitDepth, bitDepth);
+          }
           dataArraysEqual(decoded.image.data, expected);
         });
       }
