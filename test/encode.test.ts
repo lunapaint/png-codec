@@ -23,7 +23,7 @@ const blue16  = [0x0000, 0x0000, 0xFFFF, 0xFFFF];
 const white16 = [0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF];
 const black16 = [0x0000, 0x0000, 0x0000, 0xFFFF];
 
-describe.only('encode', () => {
+describe('encode', () => {
   it('should write the fixed 8-byte signature', async () => {
     const result = await encodePng({
       data: new Uint8Array(red),

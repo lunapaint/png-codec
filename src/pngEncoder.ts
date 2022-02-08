@@ -43,8 +43,6 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
 
   const ctx = analyze(image, options);
 
-  // TODO: Support configuring bit depth
-  // TODO: Support configuring interlace method
   sections.push(encodeIHDR(ctx, image));
   if (ctx.colorType === ColorType.Indexed) {
     const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
@@ -55,8 +53,20 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
     sections.push((await getChunkDecoder(KnownChunkTypes.tRNS)).encodeChunk(ctx, image));
   }
   sections.push(encodeIDAT(ctx, image));
-  // TODO: Allow configuring all chunks explicitly
-  sections.push((await import(`./chunks/tEXt_encode.js`)).encodeChunk(ctx, image, 'Software', 'Luna Paint'));
+  // tEXt chunks
+  if (options?.ancillaryChunks === undefined) {
+    sections.push((await import(`./chunks/tEXt_encode.js`)).encodeChunk(ctx, image, 'Software', '@lunapaint/png-codec'));
+  } else {
+    for (const chunk of options.ancillaryChunks) {
+      switch (chunk.type) {
+        case KnownChunkTypes.tEXt:
+          sections.push((await import(`./chunks/tEXt_encode.js`)).encodeChunk(ctx, image, chunk.keyword, chunk.text));
+          break;
+        default:
+          throw new Error(`Cannot encode chunk type "${chunk.type}"`);
+      }
+    }
+  }
   sections.push(encodeIEND());
   // console.log('sections', sections);
 
@@ -145,7 +155,9 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
 
   return {
     colorType,
+    // TODO: Support configuring bit depth
     bitDepth: image.data.BYTES_PER_ELEMENT === 2 ? 16 : 8,
+    // TODO: Support configuring interlace method
     interlaceMethod: InterlaceMethod.None,
     transparentColorCount: transparentColorSet.size,
     useTransparencyChunk,

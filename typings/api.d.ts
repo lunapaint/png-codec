@@ -241,9 +241,16 @@ export interface IEncodePngOptions {
   colorType?: ColorType;
 
   /**
-   * Enabled strict encoding which will throw when
+   * Enabled strict encoding which will throw when warnings are encountered.
    */
   strictMode?: boolean;
+
+  /**
+   * Additional metadata to encode as chunks in the png. By default a single
+   * `Software=@lunapaint/png-codec` chunk will be written, setting this to `{}` or will suppress
+   * this default chunk.
+   */
+  ancillaryChunks?: (IPngMetadataTextualData)[];
 }
 
 /**
