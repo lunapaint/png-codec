@@ -115,7 +115,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
       image.data[i + 2] <<  8 |
       image.data[i + 3]
     );
-    if (image.data[i + 3] < 255) {
+    if (image.data[i + 3] < (image.data.BYTES_PER_ELEMENT === 2 ? 65535 : 255)) {
       transparentColorSet.add(rgbaId);
     }
     colorSet.add(rgbaId);

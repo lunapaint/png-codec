@@ -5,10 +5,10 @@
  */
 
 import { fail, strictEqual } from 'assert';
-import { decodePng } from '../out-dev/pngDecoder.js';
-import { encodePng } from '../out-dev/pngEncoder.js';
-import { BitDepth, ColorType, IImage32, IImage64 } from '../typings/api.js';
-import { colorTypeIdToName, dataArraysEqual } from './testUtil.js';
+import { decodePng } from '../../out-dev/pngDecoder.js';
+import { encodePng } from '../../out-dev/pngEncoder.js';
+import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../typings/api.js';
+import { colorTypeIdToName, dataArraysEqual } from '../testUtil.js';
 import * as fs from 'fs';
 import { join } from 'path';
 
@@ -140,21 +140,59 @@ describe('encode', () => {
         const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
         const decoded = await decodePng(data);
         const encoded = await encodePng(decoded.image);
-        await fs.promises.mkdir('out-test/images', { recursive: true });
-        await fs.promises.writeFile(`out-test/images/encoded_${file}`, encoded);
+        await fs.promises.mkdir('out-test/images/pngsuite', { recursive: true });
+        await fs.promises.writeFile(`out-test/images/pngsuite/encoded_${file}`, encoded);
         const decoded2 = await decodePng(encoded);
         dataArraysEqual(decoded2.image.data, decoded.image.data);
       });
     }
   });
-  // describe('imagetestsuite', async () => {
-  //   const pngSuiteRoot = 'test/imagetestsuite/png';
-  //   const files = fs.readdirSync(pngSuiteRoot);
-  //   for (const file of files) {
-  //     // Exclude non-png files
-  //     if (!file.endsWith('.png')) {
-  //       continue;
-  //     }
-  //   }
-  // });
+  describe('imagetestsuite', async () => {
+    const pngSuiteRoot = 'test/imagetestsuite/png';
+    const files = fs.readdirSync(pngSuiteRoot);
+    for (const file of files) {
+      // Exclude non-png files
+      if (!file.endsWith('.png')) {
+        continue;
+      }
+
+      it(file, async () => {
+        // Decode the file, encode it again, redecode it and check the colors are equal
+        const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
+        let decoded: IDecodedPng<any>;
+        try {
+          decoded = await decodePng(data);
+        } catch {
+          // Ignore files that cannot be decoded
+          return;
+        }
+        const encoded = await encodePng(decoded.image);
+        await fs.promises.mkdir('out-test/images/imagetestsuite', { recursive: true });
+        await fs.promises.writeFile(`out-test/images/imagetestsuite/encoded_${file}`, encoded);
+        const decoded2 = await decodePng(encoded);
+        dataArraysEqual(decoded2.image.data, decoded.image.data);
+      });
+    }
+  });
+  describe('random_pngs', async () => {
+    const pngSuiteRoot = 'test/random_pngs';
+    const files = fs.readdirSync(pngSuiteRoot);
+    for (const file of files) {
+      // Exclude non-png files
+      if (!file.endsWith('.png')) {
+        continue;
+      }
+      it(file, async () => {
+        // Decode the file, encode it again, redecode it and check the colors are equal
+        const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
+        // TODO: Test 16 bit images
+        const decoded = await decodePng(data);
+        const encoded = await encodePng(decoded.image);
+        await fs.promises.mkdir('out-test/images/random_pngs', { recursive: true });
+        await fs.promises.writeFile(`out-test/images/random_pngs/encoded_${file}`, encoded);
+        const decoded2 = await decodePng(encoded);
+        dataArraysEqual(decoded2.image.data, decoded.image.data);
+      });
+    }
+  });
 });
