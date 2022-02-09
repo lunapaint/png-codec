@@ -67,7 +67,6 @@ describe('encode', () => {
     fail('exception expected');
   });
   describe('integration', () => {
-    // TODO: Add test for undefined options
     // TODO: Support other bit depths
     for (const bitDepth of [undefined, 8, 16] as (BitDepth | undefined)[]) {
       for (const colorType of [
