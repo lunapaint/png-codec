@@ -77,7 +77,6 @@ function writeUncompressedData(
   // TODO: Allow specifying a filter pattern option for better testing
 
   const writeWithBitDepth = (image.data.BYTES_PER_ELEMENT === 2 ? stream.writeUint16 : stream.writeUint8).bind(stream);
-  const modForBitDepth = image.data.BYTES_PER_ELEMENT === 2 ? 65536 : 256;
 
   let y = 0;
   let x = 0;
@@ -207,54 +206,54 @@ function writeUncompressedData(
             if (image.data.BYTES_PER_ELEMENT === 2) {
               for (x = 0; x < image.width; x++) {
                 stream.writeUint8(((image.data[i    ] >> 8 & 0xFF) - paethPredicator(
-                  (x === 0              ? 0 : (image.data[i     - 4                  ] >> 8 & 0xFF)),
-                  (y === 0              ? 0 : (image.data[i         - image.width * 4] >> 8 & 0xFF)),
+                  ( x === 0             ? 0 : (image.data[i     - 4                  ] >> 8 & 0xFF)),
+                  (            y === 0  ? 0 : (image.data[i         - image.width * 4] >> 8 & 0xFF)),
                   ((x === 0 || y === 0) ? 0 : (image.data[i     - 4 - image.width * 4] >> 8 & 0xFF))
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8(((image.data[i    ]      & 0xFF) - paethPredicator(
-                  (x === 0              ? 0 : (image.data[i     - 4                  ]      & 0xFF)),
-                  (y === 0              ? 0 : (image.data[i         - image.width * 4]      & 0xFF)),
+                  ( x === 0             ? 0 : (image.data[i     - 4                  ]      & 0xFF)),
+                  (            y === 0  ? 0 : (image.data[i         - image.width * 4]      & 0xFF)),
                   ((x === 0 || y === 0) ? 0 : (image.data[i     - 4 - image.width * 4]      & 0xFF))
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8(((image.data[i + 1] >> 8 & 0xFF) - paethPredicator(
-                  (x === 0              ? 0 : (image.data[i + 1 - 4                  ] >> 8 & 0xFF)),
-                  (y === 0              ? 0 : (image.data[i + 1     - image.width * 4] >> 8 & 0xFF)),
+                  ( x === 0             ? 0 : (image.data[i + 1 - 4                  ] >> 8 & 0xFF)),
+                  (            y === 0  ? 0 : (image.data[i + 1     - image.width * 4] >> 8 & 0xFF)),
                   ((x === 0 || y === 0) ? 0 : (image.data[i + 1 - 4 - image.width * 4] >> 8 & 0xFF))
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8(((image.data[i + 1]      & 0xFF) - paethPredicator(
-                  (x === 0              ? 0 : (image.data[i + 1 - 4                  ]      & 0xFF)),
-                  (y === 0              ? 0 : (image.data[i + 1     - image.width * 4]      & 0xFF)),
+                  ( x === 0             ? 0 : (image.data[i + 1 - 4                  ]      & 0xFF)),
+                  (            y === 0  ? 0 : (image.data[i + 1     - image.width * 4]      & 0xFF)),
                   ((x === 0 || y === 0) ? 0 : (image.data[i + 1 - 4 - image.width * 4]      & 0xFF))
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8(((image.data[i + 2] >> 8 & 0xFF) - paethPredicator(
-                  (x === 0              ? 0 : (image.data[i + 2 - 4                  ] >> 8 & 0xFF)),
-                  (y === 0              ? 0 : (image.data[i + 2     - image.width * 4] >> 8 & 0xFF)),
+                  ( x === 0             ? 0 : (image.data[i + 2 - 4                  ] >> 8 & 0xFF)),
+                  (            y === 0  ? 0 : (image.data[i + 2     - image.width * 4] >> 8 & 0xFF)),
                   ((x === 0 || y === 0) ? 0 : (image.data[i + 2 - 4 - image.width * 4] >> 8 & 0xFF))
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8(((image.data[i + 2]      & 0xFF) - paethPredicator(
-                  (x === 0              ? 0 : (image.data[i + 2 - 4                  ]      & 0xFF)),
-                  (y === 0              ? 0 : (image.data[i + 2     - image.width * 4]      & 0xFF)),
+                  ( x === 0             ? 0 : (image.data[i + 2 - 4                  ]      & 0xFF)),
+                  (            y === 0  ? 0 : (image.data[i + 2     - image.width * 4]      & 0xFF)),
                   ((x === 0 || y === 0) ? 0 : (image.data[i + 2 - 4 - image.width * 4]      & 0xFF))
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 i += 4;
               }
             } else {
               for (x = 0; x < image.width; x++) {
                 stream.writeUint8((image.data[i    ] - paethPredicator(
-                  (x === 0              ? 0 : image.data[i     - 4                  ]),
-                  (y === 0              ? 0 : image.data[i         - image.width * 4]),
+                  ( x === 0             ? 0 : image.data[i     - 4                  ]),
+                  (            y === 0  ? 0 : image.data[i         - image.width * 4]),
                   ((x === 0 || y === 0) ? 0 : image.data[i     - 4 - image.width * 4])
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8((image.data[i + 1] - paethPredicator(
-                  (x === 0              ? 0 : image.data[i + 1 - 4                  ]),
-                  (y === 0              ? 0 : image.data[i + 1     - image.width * 4]),
+                  ( x === 0             ? 0 : image.data[i + 1 - 4                  ]),
+                  (            y === 0  ? 0 : image.data[i + 1     - image.width * 4]),
                   ((x === 0 || y === 0) ? 0 : image.data[i + 1 - 4 - image.width * 4])
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 stream.writeUint8((image.data[i + 2] - paethPredicator(
-                  (x === 0              ? 0 : image.data[i + 2 - 4                  ]),
-                  (y === 0              ? 0 : image.data[i + 2     - image.width * 4]),
+                  ( x === 0             ? 0 : image.data[i + 2 - 4                  ]),
+                  (            y === 0  ? 0 : image.data[i + 2     - image.width * 4]),
                   ((x === 0 || y === 0) ? 0 : image.data[i + 2 - 4 - image.width * 4])
-                ) + modForBitDepth) % modForBitDepth);
+                ) + 256) % 256);
                 i += 4;
               }
             }
