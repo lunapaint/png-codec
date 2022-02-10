@@ -67,7 +67,6 @@ describe('encode', () => {
     fail('exception expected');
   });
   describe('integration', () => {
-    // TODO: Support other bit depths
     for (const bitDepth of [undefined, 8, 16] as (BitDepth | undefined)[]) {
       for (const colorType of [
         undefined,
@@ -184,7 +183,6 @@ describe('encode', () => {
       it(file, async () => {
         // Decode the file, encode it again, redecode it and check the colors are equal
         const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, file)));
-        // TODO: Test 16 bit images
         const decoded = await decodePng(data);
         const encoded = await encodePng(decoded.image);
         await fs.promises.mkdir('out-test/images/random_pngs', { recursive: true });

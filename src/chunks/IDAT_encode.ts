@@ -93,6 +93,7 @@ function writeUncompressedData(
       for (; y < image.height; y++) {
         // Filter type
         const filterType = pickFilterType(image, y * image.width * 4);
+        console.log('filterType: ' + filterType);
         stream.writeUint8(filterType);
 
         // Data
@@ -110,11 +111,23 @@ function writeUncompressedData(
             writeWithBitDepth(image.data[i++]);
             writeWithBitDepth(image.data[i++]);
             i++;
-            for (x = 1; x < image.width; x++) {
-              writeWithBitDepth((image.data[i    ] - image.data[i     - 4] + modForBitDepth) % modForBitDepth);
-              writeWithBitDepth((image.data[i + 1] - image.data[i + 1 - 4] + modForBitDepth) % modForBitDepth);
-              writeWithBitDepth((image.data[i + 2] - image.data[i + 2 - 4] + modForBitDepth) % modForBitDepth);
-              i += 4;
+            if (image.data.BYTES_PER_ELEMENT === 2) {
+              for (x = 1; x < image.width; x++) {
+                stream.writeUint8(( ((image.data[i    ] >> 8) & 0xFF) - ((image.data[i     - 4] >> 8) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i    ]     ) & 0xFF) - ((image.data[i     - 4]     ) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 1] >> 8) & 0xFF) - ((image.data[i + 1 - 4] >> 8) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 1]     ) & 0xFF) - ((image.data[i + 1 - 4]     ) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 2] >> 8) & 0xFF) - ((image.data[i + 2 - 4] >> 8) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 2]     ) & 0xFF) - ((image.data[i + 2 - 4]     ) & 0xFF) + 256) % 256);
+                i += 4;
+              }
+            } else {
+              for (x = 1; x < image.width; x++) {
+                stream.writeUint8((image.data[i    ] - image.data[i     - 4] + modForBitDepth) % modForBitDepth);
+                stream.writeUint8((image.data[i + 1] - image.data[i + 1 - 4] + modForBitDepth) % modForBitDepth);
+                stream.writeUint8((image.data[i + 2] - image.data[i + 2 - 4] + modForBitDepth) % modForBitDepth);
+                i += 4;
+              }
             }
             break;
           case FilterType.Up:
@@ -178,6 +191,9 @@ function writeUncompressedData(
       if (!ctx.palette) {
         throw new Error('Cannot encode indexed file without palette');
       }
+      if (image.data.BYTES_PER_ELEMENT === 2) {
+        throw new Error('Cannot encode indexed file from 16-bit image');
+      }
       for (; y < image.height; y++) {
         stream.writeUint8(0); // Filter type - indexed images always use no filter intentionally
         for (x = 0; x < image.width; x++) {
@@ -226,11 +242,6 @@ function pickFilterType(
   image: Readonly<IImage32> | Readonly<IImage64>,
   lineIndex: number
 ): FilterType {
-  if (image.data.BYTES_PER_ELEMENT === 2) {
-    console.warn('16 bit images can\'t select filters yet');
-    return FilterType.None;
-  }
-
   // (... + 256) % 256 is used below to ensure it's positive for modulo as the numbers are encoded
   // as unsigned ints.
 
@@ -280,6 +291,7 @@ function pickFilterType(
             );
           }
         }
+        sum = Infinity;
         break;
       }
       case FilterType.Average: {
@@ -299,6 +311,7 @@ function pickFilterType(
             ) / 2) + modForBitDepth) % modForBitDepth)
           );
         }
+        sum = Infinity;
         break;
       }
       case FilterType.Paeth: {
@@ -321,6 +334,7 @@ function pickFilterType(
             ) + modForBitDepth) % modForBitDepth)
           );
         }
+        sum = Infinity;
         break;
       }
       default:
