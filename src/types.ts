@@ -97,6 +97,7 @@ export interface IEncodeContext {
   useTransparencyChunk: boolean;
   options: IEncodePngOptions;
   warnings: EncodeWarning[];
+  info: string[];
 }
 
 export interface IPngHeaderDetails {

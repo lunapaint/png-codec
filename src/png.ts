@@ -6,6 +6,7 @@
 
 export { DecodeError, DecodeWarning } from './assert.js';
 export { EncodeError, EncodeWarning } from './encode/assert.js';
+import { IEncodedPng } from '../typings/api.js';
 import { IDecodedPng, IDecodePngOptions, IEncodePngOptions, IImage32, IImage64 } from './types.js';
 
 // This file is the entry point the the library, it wraps the implementation files using dynamic
@@ -18,7 +19,6 @@ export async function decodePng(data: Readonly<Uint8Array>, options?: IDecodePng
   return (await import('./pngDecoder.js')).decodePng(data, options);
 }
 
-// TODO: Return IEncodedPng that gives warnings and any other information back
-export async function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<Uint8Array> {
+export async function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<IEncodedPng> {
   return (await import('./pngEncoder.js')).encodePng(data, options);
 }

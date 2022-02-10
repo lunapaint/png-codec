@@ -43,8 +43,8 @@ async function decode(filepath) {
 
 async function encode(data, width, height, filepath) {
   const encoded = await encodePng({ data, width, height });
-  await fs.writeFile(filepath, encoded);
-  console.log('encoded image', encoded);
+  await fs.writeFile(filepath, encoded.data);
+  console.log('encoded image', encoded.data);
   // [...binary data]
 }
 ```

@@ -27,7 +27,7 @@ export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions
  * @param data The image data in rgba format.
  * @param options Options to configure how encoding happens.
  */
-export function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<Uint8Array>;
+export function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<IEncodedPng>;
 
 /**
  * A png that has been successfully decoded.
@@ -78,6 +78,28 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
 
   /**
    * Any informational messages when decoding. These are things of note but not important enough to
+   * be a warning.
+   */
+  info: string[];
+}
+
+export interface IEncodedPng {
+  data: Uint8Array;
+
+  /**
+   * Any warnings that were encountered during encoding. Warnings typically fall into the following
+   * categories:
+   *
+   * - An explicitly provided color type must be changed in order to encode the image (eg.
+   * specifying Truecolor but having more than one transparent pixel).
+   *
+   * Strict mode can be enabled via {@link IEncodePngOptions.strictMode} which will throw an error
+   * when any warning is encountered.
+   */
+  warnings?: EncodeWarning[];
+
+  /**
+   * Any informational messages when encoding. These are things of note but not important enough to
    * be a warning.
    */
   info: string[];

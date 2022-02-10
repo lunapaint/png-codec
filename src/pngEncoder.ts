@@ -4,6 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
+import { IEncodedPng } from '../typings/api.js';
 import { DecodeWarning } from './assert.js';
 import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
@@ -32,7 +33,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
   }
 }
 
-export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): Promise<Uint8Array> {
+export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): Promise<IEncodedPng> {
   if (image.data.length !== image.width * image.height * 4) {
     throw new EncodeError(`Provided image data length (${image.data.length}) is not expected length (${image.width * image.height * 4})`, Math.min(image.data.length, image.width * image.height * 4) - 1);
   }
@@ -80,7 +81,11 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   }
   // console.log('result', result);
 
-  return result;
+  return {
+    data: result,
+    warnings: ctx.warnings,
+    info: ctx.info
+  };
 }
 
 function writePngSignature(): Uint8Array {
@@ -99,6 +104,7 @@ function writePngSignature(): Uint8Array {
 
 function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): IEncodeContext {
   const warnings: DecodeWarning[] = [];
+  const info: string[] = [];
 
   // TODO: Don't analyze any info we don't need
   const pixelCount = image.width * image.height;
@@ -168,6 +174,10 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
       useTransparencyChunk = false;
   }
 
+  if (options.colorType === undefined) {
+    info.push(`Using color type ${colorType}`);
+  }
+
   return {
     colorType,
     // TODO: Support configuring bit depth
@@ -179,6 +189,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
     firstTransparentColor: transparentColorSet.size > 0 ? transparentColorSet.values().next().value : undefined,
     useTransparencyChunk,
     options,
-    warnings: []
+    warnings: [],
+    info: []
   };
 }

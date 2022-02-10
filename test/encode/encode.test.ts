@@ -25,11 +25,11 @@ const black16 = [0x0000, 0x0000, 0x0000, 0xFFFF];
 
 describe('encode', () => {
   it('should write the fixed 8-byte signature', async () => {
-    const result = await encodePng({
+    const result = (await encodePng({
       data: new Uint8Array(red),
       width: 1,
       height: 1
-    });
+    })).data;
     strictEqual(result[0], 0x89);
     strictEqual(result[1], 0x50);
     strictEqual(result[2], 0x4E);
@@ -45,7 +45,7 @@ describe('encode', () => {
         data: new Uint8Array(red),
         width: 1,
         height: 1
-      })).buffer);
+      })).data.buffer);
       // IHDR always starts at offset 8, immediately after the signature
       strictEqual(view.getUint32(8), 13);
       strictEqual(view.getUint8(12), 73, 'I in IHDR type doesn\'t match');
@@ -101,14 +101,14 @@ describe('encode', () => {
                 ...black16, ...white16
               ])
           ) : original;
-          const data = await encodePng({
+          const data = (await encodePng({
             data: original,
             width: 2,
             height: 2
           } as IImage32 | IImage64, {
             colorType,
             bitDepth
-          });
+          })).data;
           const decoded = await decodePng(data, { strictMode: true });
           if (colorType === undefined) {
             strictEqual(decoded.details.colorType, bitDepth === 16 ? ColorType.Truecolor : ColorType.Indexed);
@@ -140,8 +140,8 @@ describe('encode', () => {
         const decoded = await decodePng(data);
         const encoded = await encodePng(decoded.image);
         await fs.promises.mkdir('out-test/images/pngsuite', { recursive: true });
-        await fs.promises.writeFile(`out-test/images/pngsuite/encoded_${file}`, encoded);
-        const decoded2 = await decodePng(encoded);
+        await fs.promises.writeFile(`out-test/images/pngsuite/encoded_${file}`, encoded.data);
+        const decoded2 = await decodePng(encoded.data);
         dataArraysEqual(decoded2.image.data, decoded.image.data);
       });
     }
@@ -167,8 +167,8 @@ describe('encode', () => {
         }
         const encoded = await encodePng(decoded.image);
         await fs.promises.mkdir('out-test/images/imagetestsuite', { recursive: true });
-        await fs.promises.writeFile(`out-test/images/imagetestsuite/encoded_${file}`, encoded);
-        const decoded2 = await decodePng(encoded);
+        await fs.promises.writeFile(`out-test/images/imagetestsuite/encoded_${file}`, encoded.data);
+        const decoded2 = await decodePng(encoded.data);
         dataArraysEqual(decoded2.image.data, decoded.image.data);
       });
     }
@@ -188,8 +188,8 @@ describe('encode', () => {
         const decoded = await decodePng(data);
         const encoded = await encodePng(decoded.image);
         await fs.promises.mkdir('out-test/images/random_pngs', { recursive: true });
-        await fs.promises.writeFile(`out-test/images/random_pngs/encoded_${file}`, encoded);
-        const decoded2 = await decodePng(encoded);
+        await fs.promises.writeFile(`out-test/images/random_pngs/encoded_${file}`, encoded.data);
+        const decoded2 = await decodePng(encoded.data);
         dataArraysEqual(decoded2.image.data, decoded.image.data);
       });
     }

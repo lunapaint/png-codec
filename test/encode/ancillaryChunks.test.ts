@@ -18,7 +18,7 @@ async function testAncillaryChunks(encodeAncillaryChunks: IEncodePngOptions['anc
     width: 1,
     height: 1
   }, { ancillaryChunks: encodeAncillaryChunks });
-  const decoded = await decodePng(result, { parseChunkTypes: '*' });
+  const decoded = await decodePng(result.data, { parseChunkTypes: '*' });
   deepStrictEqual(decoded.metadata, expectedMetadata);
 }
 
