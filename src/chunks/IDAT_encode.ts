@@ -66,9 +66,13 @@ function writeUncompressedData(
   image: Readonly<IImage32> | Readonly<IImage64>,
   stream: ByteStream
 ) {
-  // TODO: Support filtering:
-  // - If the image type is Palette, or the bit depth is smaller than 8, then do not filter the image (i.e. use fixed filtering, with the filter None).
-  // - (The other case) If the image type is Grayscale or RGB (with or without Alpha), and the bit depth is not smaller than 8, then use adaptive filtering as follows: independently for each row, apply all five filters and select the filter that produces the smallest sum of absolute values per row.
+  // Filtering using the following approach from the spec:
+  // - If the image type is Palette, or the bit depth is smaller than 8, then do not filter the
+  //   image (i.e. use fixed filtering, with the filter None).
+  // - (The other case) If the image type is Grayscale or RGB (with or without Alpha), and the bit
+  //   depth is not smaller than 8, then use adaptive filtering as follows: independently for each
+  //   row, apply all five filters and select the filter that produces the smallest sum of absolute
+  //   values per row.
 
   // TODO: Allow specifying a filter pattern option for better testing
 
@@ -93,7 +97,6 @@ function writeUncompressedData(
       for (; y < image.height; y++) {
         // Filter type
         const filterType = pickFilterType(image, y * image.width * 4);
-        console.log('filterType: ' + filterType);
         stream.writeUint8(filterType);
 
         // Data
@@ -146,9 +149,9 @@ function writeUncompressedData(
               }
             } else {
               for (x = 0; x < image.width; x++) {
-                writeWithBitDepth((image.data[i    ] - image.data[i     - image.width * 4] + 256) % 256);
-                writeWithBitDepth((image.data[i + 1] - image.data[i + 1 - image.width * 4] + 256) % 256);
-                writeWithBitDepth((image.data[i + 2] - image.data[i + 2 - image.width * 4] + 256) % 256);
+                stream.writeUint8((image.data[i    ] - image.data[i     - image.width * 4] + 256) % 256);
+                stream.writeUint8((image.data[i + 1] - image.data[i + 1 - image.width * 4] + 256) % 256);
+                stream.writeUint8((image.data[i + 2] - image.data[i + 2 - image.width * 4] + 256) % 256);
                 i += 4;
               }
             }
@@ -184,15 +187,15 @@ function writeUncompressedData(
               }
             } else {
               for (x = 0; x < image.width; x++) {
-                writeWithBitDepth((image.data[i    ] - Math.floor((
+                stream.writeUint8((image.data[i    ] - Math.floor((
                   (x === 0 ? 0 : image.data[i     - 4]              ) +
                   (y === 0 ? 0 : image.data[i     - image.width * 4])
                 ) / 2) + 256) % 256);
-                writeWithBitDepth((image.data[i + 1] - Math.floor((
+                stream.writeUint8((image.data[i + 1] - Math.floor((
                   (x === 0 ? 0 : image.data[i + 1 - 4]              ) +
                   (y === 0 ? 0 : image.data[i + 1 - image.width * 4])
                 ) / 2) + 256) % 256);
-                writeWithBitDepth((image.data[i + 2] - Math.floor((
+                stream.writeUint8((image.data[i + 2] - Math.floor((
                   (x === 0 ? 0 : image.data[i + 2 - 4]              ) +
                   (y === 0 ? 0 : image.data[i + 2 - image.width * 4])
                 ) / 2) + 256) % 256);
@@ -201,24 +204,59 @@ function writeUncompressedData(
             }
             break;
           case FilterType.Paeth: {
-            for (x = 0; x < image.width; x++) {
-              // Add 256 to ensure it's positive for modulo
-              writeWithBitDepth((image.data[i    ] - paethPredicator(
-                (x === 0              ? 0 : image.data[i     - 4]                 ),
-                (y === 0              ? 0 : image.data[i     - image.width * 4]   ),
-                ((x === 0 || y === 0) ? 0 : image.data[i    - 4 - image.width * 4])
-              ) + modForBitDepth) % modForBitDepth);
-              writeWithBitDepth((image.data[i + 1] - paethPredicator(
-                (x === 0              ? 0 : image.data[i + 1 - 4]                  ),
-                (y === 0              ? 0 : image.data[i + 1 - image.width * 4]    ),
-                ((x === 0 || y === 0) ? 0 : image.data[i + 1 - 4 - image.width * 4])
-              ) + modForBitDepth) % modForBitDepth);
-              writeWithBitDepth((image.data[i + 2] - paethPredicator(
-                (x === 0              ? 0 : image.data[i + 2 - 4]                  ),
-                (y === 0              ? 0 : image.data[i + 2 - image.width * 4]    ),
-                ((x === 0 || y === 0) ? 0 : image.data[i + 2 - 4 - image.width * 4])
-              ) + modForBitDepth) % modForBitDepth);
-              i += 4;
+            if (image.data.BYTES_PER_ELEMENT === 2) {
+              for (x = 0; x < image.width; x++) {
+                stream.writeUint8(((image.data[i    ] >> 8 & 0xFF) - paethPredicator(
+                  (x === 0              ? 0 : (image.data[i     - 4                  ] >> 8 & 0xFF)),
+                  (y === 0              ? 0 : (image.data[i         - image.width * 4] >> 8 & 0xFF)),
+                  ((x === 0 || y === 0) ? 0 : (image.data[i     - 4 - image.width * 4] >> 8 & 0xFF))
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8(((image.data[i    ]      & 0xFF) - paethPredicator(
+                  (x === 0              ? 0 : (image.data[i     - 4                  ]      & 0xFF)),
+                  (y === 0              ? 0 : (image.data[i         - image.width * 4]      & 0xFF)),
+                  ((x === 0 || y === 0) ? 0 : (image.data[i     - 4 - image.width * 4]      & 0xFF))
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8(((image.data[i + 1] >> 8 & 0xFF) - paethPredicator(
+                  (x === 0              ? 0 : (image.data[i + 1 - 4                  ] >> 8 & 0xFF)),
+                  (y === 0              ? 0 : (image.data[i + 1     - image.width * 4] >> 8 & 0xFF)),
+                  ((x === 0 || y === 0) ? 0 : (image.data[i + 1 - 4 - image.width * 4] >> 8 & 0xFF))
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8(((image.data[i + 1]      & 0xFF) - paethPredicator(
+                  (x === 0              ? 0 : (image.data[i + 1 - 4                  ]      & 0xFF)),
+                  (y === 0              ? 0 : (image.data[i + 1     - image.width * 4]      & 0xFF)),
+                  ((x === 0 || y === 0) ? 0 : (image.data[i + 1 - 4 - image.width * 4]      & 0xFF))
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8(((image.data[i + 2] >> 8 & 0xFF) - paethPredicator(
+                  (x === 0              ? 0 : (image.data[i + 2 - 4                  ] >> 8 & 0xFF)),
+                  (y === 0              ? 0 : (image.data[i + 2     - image.width * 4] >> 8 & 0xFF)),
+                  ((x === 0 || y === 0) ? 0 : (image.data[i + 2 - 4 - image.width * 4] >> 8 & 0xFF))
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8(((image.data[i + 2]      & 0xFF) - paethPredicator(
+                  (x === 0              ? 0 : (image.data[i + 2 - 4                  ]      & 0xFF)),
+                  (y === 0              ? 0 : (image.data[i + 2     - image.width * 4]      & 0xFF)),
+                  ((x === 0 || y === 0) ? 0 : (image.data[i + 2 - 4 - image.width * 4]      & 0xFF))
+                ) + modForBitDepth) % modForBitDepth);
+                i += 4;
+              }
+            } else {
+              for (x = 0; x < image.width; x++) {
+                stream.writeUint8((image.data[i    ] - paethPredicator(
+                  (x === 0              ? 0 : image.data[i     - 4                  ]),
+                  (y === 0              ? 0 : image.data[i         - image.width * 4]),
+                  ((x === 0 || y === 0) ? 0 : image.data[i     - 4 - image.width * 4])
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8((image.data[i + 1] - paethPredicator(
+                  (x === 0              ? 0 : image.data[i + 1 - 4                  ]),
+                  (y === 0              ? 0 : image.data[i + 1     - image.width * 4]),
+                  ((x === 0 || y === 0) ? 0 : image.data[i + 1 - 4 - image.width * 4])
+                ) + modForBitDepth) % modForBitDepth);
+                stream.writeUint8((image.data[i + 2] - paethPredicator(
+                  (x === 0              ? 0 : image.data[i + 2 - 4                  ]),
+                  (y === 0              ? 0 : image.data[i + 2     - image.width * 4]),
+                  ((x === 0 || y === 0) ? 0 : image.data[i + 2 - 4 - image.width * 4])
+                ) + modForBitDepth) % modForBitDepth);
+                i += 4;
+              }
             }
             break;
           }
@@ -283,8 +321,11 @@ function pickFilterType(
   image: Readonly<IImage32> | Readonly<IImage64>,
   lineIndex: number
 ): FilterType {
+  // NOTE: These sums are approximate for 16 bit to avoid additional math
   // (... + 256) % 256 is used below to ensure it's positive for modulo as the numbers are encoded
   // as unsigned ints.
+
+  // TODO: Support filtering properly for non true color
 
   const modForBitDepth = image.data.BYTES_PER_ELEMENT === 2 ? 65536 : 256;
   const filterSums: Map<FilterType, number> = new Map();
@@ -373,7 +414,6 @@ function pickFilterType(
             ) + modForBitDepth) % modForBitDepth)
           );
         }
-        sum = Infinity;
         break;
       }
       default:
