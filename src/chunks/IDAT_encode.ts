@@ -123,9 +123,9 @@ function writeUncompressedData(
               }
             } else {
               for (x = 1; x < image.width; x++) {
-                stream.writeUint8((image.data[i    ] - image.data[i     - 4] + modForBitDepth) % modForBitDepth);
-                stream.writeUint8((image.data[i + 1] - image.data[i + 1 - 4] + modForBitDepth) % modForBitDepth);
-                stream.writeUint8((image.data[i + 2] - image.data[i + 2 - 4] + modForBitDepth) % modForBitDepth);
+                stream.writeUint8((image.data[i    ] - image.data[i     - 4] + 256) % 256);
+                stream.writeUint8((image.data[i + 1] - image.data[i + 1 - 4] + 256) % 256);
+                stream.writeUint8((image.data[i + 2] - image.data[i + 2 - 4] + 256) % 256);
                 i += 4;
               }
             }
@@ -134,11 +134,23 @@ function writeUncompressedData(
             if (y === 0) {
               throw new Error('Cannot encode with filter type Up on first line');
             }
-            for (x = 0; x < image.width; x++) {
-              writeWithBitDepth((image.data[i    ] - image.data[i     - image.width * 4] + modForBitDepth) % modForBitDepth);
-              writeWithBitDepth((image.data[i + 1] - image.data[i + 1 - image.width * 4] + modForBitDepth) % modForBitDepth);
-              writeWithBitDepth((image.data[i + 2] - image.data[i + 2 - image.width * 4] + modForBitDepth) % modForBitDepth);
-              i += 4;
+            if (image.data.BYTES_PER_ELEMENT === 2) {
+              for (x = 0; x < image.width; x++) {
+                stream.writeUint8(( ((image.data[i    ] >> 8) & 0xFF) - ((image.data[i     - image.width * 4] >> 8) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i    ]     ) & 0xFF) - ((image.data[i     - image.width * 4]     ) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 1] >> 8) & 0xFF) - ((image.data[i + 1 - image.width * 4] >> 8) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 1]     ) & 0xFF) - ((image.data[i + 1 - image.width * 4]     ) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 2] >> 8) & 0xFF) - ((image.data[i + 2 - image.width * 4] >> 8) & 0xFF) + 256) % 256);
+                stream.writeUint8(( ((image.data[i + 2]     ) & 0xFF) - ((image.data[i + 2 - image.width * 4]     ) & 0xFF) + 256) % 256);
+                i += 4;
+              }
+            } else {
+              for (x = 0; x < image.width; x++) {
+                writeWithBitDepth((image.data[i    ] - image.data[i     - image.width * 4] + modForBitDepth) % modForBitDepth);
+                writeWithBitDepth((image.data[i + 1] - image.data[i + 1 - image.width * 4] + modForBitDepth) % modForBitDepth);
+                writeWithBitDepth((image.data[i + 2] - image.data[i + 2 - image.width * 4] + modForBitDepth) % modForBitDepth);
+                i += 4;
+              }
             }
             break;
           case FilterType.Average:
@@ -291,7 +303,6 @@ function pickFilterType(
             );
           }
         }
-        sum = Infinity;
         break;
       }
       case FilterType.Average: {
