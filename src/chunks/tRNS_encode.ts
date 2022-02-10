@@ -8,28 +8,22 @@ import { getChannelsForColorType } from '../colorTypes.js';
 import { ColorType, IEncodeContext, IImage32, IImage64 } from '../types.js';
 import { writeChunkDataFn } from '../write.js';
 
-const enum Constants {
-  DataLength = 13
-}
-
 export function encodeChunk(
   ctx: IEncodeContext,
   image: Readonly<IImage32> | Readonly<IImage64>
 ): Uint8Array {
-  const pixelCount = image.width * image.height;
-  const indexCount = pixelCount * 4;
-
   switch (ctx.colorType) {
     case ColorType.Grayscale: {
-      // Find the first pixel with non 255 alpha and use it
-      let i = 0;
-      for (; i < indexCount; i += 4) {
-        if (image.data[i    ] < 255) {
-          break;
-        }
+      if (ctx.firstTransparentColor === undefined) {
+        throw new Error('Cannot write tRNS for True color without any transparent colors');
       }
-      return writeChunkDataFn('tRNS', 2, stream => {
-        stream.writeUint16(image.data[i]);
+      const firstTransparentColor = ctx.firstTransparentColor;
+      return writeChunkDataFn('tRNS', 6, stream => {
+        if (image.data.BYTES_PER_ELEMENT === 2) {
+          stream.writeUint16((firstTransparentColor >> 48) & 0xFFFF);
+        } else {
+          stream.writeUint16((firstTransparentColor >> 24) & 0xFF);
+        }
       });
     }
     case ColorType.Indexed: {
@@ -43,18 +37,20 @@ export function encodeChunk(
       });
     }
     case ColorType.Truecolor: {
-      // TODO: Track first non-alpha pixel in context
-      // Find the first pixel with non 255 alpha and use it
-      let i = 0;
-      for (; i < indexCount; i += 4) {
-        if (image.data[i + 3] < 255) {
-          break;
-        }
+      if (ctx.firstTransparentColor === undefined) {
+        throw new Error('Cannot write tRNS for True color without any transparent colors');
       }
+      const firstTransparentColor = ctx.firstTransparentColor;
       return writeChunkDataFn('tRNS', 6, stream => {
-        stream.writeUint16(image.data[i    ]);
-        stream.writeUint16(image.data[i + 1]);
-        stream.writeUint16(image.data[i + 2]);
+        if (image.data.BYTES_PER_ELEMENT === 2) {
+          stream.writeUint16((firstTransparentColor >> 48) & 0xFFFF);
+          stream.writeUint16((firstTransparentColor >> 32) & 0xFFFF);
+          stream.writeUint16((firstTransparentColor >> 16) & 0xFFFF);
+        } else {
+          stream.writeUint16((firstTransparentColor >> 24) & 0xFF);
+          stream.writeUint16((firstTransparentColor >> 16) & 0xFF);
+          stream.writeUint16((firstTransparentColor >>  8) & 0xFF);
+        }
       });
     }
     default:

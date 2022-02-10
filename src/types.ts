@@ -86,10 +86,14 @@ export interface IEncodeContext {
   colorType: ColorType;
   bitDepth: BitDepth;
   interlaceMethod: InterlaceMethod;
-  /** All unique colors in the image in `0xRRGGBBAA` format. */
+  /**
+   * All unique colors in the image in `0xRRGGBBAA` format for 8 bit or `0xRRRRGGGGBBBBAAAA` for 16
+   * bit.
+   */
   colorSet: Set<number>;
   palette?: Map<number, number>;
   transparentColorCount: number;
+  firstTransparentColor: number | undefined;
   useTransparencyChunk: boolean;
   options: IEncodePngOptions;
   warnings: EncodeWarning[];

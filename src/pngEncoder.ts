@@ -108,17 +108,32 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
 
   // Get the number of rgb colors and the number of transparent colors in the image
   let rgbaId = 0;
-  for (let i = 0; i < indexCount; i += 4) {
-    rgbaId = (
-      image.data[i    ] << 24 |
-      image.data[i + 1] << 16 |
-      image.data[i + 2] <<  8 |
-      image.data[i + 3]
-    );
-    if (image.data[i + 3] < (image.data.BYTES_PER_ELEMENT === 2 ? 65535 : 255)) {
-      transparentColorSet.add(rgbaId);
+  if (image.data.BYTES_PER_ELEMENT === 2) {
+    for (let i = 0; i < indexCount; i += 4) {
+      rgbaId = (
+        image.data[i    ] << 48 |
+        image.data[i + 1] << 32 |
+        image.data[i + 2] << 16 |
+        image.data[i + 3]
+      );
+      if (image.data[i + 3] < 65535) {
+        transparentColorSet.add(rgbaId);
+      }
+      colorSet.add(rgbaId);
     }
-    colorSet.add(rgbaId);
+  } else {
+    for (let i = 0; i < indexCount; i += 4) {
+      rgbaId = (
+        image.data[i    ] << 24 |
+        image.data[i + 1] << 16 |
+        image.data[i + 2] <<  8 |
+        image.data[i + 3]
+      );
+      if (image.data[i + 3] < 255) {
+        transparentColorSet.add(rgbaId);
+      }
+      colorSet.add(rgbaId);
+    }
   }
 
   // Determine truecolor or indexed depending on the color count
@@ -161,6 +176,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
     interlaceMethod: InterlaceMethod.None,
     colorSet,
     transparentColorCount: transparentColorSet.size,
+    firstTransparentColor: transparentColorSet.size > 0 ? transparentColorSet.values().next().value : undefined,
     useTransparencyChunk,
     options,
     warnings: []
