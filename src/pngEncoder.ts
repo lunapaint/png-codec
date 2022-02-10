@@ -159,6 +159,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
     bitDepth: image.data.BYTES_PER_ELEMENT === 2 ? 16 : 8,
     // TODO: Support configuring interlace method
     interlaceMethod: InterlaceMethod.None,
+    colorSet,
     transparentColorCount: transparentColorSet.size,
     useTransparencyChunk,
     options,

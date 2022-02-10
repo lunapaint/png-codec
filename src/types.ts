@@ -86,6 +86,8 @@ export interface IEncodeContext {
   colorType: ColorType;
   bitDepth: BitDepth;
   interlaceMethod: InterlaceMethod;
+  /** All unique colors in the image in `0xRRGGBBAA` format. */
+  colorSet: Set<number>;
   palette?: Map<number, number>;
   transparentColorCount: number;
   useTransparencyChunk: boolean;

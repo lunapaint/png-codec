@@ -4,10 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { crc32 } from '../crc32.js';
-import { ByteStream } from '../byteStream.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod } from '../types.js';
-import { writeChunkDataFn, writeChunkType } from '../write.js';
+import { IEncodeContext, IImage32, IImage64 } from '../types.js';
+import { writeChunkDataFn } from '../write.js';
 
 const enum Constants {
   DataLength = 13
