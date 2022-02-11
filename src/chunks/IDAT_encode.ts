@@ -96,63 +96,49 @@ function writeUncompressedData(
       for (; y < image.height; y++) {
         // Filter type
         const filterType = pickFilterType(image, y * image.width * 4);
+        const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
+        const bpp = 4 * image.data.BYTES_PER_ELEMENT;
+        const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
         stream.writeUint8(filterType);
 
-        // Data
+        // Handle special cases for first pixel in line
+        // let pixel = 1;
+        // switch (filterType) {
+        //   case FilterType.None:
+        //     pixel = 0;
+        //     break;
+        //   case FilterType.Sub:
+        //     writeWithBitDepth(image.data[i++]);
+        //     writeWithBitDepth(image.data[i++]);
+        //     writeWithBitDepth(image.data[i++]);
+        //     i++;
+        //     break;
+        //   case FilterType.Up:
+        //     if (y === 0) {
+        //       throw new Error('Cannot encode with filter type Up on first line');
+        //     }
+        //     pixel = 0;
+        //     break;
+        //   case FilterType.Average:
+        //     break;
+        //   case FilterType.Paeth:
+        //     break;
+        // }
+
+        // Other pixels in line
+        let p = 0, byte = 0;
         switch (filterType) {
           case FilterType.None:
-            for (x = 0; x < image.width; x++) {
-              writeWithBitDepth(image.data[i++]);
-              writeWithBitDepth(image.data[i++]);
-              writeWithBitDepth(image.data[i++]);
-              i++;
-            }
-            break;
           case FilterType.Sub:
-            writeWithBitDepth(image.data[i++]);
-            writeWithBitDepth(image.data[i++]);
-            writeWithBitDepth(image.data[i++]);
-            i++;
-            if (image.data.BYTES_PER_ELEMENT === 2) {
-              for (x = 1; x < image.width; x++) {
-                stream.writeUint8(( ((image.data[i    ] >> 8) & 0xFF) - ((image.data[i     - 4] >> 8) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i    ]     ) & 0xFF) - ((image.data[i     - 4]     ) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 1] >> 8) & 0xFF) - ((image.data[i + 1 - 4] >> 8) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 1]     ) & 0xFF) - ((image.data[i + 1 - 4]     ) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 2] >> 8) & 0xFF) - ((image.data[i + 2 - 4] >> 8) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 2]     ) & 0xFF) - ((image.data[i + 2 - 4]     ) & 0xFF) + 256) % 256);
-                i += 4;
-              }
-            } else {
-              for (x = 1; x < image.width; x++) {
-                stream.writeUint8((image.data[i    ] - image.data[i     - 4] + 256) % 256);
-                stream.writeUint8((image.data[i + 1] - image.data[i + 1 - 4] + 256) % 256);
-                stream.writeUint8((image.data[i + 2] - image.data[i + 2 - 4] + 256) % 256);
-                i += 4;
-              }
-            }
-            break;
           case FilterType.Up:
-            if (y === 0) {
-              throw new Error('Cannot encode with filter type Up on first line');
-            }
-            if (image.data.BYTES_PER_ELEMENT === 2) {
-              for (x = 0; x < image.width; x++) {
-                stream.writeUint8(( ((image.data[i    ] >> 8) & 0xFF) - ((image.data[i     - image.width * 4] >> 8) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i    ]     ) & 0xFF) - ((image.data[i     - image.width * 4]     ) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 1] >> 8) & 0xFF) - ((image.data[i + 1 - image.width * 4] >> 8) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 1]     ) & 0xFF) - ((image.data[i + 1 - image.width * 4]     ) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 2] >> 8) & 0xFF) - ((image.data[i + 2 - image.width * 4] >> 8) & 0xFF) + 256) % 256);
-                stream.writeUint8(( ((image.data[i + 2]     ) & 0xFF) - ((image.data[i + 2 - image.width * 4]     ) & 0xFF) + 256) % 256);
-                i += 4;
+          // case FilterType.Average:
+            for (x = 0; x < image.width; x++) { // Pixel
+              for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
+                for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
+                  stream.writeUint8(filterFn(dataUint8, i * image.data.BYTES_PER_ELEMENT + p + byte, x === 0));
+                }
               }
-            } else {
-              for (x = 0; x < image.width; x++) {
-                stream.writeUint8((image.data[i    ] - image.data[i     - image.width * 4] + 256) % 256);
-                stream.writeUint8((image.data[i + 1] - image.data[i + 1 - image.width * 4] + 256) % 256);
-                stream.writeUint8((image.data[i + 2] - image.data[i + 2 - image.width * 4] + 256) % 256);
-                i += 4;
-              }
+              i += 4;
             }
             break;
           case FilterType.Average:
@@ -429,4 +415,48 @@ function pickFilterType(
     }
   }
   return lowestFilterType;
+}
+
+type FilterFunction = (orig: Uint8Array, origX: number, isFirstInLine: boolean) => number;
+
+function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): FilterFunction {
+  let ai = 0, bi = 0, ci = 0;
+  switch (filterType) {
+    case FilterType.None: return (filt, filtX) => filt[filtX];
+    case FilterType.Sub: return (filt, filtX, isFirstInLine) => {
+      ai = isFirstInLine ? -1 : filtX - bpp;
+      return (filt[filtX] - (
+        ai < 0 ? 0 : filt[filtX - bpp]
+      ) + 256) % 256;
+    };
+    case FilterType.Up: return (filt, filtX) => {
+      bi = filtX - bpl;
+      return (filt[filtX] - filt[bi] + 256) % 256;
+    };
+
+
+    // TODO: Average doesn't work yet
+    case FilterType.Average: return (filt, filtX, isFirstInLine) => {
+      ai = isFirstInLine ? -1 : filtX - bpp;
+      bi =                      filtX - bpl;
+      return (
+        filt[filtX] - Math.floor(
+          (ai < 0 ? 0 : filt[ai]) +
+          (bi < 0 ? 0 : filt[bi])
+        ) / 2 + 256
+      ) % 256;
+    };
+    case FilterType.Paeth: return (filt, filtX, isFirstInLine) => {
+      ai = isFirstInLine ? -1 : Math.floor(filtX - bpp      );
+      bi = Math.floor(filtX       - bpl);
+      ci = isFirstInLine ? -1 : Math.floor(filtX - bpp - bpl);
+      return (
+        filt[filtX] + paethPredicator(
+          (ai < 0 ? 0 : filt[ai]),
+          (bi < 0 ? 0 : filt[bi]),
+          (ci < 0 ? 0 : filt[ci])
+        ) + 256
+      ) % 256;
+    };
+  }
 }
