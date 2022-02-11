@@ -131,7 +131,7 @@ function writeUncompressedData(
           case FilterType.None:
           case FilterType.Sub:
           case FilterType.Up:
-          // case FilterType.Average:
+          case FilterType.Average:
             for (x = 0; x < image.width; x++) { // Pixel
               for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
                 for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
@@ -139,53 +139,6 @@ function writeUncompressedData(
                 }
               }
               i += 4;
-            }
-            break;
-          case FilterType.Average:
-            if (image.data.BYTES_PER_ELEMENT === 2) {
-              for (x = 0; x < image.width; x++) {
-                stream.writeUint8(((image.data[i    ] >> 8 & 0xFF) - Math.floor((
-                  (x === 0 ? 0 : (image.data[i     - 4]               >> 8 & 0xFF)) +
-                  (y === 0 ? 0 : (image.data[i     - image.width * 4] >> 8 & 0xFF))
-                ) / 2) + 256) % 256);
-                stream.writeUint8(((image.data[i    ]      & 0xFF) - Math.floor((
-                  (x === 0 ? 0 : (image.data[i     - 4]                    & 0xFF)) +
-                  (y === 0 ? 0 : (image.data[i     - image.width * 4]      & 0xFF))
-                ) / 2) + 256) % 256);
-                stream.writeUint8(((image.data[i + 1] >> 8 & 0xFF) - Math.floor((
-                  (x === 0 ? 0 : (image.data[i + 1 - 4]               >> 8 & 0xFF)) +
-                  (y === 0 ? 0 : (image.data[i + 1 - image.width * 4] >> 8 & 0xFF))
-                ) / 2) + 256) % 256);
-                stream.writeUint8(((image.data[i + 1]      & 0xFF) - Math.floor((
-                  (x === 0 ? 0 : (image.data[i + 1 - 4]                    & 0xFF)) +
-                  (y === 0 ? 0 : (image.data[i + 1 - image.width * 4]      & 0xFF))
-                ) / 2) + 256) % 256);
-                stream.writeUint8(((image.data[i + 2] >> 8 & 0xFF) - Math.floor((
-                  (x === 0 ? 0 : (image.data[i + 2 - 4]               >> 8 & 0xFF)) +
-                  (y === 0 ? 0 : (image.data[i + 2 - image.width * 4] >> 8 & 0xFF))
-                ) / 2) + 256) % 256);
-                stream.writeUint8(((image.data[i + 2]      & 0xFF) - Math.floor((
-                  (x === 0 ? 0 : (image.data[i + 2 - 4]                    & 0xFF)) +
-                  (y === 0 ? 0 : (image.data[i + 2 - image.width * 4]      & 0xFF))
-                ) / 2) + 256) % 256);
-                i += 4;
-              }
-            } else {
-              for (x = 0; x < image.width; x++) {
-                stream.writeUint8((image.data[i    ] - Math.floor((
-                  (x === 0 ? 0 : image.data[i     - 4]              ) +
-                  (y === 0 ? 0 : image.data[i     - image.width * 4])
-                ) / 2) + 256) % 256);
-                stream.writeUint8((image.data[i + 1] - Math.floor((
-                  (x === 0 ? 0 : image.data[i + 1 - 4]              ) +
-                  (y === 0 ? 0 : image.data[i + 1 - image.width * 4])
-                ) / 2) + 256) % 256);
-                stream.writeUint8((image.data[i + 2] - Math.floor((
-                  (x === 0 ? 0 : image.data[i + 2 - 4]              ) +
-                  (y === 0 ? 0 : image.data[i + 2 - image.width * 4])
-                ) / 2) + 256) % 256);
-                i += 4;
-              }
             }
             break;
           case FilterType.Paeth: {
@@ -437,19 +390,19 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
 
     // TODO: Average doesn't work yet
     case FilterType.Average: return (filt, filtX, isFirstInLine) => {
-      ai = isFirstInLine ? -1 : filtX - bpp;
-      bi =                      filtX - bpl;
+      ai = isFirstInLine ? -1 : filtX - bpp      ;
+      bi =                      filtX       - bpl;
       return (
-        filt[filtX] - Math.floor(
+        filt[filtX] - Math.floor((
           (ai < 0 ? 0 : filt[ai]) +
           (bi < 0 ? 0 : filt[bi])
-        ) / 2 + 256
+        ) / 2) + 256
       ) % 256;
     };
     case FilterType.Paeth: return (filt, filtX, isFirstInLine) => {
-      ai = isFirstInLine ? -1 : Math.floor(filtX - bpp      );
-      bi = Math.floor(filtX       - bpl);
-      ci = isFirstInLine ? -1 : Math.floor(filtX - bpp - bpl);
+      ai = isFirstInLine ? -1 : filtX - bpp      ;
+      bi =                      filtX       - bpl;
+      ci = isFirstInLine ? -1 : filtX - bpp - bpl;
       return (
         filt[filtX] + paethPredicator(
           (ai < 0 ? 0 : filt[ai]),
