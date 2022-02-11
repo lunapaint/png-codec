@@ -103,7 +103,7 @@ function defilter(
     // Get the filter function for this line, caching it for later lines
     let filterFn = filterFnCache.get(filterType);
     if (!filterFn) {
-      filterFn = buildDefilterFunction(bppFloat, bpl, header.bitDepth, width, filterType);
+      filterFn = buildDefilterFunction(bppFloat, bpl, width, filterType);
       filterFnCache.set(filterType, filterFn);
     }
 
@@ -184,7 +184,8 @@ function isValidFilterType(filterType: number): filterType is FilterType {
 
 type DefilterFunction = (filt: Uint8Array | Uint16Array, filtX: number, recon: Uint8Array | Uint16Array, reconX: number) => number;
 
-function buildDefilterFunction(bpp: number, bpl: number, bitDepth: number, width: number, filterType: FilterType): DefilterFunction {
+function buildDefilterFunction(bpp: number, bpl: number, width: number, filterType: FilterType): DefilterFunction {
+  // This function is not called for the first pixel in a line so ai/ci should always be valid
   let ai = 0, bi = 0, ci = 0;
   switch (filterType) {
     case FilterType.None: return (filt, filtX) => filt[filtX];

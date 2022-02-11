@@ -378,15 +378,15 @@ function pickFilterType(
         for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
           sum += (
             ((image.data[i    ] - Math.floor((
-              (i === lineIndex     ? 0 : image.data[i     - 4]              ) +
+              (i === lineIndex     ? 0 : image.data[i     - 4              ]) +
               (i < image.width * 4 ? 0 : image.data[i     - image.width * 4])
             ) / 2) + modForBitDepth) % modForBitDepth) +
             ((image.data[i + 1] - Math.floor((
-              (i === lineIndex     ? 0 : image.data[i + 1 - 4]              ) +
+              (i === lineIndex     ? 0 : image.data[i + 1 - 4              ]) +
               (i < image.width * 4 ? 0 : image.data[i + 1 - image.width * 4])
             ) / 2) + modForBitDepth) % modForBitDepth) +
             ((image.data[i + 2] - Math.floor((
-              (i === lineIndex     ? 0 : image.data[i + 2 - 4]              ) +
+              (i === lineIndex     ? 0 : image.data[i + 2 - 4              ]) +
               (i < image.width * 4 ? 0 : image.data[i + 2 - image.width * 4])
             ) / 2) + modForBitDepth) % modForBitDepth)
           );
@@ -397,19 +397,19 @@ function pickFilterType(
         for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
           sum += (
             ((image.data[i    ] - paethPredicator(
-              (i === lineIndex                          ? 0 : image.data[i     - 4]                    ),
-              (i < image.width * 4                      ? 0 : image.data[i     - image.width * 4]      ),
-              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i     - (image.width + 1) * 4]),
+              ( i === lineIndex                         ? 0 : image.data[i     - 4                  ]),
+              (                    i < image.width * 4  ? 0 : image.data[i         - image.width * 4]),
+              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i     - 4 - image.width * 4]),
             ) + modForBitDepth) % modForBitDepth) +
             ((image.data[i + 1] - paethPredicator(
-              (i === lineIndex                          ? 0 : image.data[i + 1 - 4]                    ),
-              (i < image.width * 4                      ? 0 : image.data[i + 1 - image.width * 4]      ),
-              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 1 - (image.width + 1) * 4]),
+              ( i === lineIndex                         ? 0 : image.data[i + 1 - 4                  ]),
+              (                    i < image.width * 4  ? 0 : image.data[i + 1     - image.width * 4]),
+              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 1 - 4 - image.width * 4]),
             ) + modForBitDepth) % modForBitDepth) +
             ((image.data[i + 2] - paethPredicator(
-              (i === lineIndex                          ? 0 : image.data[i + 2 - 4]                    ),
-              (i < image.width * 4                      ? 0 : image.data[i + 2 - image.width * 4]      ),
-              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 2 - (image.width + 1) * 4]),
+              ( i === lineIndex                         ? 0 : image.data[i + 2 - 4                  ]),
+              (                    i < image.width * 4  ? 0 : image.data[i + 2     - image.width * 4]),
+              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 2 - 4 - image.width * 4]),
             ) + modForBitDepth) % modForBitDepth)
           );
         }
