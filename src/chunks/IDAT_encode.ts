@@ -101,105 +101,15 @@ function writeUncompressedData(
         const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
         stream.writeUint8(filterType);
 
-        // Handle special cases for first pixel in line
-        // let pixel = 1;
-        // switch (filterType) {
-        //   case FilterType.None:
-        //     pixel = 0;
-        //     break;
-        //   case FilterType.Sub:
-        //     writeWithBitDepth(image.data[i++]);
-        //     writeWithBitDepth(image.data[i++]);
-        //     writeWithBitDepth(image.data[i++]);
-        //     i++;
-        //     break;
-        //   case FilterType.Up:
-        //     if (y === 0) {
-        //       throw new Error('Cannot encode with filter type Up on first line');
-        //     }
-        //     pixel = 0;
-        //     break;
-        //   case FilterType.Average:
-        //     break;
-        //   case FilterType.Paeth:
-        //     break;
-        // }
-
-        // Other pixels in line
+        // Data
         let p = 0, byte = 0;
-        switch (filterType) {
-          case FilterType.None:
-          case FilterType.Sub:
-          case FilterType.Up:
-          case FilterType.Average:
-            for (x = 0; x < image.width; x++) { // Pixel
-              for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
-                for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
-                  stream.writeUint8(filterFn(dataUint8, i * image.data.BYTES_PER_ELEMENT + p + byte, x === 0));
-                }
-              }
-              i += 4;
+        for (x = 0; x < image.width; x++) { // Pixel
+          for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
+            for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
+              stream.writeUint8(filterFn(dataUint8, i * image.data.BYTES_PER_ELEMENT + p + byte, x === 0));
             }
-            break;
-          case FilterType.Paeth: {
-            if (image.data.BYTES_PER_ELEMENT === 2) {
-              for (x = 0; x < image.width; x++) {
-                stream.writeUint8(((image.data[i    ] >> 8 & 0xFF) - paethPredicator(
-                  ( x === 0             ? 0 : (image.data[i     - 4                  ] >> 8 & 0xFF)),
-                  (            y === 0  ? 0 : (image.data[i         - image.width * 4] >> 8 & 0xFF)),
-                  ((x === 0 || y === 0) ? 0 : (image.data[i     - 4 - image.width * 4] >> 8 & 0xFF))
-                ) + 256) % 256);
-                stream.writeUint8(((image.data[i    ]      & 0xFF) - paethPredicator(
-                  ( x === 0             ? 0 : (image.data[i     - 4                  ]      & 0xFF)),
-                  (            y === 0  ? 0 : (image.data[i         - image.width * 4]      & 0xFF)),
-                  ((x === 0 || y === 0) ? 0 : (image.data[i     - 4 - image.width * 4]      & 0xFF))
-                ) + 256) % 256);
-                stream.writeUint8(((image.data[i + 1] >> 8 & 0xFF) - paethPredicator(
-                  ( x === 0             ? 0 : (image.data[i + 1 - 4                  ] >> 8 & 0xFF)),
-                  (            y === 0  ? 0 : (image.data[i + 1     - image.width * 4] >> 8 & 0xFF)),
-                  ((x === 0 || y === 0) ? 0 : (image.data[i + 1 - 4 - image.width * 4] >> 8 & 0xFF))
-                ) + 256) % 256);
-                stream.writeUint8(((image.data[i + 1]      & 0xFF) - paethPredicator(
-                  ( x === 0             ? 0 : (image.data[i + 1 - 4                  ]      & 0xFF)),
-                  (            y === 0  ? 0 : (image.data[i + 1     - image.width * 4]      & 0xFF)),
-                  ((x === 0 || y === 0) ? 0 : (image.data[i + 1 - 4 - image.width * 4]      & 0xFF))
-                ) + 256) % 256);
-                stream.writeUint8(((image.data[i + 2] >> 8 & 0xFF) - paethPredicator(
-                  ( x === 0             ? 0 : (image.data[i + 2 - 4                  ] >> 8 & 0xFF)),
-                  (            y === 0  ? 0 : (image.data[i + 2     - image.width * 4] >> 8 & 0xFF)),
-                  ((x === 0 || y === 0) ? 0 : (image.data[i + 2 - 4 - image.width * 4] >> 8 & 0xFF))
-                ) + 256) % 256);
-                stream.writeUint8(((image.data[i + 2]      & 0xFF) - paethPredicator(
-                  ( x === 0             ? 0 : (image.data[i + 2 - 4                  ]      & 0xFF)),
-                  (            y === 0  ? 0 : (image.data[i + 2     - image.width * 4]      & 0xFF)),
-                  ((x === 0 || y === 0) ? 0 : (image.data[i + 2 - 4 - image.width * 4]      & 0xFF))
-                ) + 256) % 256);
-                i += 4;
-              }
-            } else {
-              for (x = 0; x < image.width; x++) {
-                stream.writeUint8((image.data[i    ] - paethPredicator(
-                  ( x === 0             ? 0 : image.data[i     - 4                  ]),
-                  (            y === 0  ? 0 : image.data[i         - image.width * 4]),
-                  ((x === 0 || y === 0) ? 0 : image.data[i     - 4 - image.width * 4])
-                ) + 256) % 256);
-                stream.writeUint8((image.data[i + 1] - paethPredicator(
-                  ( x === 0             ? 0 : image.data[i + 1 - 4                  ]),
-                  (            y === 0  ? 0 : image.data[i + 1     - image.width * 4]),
-                  ((x === 0 || y === 0) ? 0 : image.data[i + 1 - 4 - image.width * 4])
-                ) + 256) % 256);
-                stream.writeUint8((image.data[i + 2] - paethPredicator(
-                  ( x === 0             ? 0 : image.data[i + 2 - 4                  ]),
-                  (            y === 0  ? 0 : image.data[i + 2     - image.width * 4]),
-                  ((x === 0 || y === 0) ? 0 : image.data[i + 2 - 4 - image.width * 4])
-                ) + 256) % 256);
-                i += 4;
-              }
-            }
-            break;
           }
-          default:
-            throw new Error('Only none and sub filter types are supported');
+          i += 4;
         }
       }
       break;
@@ -264,6 +174,7 @@ function pickFilterType(
   // as unsigned ints.
 
   // TODO: Support filtering properly for non true color
+  // TODO: Use filter function here
 
   const modForBitDepth = image.data.BYTES_PER_ELEMENT === 2 ? 65536 : 256;
   const filterSums: Map<FilterType, number> = new Map();
@@ -386,9 +297,6 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
       bi = filtX - bpl;
       return (filt[filtX] - filt[bi] + 256) % 256;
     };
-
-
-    // TODO: Average doesn't work yet
     case FilterType.Average: return (filt, filtX, isFirstInLine) => {
       ai = isFirstInLine ? -1 : filtX - bpp      ;
       bi =                      filtX       - bpl;
@@ -404,7 +312,7 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
       bi =                      filtX       - bpl;
       ci = isFirstInLine ? -1 : filtX - bpp - bpl;
       return (
-        filt[filtX] + paethPredicator(
+        filt[filtX] - paethPredicator(
           (ai < 0 ? 0 : filt[ai]),
           (bi < 0 ? 0 : filt[bi]),
           (ci < 0 ? 0 : filt[ci])
