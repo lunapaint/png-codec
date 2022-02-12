@@ -95,7 +95,8 @@ function writeUncompressedData(
     return;
   }
 
-  // Support custom filter pattern to help with testing
+  // Support custom filter pattern to help with testing. When a filter pattern is not provided the
+  // filter will be determined at the same time as writing to improve locality of reference.
   let filterPattern: number[] | undefined;
   if (ctx.options.filterPattern) {
     if (ctx.options.filterPattern.length === 0) {
@@ -104,16 +105,21 @@ function writeUncompressedData(
     filterPattern = ctx.options.filterPattern;
   }
 
+  // Build filter functions to share between all lines.
+  const bpp = 4 * image.data.BYTES_PER_ELEMENT;
+  const filterFns: FilterFunction[] = [];
+  for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
+    filterFns[filterType] = buildFilterFunction(bpp, bpp * image.width, filterType);
+  }
+
   // If the image type is Grayscale or RGB (with or without Alpha), and the bit depth is not smaller
   // than 8, then use adaptive filtering as follows: independently for each row, apply all five
   // filters and select the filter that produces the smallest sum of absolute values per row.
   const channelsToWrite = getChannelsToWrite(ctx.colorType);
   for (; y < image.height; y++) {
     // Filter type
-    const filterType = filterPattern ? filterPattern[y % filterPattern.length] : pickFilterType(ctx.colorType, image, y * image.width * 4);
+    const filterType = filterPattern ? filterPattern[y % filterPattern.length] : pickFilterType(ctx.colorType, image, y * image.width * 4, filterFns);
     const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
-    const bpp = 4 * image.data.BYTES_PER_ELEMENT;
-    const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
     stream.writeUint8(filterType);
 
     // Data
@@ -121,7 +127,7 @@ function writeUncompressedData(
     for (x = 0; x < image.width; x++) { // Pixel
       for (c of channelsToWrite) { // Channel
         for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
-          stream.writeUint8(filterFn(dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, x === 0));
+          stream.writeUint8(filterFns[filterType](dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, x === 0));
         }
       }
       i += 4;
@@ -132,14 +138,12 @@ function writeUncompressedData(
 function pickFilterType(
   colorType: Exclude<ColorType, ColorType.Indexed>,
   image: Readonly<IImage32> | Readonly<IImage64>,
-  lineIndex: number
+  lineIndex: number,
+  filterFns: FilterFunction[]
 ): FilterType {
   const filterSums: number[] = [];
   const bpp = 4 * image.data.BYTES_PER_ELEMENT;
   for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
-    // TODO: This builds all filter funtions for evey line - cache them for the whole image
-    const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
-
     let sum = 0;
     const channelsToWrite = getChannelsToWrite(colorType);
     const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
@@ -147,7 +151,7 @@ function pickFilterType(
     for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) { // Pixel in line
       for (c of channelsToWrite) { // Channel
         for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
-          sum += filterFn(dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, i === lineIndex);
+          sum += filterFns[filterType](dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, i === lineIndex);
         }
       }
     }
