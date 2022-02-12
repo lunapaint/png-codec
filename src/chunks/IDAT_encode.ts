@@ -76,23 +76,18 @@ function writeUncompressedData(
 
   // TODO: Allow specifying a filter pattern option for better testing
 
-  const writeWithBitDepth = (image.data.BYTES_PER_ELEMENT === 2 ? stream.writeUint16 : stream.writeUint8).bind(stream);
+
+  // Get the channels to write based on the color type
+  const channelsToWrite = getChannelsToWrite(ctx.colorType);
 
   let y = 0;
   let x = 0;
   let i = 0;
   switch (ctx.colorType) {
-    case ColorType.Grayscale: {
-      for (; y < image.height; y++) {
-        stream.writeUint8(0); // Filter type
-        for (x = 0; x < image.width; x++) {
-          writeWithBitDepth(image.data[i++]); // Only use the red channel for grayscale
-          i += 3;
-        }
-      }
-      break;
-    }
-    case ColorType.Truecolor: {
+    case ColorType.Grayscale:
+    case ColorType.Truecolor:
+    case ColorType.GrayscaleAndAlpha:
+    case ColorType.TruecolorAndAlpha: {
       for (; y < image.height; y++) {
         // Filter type
         const filterType = pickFilterType(ctx, image, y * image.width * 4);
@@ -102,11 +97,11 @@ function writeUncompressedData(
         stream.writeUint8(filterType);
 
         // Data
-        let p = 0, byte = 0;
+        let byte = 0, c = 0;
         for (x = 0; x < image.width; x++) { // Pixel
-          for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
+          for (c of channelsToWrite) { // Channel
             for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
-              stream.writeUint8(filterFn(dataUint8, i * image.data.BYTES_PER_ELEMENT + p + byte, x === 0));
+              stream.writeUint8(filterFn(dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, x === 0));
             }
           }
           i += 4;
@@ -137,29 +132,6 @@ function writeUncompressedData(
       }
       break;
     }
-    case ColorType.GrayscaleAndAlpha: {
-      for (; y < image.height; y++) {
-        stream.writeUint8(0); // Filter type
-        for (x = 0; x < image.width; x++) {
-          writeWithBitDepth(image.data[i++]); // Only use the red channel for grayscale
-          i += 2;
-          writeWithBitDepth(image.data[i++]);
-        }
-      }
-      break;
-    }
-    case ColorType.TruecolorAndAlpha: {
-      for (; y < image.height; y++) {
-        stream.writeUint8(0); // Filter type
-        for (x = 0; x < image.width; x++) {
-          writeWithBitDepth(image.data[i++]);
-          writeWithBitDepth(image.data[i++]);
-          writeWithBitDepth(image.data[i++]);
-          writeWithBitDepth(image.data[i++]);
-        }
-      }
-      break;
-    }
     default:
       throw new Error(`Color type "${ctx.colorType}" not supported yet`);
   }
@@ -184,21 +156,15 @@ function pickFilterType(
     const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
 
     let sum = 0;
-    switch (ctx.colorType) {
-      case ColorType.Truecolor: {
-        const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
-        let p = 0, byte = 0;
-        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) { // Pixel in line
-          for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
-            for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
-              sum += filterFn(dataUint8, i * image.data.BYTES_PER_ELEMENT + p + byte, i === lineIndex);
-            }
-          }
+    const channelsToWrite = getChannelsToWrite(ctx.colorType);
+    const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
+    let c = 0, byte = 0;
+    for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) { // Pixel in line
+      for (c of channelsToWrite) { // Channel
+        for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
+          sum += filterFn(dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, i === lineIndex);
         }
-        break;
       }
-      default:
-        throw new Error('NYI');
     }
     filterSums.set(filterType, sum);
   }
@@ -252,4 +218,14 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
       ) % 256;
     };
   }
+}
+
+function getChannelsToWrite(colorType: ColorType): number[] {
+  switch (colorType) {
+    case ColorType.Grayscale: return [0];
+    case ColorType.Truecolor: return [0, 1, 2];
+    case ColorType.GrayscaleAndAlpha: return [0, 3];
+    case ColorType.TruecolorAndAlpha: return [0, 1, 2, 3];
+  }
+  return [];
 }
