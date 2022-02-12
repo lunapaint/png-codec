@@ -66,97 +66,76 @@ function writeUncompressedData(
   image: Readonly<IImage32> | Readonly<IImage64>,
   stream: ByteStream
 ) {
-  // Filtering using the following approach from the spec:
-  // - If the image type is Palette, or the bit depth is smaller than 8, then do not filter the
-  //   image (i.e. use fixed filtering, with the filter None).
-  // - (The other case) If the image type is Grayscale or RGB (with or without Alpha), and the bit
-  //   depth is not smaller than 8, then use adaptive filtering as follows: independently for each
-  //   row, apply all five filters and select the filter that produces the smallest sum of absolute
-  //   values per row.
+  let i = 0, x = 0, y = 0;
 
-  // TODO: Allow specifying a filter pattern option for better testing
+  // TODO: Cover < bitDepth 8 case
+  // If the image type is Palette, or the bit depth is smaller than 8, then do not filter the image
+  // (i.e. use fixed filtering, with the filter None).
+  if (ctx.colorType === ColorType.Indexed) {
+    if (!ctx.palette) {
+      throw new Error('Cannot encode indexed file without palette');
+    }
+    if (image.data.BYTES_PER_ELEMENT === 2) {
+      throw new Error('Cannot encode indexed file from 16-bit image');
+    }
+    for (; y < image.height; y++) {
+      stream.writeUint8(0); // Filter type
+      for (x = 0; x < image.width; x++) {
+        stream.writeUint8(
+          ctx.palette.get(
+            image.data[i    ] << 24 |
+            image.data[i + 1] << 16 |
+            image.data[i + 2] <<  8 |
+            image.data[i + 3]
+          )!
+        );
+        i += 4;
+      }
+    }
+    return;
+  }
 
+  // TODO: Allow specifying a filter pattern option for better testing - writing could be split into
+  //       2 phases; gather filter pattern (or use option) and writing using the filter pattern
 
-  // Get the channels to write based on the color type
+  // If the image type is Grayscale or RGB (with or without Alpha), and the bit depth is not smaller
+  // than 8, then use adaptive filtering as follows: independently for each row, apply all five
+  // filters and select the filter that produces the smallest sum of absolute values per row.
   const channelsToWrite = getChannelsToWrite(ctx.colorType);
+  for (; y < image.height; y++) {
+    // Filter type
+    const filterType = pickFilterType(ctx.colorType, image, y * image.width * 4);
+    const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
+    const bpp = 4 * image.data.BYTES_PER_ELEMENT;
+    const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
+    stream.writeUint8(filterType);
 
-  let y = 0;
-  let x = 0;
-  let i = 0;
-  switch (ctx.colorType) {
-    case ColorType.Grayscale:
-    case ColorType.Truecolor:
-    case ColorType.GrayscaleAndAlpha:
-    case ColorType.TruecolorAndAlpha: {
-      for (; y < image.height; y++) {
-        // Filter type
-        const filterType = pickFilterType(ctx, image, y * image.width * 4);
-        const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
-        const bpp = 4 * image.data.BYTES_PER_ELEMENT;
-        const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
-        stream.writeUint8(filterType);
-
-        // Data
-        let byte = 0, c = 0;
-        for (x = 0; x < image.width; x++) { // Pixel
-          for (c of channelsToWrite) { // Channel
-            for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
-              stream.writeUint8(filterFn(dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, x === 0));
-            }
-          }
-          i += 4;
+    // Data
+    let byte = 0, c = 0;
+    for (x = 0; x < image.width; x++) { // Pixel
+      for (c of channelsToWrite) { // Channel
+        for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
+          stream.writeUint8(filterFn(dataUint8, (i + c) * image.data.BYTES_PER_ELEMENT + byte, x === 0));
         }
       }
-      break;
+      i += 4;
     }
-    case ColorType.Indexed: {
-      if (!ctx.palette) {
-        throw new Error('Cannot encode indexed file without palette');
-      }
-      if (image.data.BYTES_PER_ELEMENT === 2) {
-        throw new Error('Cannot encode indexed file from 16-bit image');
-      }
-      for (; y < image.height; y++) {
-        stream.writeUint8(0); // Filter type - indexed images always use no filter intentionally
-        for (x = 0; x < image.width; x++) {
-          stream.writeUint8(
-            ctx.palette.get(
-              image.data[i    ] << 24 |
-              image.data[i + 1] << 16 |
-              image.data[i + 2] <<  8 |
-              image.data[i + 3]
-            )!
-          );
-          i += 4;
-        }
-      }
-      break;
-    }
-    default:
-      throw new Error(`Color type "${ctx.colorType}" not supported yet`);
   }
 }
 
 function pickFilterType(
-  ctx: IEncodeContext,
+  colorType: Exclude<ColorType, ColorType.Indexed>,
   image: Readonly<IImage32> | Readonly<IImage64>,
   lineIndex: number
 ): FilterType {
-  // NOTE: These sums are approximate for 16 bit to avoid additional math
-  // (... + 256) % 256 is used below to ensure it's positive for modulo as the numbers are encoded
-  // as unsigned ints.
-
-  // TODO: Support filtering properly for non true color
-  // TODO: Use filter function here
-
   const filterSums: Map<FilterType, number> = new Map();
+  const bpp = 4 * image.data.BYTES_PER_ELEMENT;
   for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
-    const bpp = 4 * image.data.BYTES_PER_ELEMENT;
-    // TODO: This builds all filter funtions for evey line
+    // TODO: This builds all filter funtions for evey line - cache them for the whole image
     const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
 
     let sum = 0;
-    const channelsToWrite = getChannelsToWrite(ctx.colorType);
+    const channelsToWrite = getChannelsToWrite(colorType);
     const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
     let c = 0, byte = 0;
     for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) { // Pixel in line
@@ -220,12 +199,11 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
   }
 }
 
-function getChannelsToWrite(colorType: ColorType): number[] {
+function getChannelsToWrite(colorType: Exclude<ColorType, ColorType.Indexed>): number[] {
   switch (colorType) {
     case ColorType.Grayscale: return [0];
     case ColorType.Truecolor: return [0, 1, 2];
     case ColorType.GrayscaleAndAlpha: return [0, 3];
     case ColorType.TruecolorAndAlpha: return [0, 1, 2, 3];
   }
-  return [];
 }
