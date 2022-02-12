@@ -128,7 +128,7 @@ function pickFilterType(
   image: Readonly<IImage32> | Readonly<IImage64>,
   lineIndex: number
 ): FilterType {
-  const filterSums: Map<FilterType, number> = new Map();
+  const filterSums: number[] = [];
   const bpp = 4 * image.data.BYTES_PER_ELEMENT;
   for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
     // TODO: This builds all filter funtions for evey line - cache them for the whole image
@@ -145,14 +145,14 @@ function pickFilterType(
         }
       }
     }
-    filterSums.set(filterType, sum);
+    filterSums[filterType] = sum;
   }
   let lowestFilterType: FilterType = FilterType.None;
-  let lowestSum = filterSums.get(FilterType.None)!;
+  let lowestSum = filterSums[FilterType.None];
   for (const filterType of [1, 2, 3, 4] as FilterType[]) {
-    if (filterSums.get(filterType)! < lowestSum) {
+    if (filterSums[filterType] < lowestSum) {
       lowestFilterType = filterType;
-      lowestSum = filterSums.get(filterType)!;
+      lowestSum = filterSums[filterType];
     }
   }
   return lowestFilterType;
