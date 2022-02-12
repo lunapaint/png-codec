@@ -95,7 +95,7 @@ export interface IEncodeContext {
   transparentColorCount: number;
   firstTransparentColor: number | undefined;
   useTransparencyChunk: boolean;
-  options: IEncodePngOptions;
+  options: IEncodePngOptionsInternal;
   warnings: EncodeWarning[];
   info: string[];
 }
@@ -116,6 +116,11 @@ export const enum ChunkPartByteLength {
 
 export interface IPngPaletteInternal extends IPngPalette {
   setRgba(data: Uint8Array, offset: number, colorIndex: number): void;
+}
+
+export interface IEncodePngOptionsInternal extends IEncodePngOptions {
+  /** An optional filter pattern used for testing. */
+  filterPattern?: FilterType[];
 }
 
 export const enum FilterMethod {

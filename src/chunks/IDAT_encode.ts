@@ -95,8 +95,14 @@ function writeUncompressedData(
     return;
   }
 
-  // TODO: Allow specifying a filter pattern option for better testing - writing could be split into
-  //       2 phases; gather filter pattern (or use option) and writing using the filter pattern
+  // Support custom filter pattern to help with testing
+  let filterPattern: number[] | undefined;
+  if (ctx.options.filterPattern) {
+    if (ctx.options.filterPattern.length === 0) {
+      throw new Error('Filter pattern with 0 entries');
+    }
+    filterPattern = ctx.options.filterPattern;
+  }
 
   // If the image type is Grayscale or RGB (with or without Alpha), and the bit depth is not smaller
   // than 8, then use adaptive filtering as follows: independently for each row, apply all five
@@ -104,7 +110,7 @@ function writeUncompressedData(
   const channelsToWrite = getChannelsToWrite(ctx.colorType);
   for (; y < image.height; y++) {
     // Filter type
-    const filterType = pickFilterType(ctx.colorType, image, y * image.width * 4);
+    const filterType = filterPattern ? filterPattern[y % filterPattern.length] : pickFilterType(ctx.colorType, image, y * image.width * 4);
     const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
     const bpp = 4 * image.data.BYTES_PER_ELEMENT;
     const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
@@ -172,7 +178,7 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
     };
     case FilterType.Up: return (filt, filtX) => {
       bi = filtX - bpl;
-      return (filt[filtX] - filt[bi] + 256) % 256;
+      return (filt[filtX] - (bi < 0 ? 0 : filt[bi]) + 256) % 256;
     };
     case FilterType.Average: return (filt, filtX, isFirstInLine) => {
       ai = isFirstInLine ? -1 : filtX - bpp      ;
@@ -201,9 +207,9 @@ function buildFilterFunction(bpp: number, bpl: number, filterType: FilterType): 
 
 function getChannelsToWrite(colorType: Exclude<ColorType, ColorType.Indexed>): number[] {
   switch (colorType) {
-    case ColorType.Grayscale: return [0];
-    case ColorType.Truecolor: return [0, 1, 2];
-    case ColorType.GrayscaleAndAlpha: return [0, 3];
+    case ColorType.Grayscale:         return [0         ];
+    case ColorType.Truecolor:         return [0, 1, 2   ];
+    case ColorType.GrayscaleAndAlpha: return [0,       3];
     case ColorType.TruecolorAndAlpha: return [0, 1, 2, 3];
   }
 }

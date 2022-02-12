@@ -124,7 +124,7 @@ describe('encode', () => {
       }
     }
   });
-  describe('pngsuite', async () => {
+  describe('pngsuite', () => {
     const pngSuiteRoot = 'test/pngsuite/png';
     const files = fs.readdirSync(pngSuiteRoot);
     for (const file of files) {
@@ -145,7 +145,7 @@ describe('encode', () => {
       });
     }
   });
-  describe('imagetestsuite', async () => {
+  describe('imagetestsuite', () => {
     const pngSuiteRoot = 'test/imagetestsuite/png';
     const files = fs.readdirSync(pngSuiteRoot);
     for (const file of files) {
@@ -172,7 +172,7 @@ describe('encode', () => {
       });
     }
   });
-  describe('random_pngs', async () => {
+  describe('random_pngs', () => {
     const pngSuiteRoot = 'test/random_pngs';
     const files = fs.readdirSync(pngSuiteRoot);
     for (const file of files) {
