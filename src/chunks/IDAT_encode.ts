@@ -95,7 +95,7 @@ function writeUncompressedData(
     case ColorType.Truecolor: {
       for (; y < image.height; y++) {
         // Filter type
-        const filterType = pickFilterType(image, y * image.width * 4);
+        const filterType = pickFilterType(ctx, image, y * image.width * 4);
         const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
         const bpp = 4 * image.data.BYTES_PER_ELEMENT;
         const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
@@ -166,6 +166,7 @@ function writeUncompressedData(
 }
 
 function pickFilterType(
+  ctx: IEncodeContext,
   image: Readonly<IImage32> | Readonly<IImage64>,
   lineIndex: number
 ): FilterType {
@@ -176,97 +177,28 @@ function pickFilterType(
   // TODO: Support filtering properly for non true color
   // TODO: Use filter function here
 
-  const modForBitDepth = image.data.BYTES_PER_ELEMENT === 2 ? 65536 : 256;
   const filterSums: Map<FilterType, number> = new Map();
   for (const filterType of [0, 1, 2, 3, 4] as FilterType[]) {
+    const bpp = 4 * image.data.BYTES_PER_ELEMENT;
+    // TODO: This builds all filter funtions for evey line
+    const filterFn = buildFilterFunction(bpp, bpp * image.width, filterType);
+
     let sum = 0;
-    switch (filterType) {
-      case FilterType.None: {
-        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-          // TODO: This is for truecolor, handle other color types
-          sum += (
-            image.data[i    ] +
-            image.data[i + 1] +
-            image.data[i + 2]
-          );
-        }
-        break;
-      }
-      case FilterType.Sub: {
-        // TODO: This is only for truecolor, handle other color types
-        // First pixel in line is a special case
-        sum += (
-          image.data[lineIndex    ] +
-          image.data[lineIndex + 1] +
-          image.data[lineIndex + 2]
-        );
-        for (let i = lineIndex + 4; i < lineIndex + image.width * 4; i += 4) {
-          sum += (
-            (image.data[i    ] - image.data[i     - 4] + modForBitDepth) % modForBitDepth +
-            (image.data[i + 1] - image.data[i + 1 - 4] + modForBitDepth) % modForBitDepth +
-            (image.data[i + 2] - image.data[i + 2 - 4] + modForBitDepth) % modForBitDepth
-          );
-        }
-        break;
-      }
-      case FilterType.Up: {
-        // The first line should not use up as it's essentially just None
-        if (lineIndex === 0) {
-          sum = Infinity;
-        } else {
-          for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-            sum += (
-              ((image.data[i    ] - image.data[i     - image.width * 4] + modForBitDepth) % modForBitDepth) +
-              ((image.data[i + 1] - image.data[i + 1 - image.width * 4] + modForBitDepth) % modForBitDepth) +
-              ((image.data[i + 2] - image.data[i + 2 - image.width * 4] + modForBitDepth) % modForBitDepth)
-            );
+    switch (ctx.colorType) {
+      case ColorType.Truecolor: {
+        const dataUint8 = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.byteLength);
+        let p = 0, byte = 0;
+        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) { // Pixel in line
+          for (p = 0; p < 3 * image.data.BYTES_PER_ELEMENT; p += image.data.BYTES_PER_ELEMENT) { // Channel
+            for (byte = image.data.BYTES_PER_ELEMENT - 1; byte >= 0; byte--) { // Byte
+              sum += filterFn(dataUint8, i * image.data.BYTES_PER_ELEMENT + p + byte, i === lineIndex);
+            }
           }
         }
         break;
       }
-      case FilterType.Average: {
-        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-          sum += (
-            ((image.data[i    ] - Math.floor((
-              (i === lineIndex     ? 0 : image.data[i     - 4              ]) +
-              (i < image.width * 4 ? 0 : image.data[i     - image.width * 4])
-            ) / 2) + modForBitDepth) % modForBitDepth) +
-            ((image.data[i + 1] - Math.floor((
-              (i === lineIndex     ? 0 : image.data[i + 1 - 4              ]) +
-              (i < image.width * 4 ? 0 : image.data[i + 1 - image.width * 4])
-            ) / 2) + modForBitDepth) % modForBitDepth) +
-            ((image.data[i + 2] - Math.floor((
-              (i === lineIndex     ? 0 : image.data[i + 2 - 4              ]) +
-              (i < image.width * 4 ? 0 : image.data[i + 2 - image.width * 4])
-            ) / 2) + modForBitDepth) % modForBitDepth)
-          );
-        }
-        break;
-      }
-      case FilterType.Paeth: {
-        for (let i = lineIndex; i < lineIndex + image.width * 4; i += 4) {
-          sum += (
-            ((image.data[i    ] - paethPredicator(
-              ( i === lineIndex                         ? 0 : image.data[i     - 4                  ]),
-              (                    i < image.width * 4  ? 0 : image.data[i         - image.width * 4]),
-              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i     - 4 - image.width * 4]),
-            ) + modForBitDepth) % modForBitDepth) +
-            ((image.data[i + 1] - paethPredicator(
-              ( i === lineIndex                         ? 0 : image.data[i + 1 - 4                  ]),
-              (                    i < image.width * 4  ? 0 : image.data[i + 1     - image.width * 4]),
-              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 1 - 4 - image.width * 4]),
-            ) + modForBitDepth) % modForBitDepth) +
-            ((image.data[i + 2] - paethPredicator(
-              ( i === lineIndex                         ? 0 : image.data[i + 2 - 4                  ]),
-              (                    i < image.width * 4  ? 0 : image.data[i + 2     - image.width * 4]),
-              ((i === lineIndex || i < image.width * 4) ? 0 : image.data[i + 2 - 4 - image.width * 4]),
-            ) + modForBitDepth) % modForBitDepth)
-          );
-        }
-        break;
-      }
       default:
-        sum = Infinity;
+        throw new Error('NYI');
     }
     filterSums.set(filterType, sum);
   }
