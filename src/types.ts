@@ -119,7 +119,11 @@ export interface IPngPaletteInternal extends IPngPalette {
 }
 
 export interface IEncodePngOptionsInternal extends IEncodePngOptions {
-  /** An optional filter pattern used for testing. */
+  /**
+   * An optional filter pattern used for testing. This is internal only as it's not useful outside
+   * of testing to ensure each permutation is correct, unless the image is analyzed outside of the
+   * library but that's out of scope for this library.
+   */
   filterPattern?: FilterType[];
 }
 
