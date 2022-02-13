@@ -40,6 +40,7 @@ function calculateDataLength(
   if (image.data.BYTES_PER_ELEMENT === 2 && ctx.bitDepth === 8) {
     throw new Error('16 to 8 bit conversion isn\'t supported yet');
   }
+  /* istanbul ignore next - this error should never happen in practice */
   if (ctx.interlaceMethod !== InterlaceMethod.None) {
     throw new Error('Only interlace method 0 is supported currently');
   }

@@ -7,7 +7,7 @@
 import { deepStrictEqual, fail, strictEqual } from 'assert';
 import * as fs from 'fs';
 import { join } from 'path';
-import { EncodeWarning } from '../../out-dev/png.js';
+import { EncodeError, EncodeWarning } from '../../out-dev/png.js';
 import { decodePng } from '../../out-dev/pngDecoder.js';
 import { encodePng } from '../../out-dev/pngEncoder.js';
 import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../typings/api.js';
@@ -53,6 +53,27 @@ describe('encode', () => {
       strictEqual(view.getUint8(13), 72, 'H in IHDR type doesn\'t match');
       strictEqual(view.getUint8(14), 68, 'D in IHDR type doesn\'t match');
       strictEqual(view.getUint8(15), 82, 'R in IHDR type doesn\'t match');
+    });
+  });
+  describe('tEXt', () => {
+    it('Invalid keyword length', async () => {
+      try {
+        await encodePng({
+          data: new Uint8Array(red),
+          width: 1,
+          height: 1
+        }, {
+          ancillaryChunks: [{
+            type: 'tEXt',
+            keyword: 'a'.repeat(80),
+            text: 'foo'
+          }]
+        });
+      } catch (e) {
+        deepStrictEqual(e, new EncodeError('tEXt: Invalid keyword length: 0 < 80 < 80', 0));
+        return;
+      }
+      fail('exception expected');
     });
   });
   it('should throw when dimensions are 0x0', async () => {

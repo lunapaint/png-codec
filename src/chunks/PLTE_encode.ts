@@ -11,14 +11,13 @@ export function encodeChunk(
   ctx: IEncodeContext,
   image: Readonly<IImage32> | Readonly<IImage64>
 ): { chunkData: Uint8Array, palette: Map<number, number> } {
-  if (image.width <= 0 || image.height <= 0) {
-    throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
-  }
+  /* istanbul ignore next - this error should never happen in practice */
   if (ctx.bitDepth === 16 || image.data.BYTES_PER_ELEMENT === 2) {
     throw new Error('Cannot encode 16 bit images using indexed color type');
   }
 
   // Validate palette size
+  /* istanbul ignore next - this error should never happen in practice */
   if (ctx.colorSet.size > Math.pow(2, ctx.bitDepth)) {
     throw new Error(`Too many colors ${ctx.colorSet.size} to encode into indexed image (2^${ctx.bitDepth} = ${Math.pow(2, ctx.bitDepth)})`);
   }
