@@ -43,15 +43,14 @@ export function parseChunk(ctx: IDecodeContext, header: IPngHeaderDetails, chunk
     handleWarning(ctx, createChunkDecodeWarning(chunk, `Too many entries for bit depth (${chunk.dataLength / 3} > 2^${header.bitDepth})`, offset));
   }
 
-  return new PngPalette(ctx.view, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type, chunk.dataLength, header.bitDepth);
+  return new Palette(ctx.view, chunk.offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type, chunk.dataLength);
 }
 
-class PngPalette implements IPngPaletteInternal {
+export class Palette implements IPngPaletteInternal {
   constructor(
     private readonly _view: DataView,
     private _paletteOffset: number,
-    private _length: number,
-    private _bitDepth: number
+    private _length: number
   ) {
   }
 

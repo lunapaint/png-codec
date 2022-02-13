@@ -8,7 +8,7 @@ import { deepStrictEqual, fail, ok, strictEqual } from 'assert';
 import * as fs from 'fs';
 import { join } from 'path';
 import { decodePng } from '../out-dev/png.js';
-import { IPngDetails, PngMetadata } from '../typings/api';
+import { ColorType, IPngDetails, PngMetadata } from '../typings/api';
 
 export interface ITestOptions {
   /**
@@ -183,4 +183,15 @@ export function dataArraysEqual(actual: ArrayLike<number>, expected: ArrayLike<n
 
   // Double check using node's assert lib
   deepStrictEqual(actual, expected);
+}
+
+export function colorTypeIdToName(id: ColorType | undefined): string {
+  switch (id) {
+    case undefined: return 'undefined';
+    case ColorType.Grayscale: return 'greyscale';
+    case ColorType.Truecolor: return 'truecolor';
+    case ColorType.Indexed: return 'indexed';
+    case ColorType.GrayscaleAndAlpha: return 'greyscale and alpha';
+    case ColorType.TruecolorAndAlpha: return 'truecolor and alpha';
+  }
 }

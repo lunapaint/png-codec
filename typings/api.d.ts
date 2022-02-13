@@ -22,6 +22,14 @@ export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions
 export function decodePng(data: Readonly<Uint8Array>, options: IDecodePngOptions): Promise<IDecodedPng<IImage32 | IImage64>>;
 
 /**
+ * Encodes a png file.
+ *
+ * @param data The image data in rgba format.
+ * @param options Options to configure how encoding happens.
+ */
+export function encodePng(data: Readonly<IImage32> | Readonly<IImage64>, options?: IEncodePngOptions): Promise<IEncodedPng>;
+
+/**
  * A png that has been successfully decoded.
  */
 export interface IDecodedPng<T extends IImage32 | IImage64> {
@@ -70,6 +78,28 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
 
   /**
    * Any informational messages when decoding. These are things of note but not important enough to
+   * be a warning.
+   */
+  info: string[];
+}
+
+export interface IEncodedPng {
+  data: Uint8Array;
+
+  /**
+   * Any warnings that were encountered during encoding. Warnings typically fall into the following
+   * categories:
+   *
+   * - An explicitly provided color type must be changed in order to encode the image (eg.
+   * specifying Truecolor but having more than one transparent pixel).
+   *
+   * Strict mode can be enabled via {@link IEncodePngOptions.strictMode} which will throw an error
+   * when any warning is encountered.
+   */
+  warnings?: EncodeWarning[];
+
+  /**
+   * Any informational messages when encoding. These are things of note but not important enough to
    * be a warning.
    */
   info: string[];
@@ -197,6 +227,52 @@ export interface IDecodePngOptions {
    * would has failed in strict mode in {@link IDecodedPng.warnings}.
    */
   strictMode?: boolean;
+}
+
+/**
+ * An optional set of options to encode an image with. The options override the specified property
+ * when encoding, except for the case where it's not possible to encode the image with that option
+ * at which point it will be overridden (unless {@link IEncodePngOptions.strictMode} is used).
+ *
+ * @example Using the Truecolor color type that contains transparency will use either truecolor with
+ * a tRNS chunk or truecolor and alpha depending on which is smaller.
+ * @example Using the TruecolorAndAlpha color type will always use it.
+ *
+ * @throws An {@link EncodeError} when an error is encountered or a {@link EncodeWarning} when a
+ * warning is encountered in strict mode. In Typescript, `instanceof` can be used to narrow the type
+ * safely.
+ */
+export interface IEncodePngOptions {
+  /**
+   * The bit depth to encode with. When unspecified, the library will scan the image and determine
+   * the best value based on the content, it's best to pass this in if know to avoid the scan
+   * iterating over every pixel in the image.
+   */
+  bitDepth?: BitDepth;
+
+  /**
+   * What color type to encode with. Remarks:
+   *
+   * - When unspecified, the library will decide what color type to use.
+   * - When grayscale is used, only the red channel will be considered when encoding as the image is
+   * expected to be a valid grayscale image.
+   * - When grayscale or truecolor are used and transparent colors exist, the resulting image will
+   * be "upgraded" to {@link ColorType.GrayscaleAndAlpha}/{@link ColorType.TruecolorAndAlpha} or the
+   * `tRNS` chunk will be used, depending on which consumes less bytes.
+   */
+  colorType?: ColorType;
+
+  /**
+   * Enabled strict encoding which will throw when warnings are encountered.
+   */
+  strictMode?: boolean;
+
+  /**
+   * Additional metadata to encode as chunks in the png. By default a single
+   * `Software=@lunapaint/png-codec` chunk will be written, setting this to `{}` or will suppress
+   * this default chunk.
+   */
+  ancillaryChunks?: (IPngMetadataTextualData)[];
 }
 
 /**
@@ -880,7 +956,27 @@ export class DecodeError extends Error {
  */
 export class DecodeWarning extends Error {
   /**
+   * The byte offset of the warning in the datastream.
+   */
+  offset: number;
+}
+
+/**
+ * A critical error occurred during encoding.
+ */
+export class EncodeError extends Error {
+  /**
    * The byte offset of the error in the datastream.
+   */
+  offset: number;
+}
+
+/**
+ * A warning occurred during encoding.
+ */
+export class EncodeWarning extends Error {
+  /**
+   * The byte offset of the warning in the datastream.
    */
   offset: number;
 }

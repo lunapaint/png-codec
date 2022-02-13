@@ -6,7 +6,8 @@
 
 import * as pako from 'pako';
 import { createChunkDecodeError, DecodeError } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../types.js';
+import { paethPredicator } from '../paeth.js';
+import { ChunkPartByteLength, ColorType, FilterType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../types.js';
 
 /**
  * `IDAT` Image Data
@@ -102,7 +103,7 @@ function defilter(
     // Get the filter function for this line, caching it for later lines
     let filterFn = filterFnCache.get(filterType);
     if (!filterFn) {
-      filterFn = buildDefilterFunction(bppFloat, bpl, header.bitDepth, width, filterType);
+      filterFn = buildDefilterFunction(bppFloat, bpl, width, filterType);
       filterFnCache.set(filterType, filterFn);
     }
 
@@ -177,51 +178,14 @@ function defilter(
   return result;
 }
 
-const enum FilterType {
-  /**
-   * ```
-   * Filt(x) = Orig(x)
-   * Recon(x) = Filt(x)
-   * ```
-   */
-  None = 0,
-  /**
-   * ```
-   * Filt(x) = Orig(x) - Orig(a)
-   * Recon(x) = Filt(x) + Recon(a)
-   * ```
-   */
-  Sub = 1,
-  /**
-   * ```
-   * Filt(x) = Orig(x) - Orig(b)
-   * Recon(x) = Filt(x) + Recon(b)
-   * ```
-   */
-  Up = 2,
-  /**
-   * ```
-   * Filt(x) = Orig(x) - floor((Orig(a) + Orig(b)) / 2)
-   * Recon(x) = Filt(x) + floor((Recon(a) + Recon(b)) / 2)
-   * ```
-   */
-  Average = 3,
-  /**
-   * ```
-   * Filt(x) = Orig(x) - PaethPredictor(Orig(a), Orig(b), Orig(c))
-   * Recon(x) = Filt(x) + PaethPredictor(Recon(a), Recon(b), Recon(c))
-   * ```
-   */
-  Paeth = 4
-}
-
 function isValidFilterType(filterType: number): filterType is FilterType {
   return filterType % 1 === 0 && filterType >= 0 && filterType <= 4;
 }
 
 type DefilterFunction = (filt: Uint8Array | Uint16Array, filtX: number, recon: Uint8Array | Uint16Array, reconX: number) => number;
 
-function buildDefilterFunction(bpp: number, bpl: number, bitDepth: number, width: number, filterType: FilterType): DefilterFunction {
+function buildDefilterFunction(bpp: number, bpl: number, width: number, filterType: FilterType): DefilterFunction {
+  // This function is not called for the first pixel in a line so ai/ci should always be valid
   let ai = 0, bi = 0, ci = 0;
   switch (filterType) {
     case FilterType.None: return (filt, filtX) => filt[filtX];
@@ -251,20 +215,6 @@ function buildDefilterFunction(bpp: number, bpl: number, bitDepth: number, width
       ) % 256;
     };
   }
-}
-
-function paethPredicator(a: number, b: number, c: number): number {
-  const p = a + b - c;
-  const pa = Math.abs(p - a);
-  const pb = Math.abs(p - b);
-  const pc = Math.abs(p - c);
-  if (pa <= pb && pa <= pc) {
-    return a;
-  }
-  if (pb <= pc) {
-    return b;
-  }
-  return c;
 }
 
 function getBytesPerPixel(header: IPngHeaderDetails): number {

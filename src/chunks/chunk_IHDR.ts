@@ -6,6 +6,7 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeError, createChunkDecodeWarning, handleWarning } from '../assert.js';
 import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, IInitialDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../types.js';
+import { isValidBitDepth, isValidColorType, isValidFilterMethod, isValidInterlaceMethod } from '../validate.js';
 
 /**
  * `IHDR` Image Header
@@ -39,15 +40,19 @@ export function parseChunk(ctx: IInitialDecodeContext, chunk: IPngChunk): IPngHe
   assertChunkCompressionMethod(ctx, chunk, compressionMethod, offset);
   offset++;
 
-  const filterMethod = ctx.view.getUint8(offset);
-  if (filterMethod !== 0) {
+  let filterMethod = ctx.view.getUint8(offset);
+  if (!isValidFilterMethod(filterMethod)) {
     handleWarning(ctx, createChunkDecodeWarning(chunk, `Filter method "${filterMethod}" is not valid`, offset));
+    // Validation failed. If not in strict mode, continue with adaptive filter method
+    filterMethod = 0;
   }
   offset++;
 
-  const interlaceMethod = ctx.view.getUint8(offset);
+  let interlaceMethod = ctx.view.getUint8(offset);
   if (!isValidInterlaceMethod(interlaceMethod)) {
     handleWarning(ctx, createChunkDecodeWarning(chunk, `Interlace method "${interlaceMethod}" is not valid`, offset));
+    // Validation failed. If not in strict mode, continue with no interlace method
+    interlaceMethod = InterlaceMethod.None;
   }
   offset++;
 
@@ -58,31 +63,4 @@ export function parseChunk(ctx: IInitialDecodeContext, chunk: IPngChunk): IPngHe
     colorType,
     interlaceMethod
   };
-}
-
-function isValidBitDepth(bitDepth: number): bitDepth is BitDepth {
-  return (
-    bitDepth === 1 ||
-    bitDepth === 2 ||
-    bitDepth === 4 ||
-    bitDepth === 8 ||
-    bitDepth === 16
-  );
-}
-
-function isValidColorType(colorType: number, bitDepth: number): colorType is ColorType {
-  return (
-    (colorType === 0 && bitDepth >= 1 && bitDepth <= 16) ||
-    (colorType === 2 && bitDepth >= 8 && bitDepth <= 16) ||
-    (colorType === 3 && bitDepth >= 1 && bitDepth <= 8) ||
-    (colorType === 4 && bitDepth >= 8 && bitDepth <= 16) ||
-    (colorType === 6 && bitDepth >= 8 && bitDepth <= 16)
-  );
-}
-
-function isValidInterlaceMethod(interlaceMethod: number): interlaceMethod is InterlaceMethod {
-  return (
-    interlaceMethod === 0 ||
-    interlaceMethod === 1
-  );
 }

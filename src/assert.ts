@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { ChunkPartByteLength, IDecodeContext, IDecodedPng, IInitialDecodeContext, IPngChunk, IPngDetails, KnownChunkTypes } from './types.js';
+import { ChunkPartByteLength, IDecodeContext, IDecodedPng, IInitialDecodeContext, IPngChunk, KnownChunkTypes } from './types.js';
 
 /**
  * Assert the given chunk type already exists.
@@ -134,13 +134,13 @@ export class DecodeWarning extends Error {
 }
 
 /**
- * Handles an error, throwing in strict mode or adding to the warnings array otherwise.
+ * Handles a warning, throwing in strict mode or adding to the warnings array otherwise.
  * @param ctx The decode context.
- * @param error The error to handle.
+ * @param warning The warning to handle.
  */
-export function handleWarning(ctx: IInitialDecodeContext, error: DecodeWarning) {
+export function handleWarning(ctx: IInitialDecodeContext, warning: DecodeWarning) {
   if (ctx.options.strictMode) {
-    throw error;
+    throw warning;
   }
-  ctx.warnings.push(error);
+  ctx.warnings.push(warning);
 }
