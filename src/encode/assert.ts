@@ -23,7 +23,7 @@ export class EncodeWarning extends Error {
  * @param ctx The decode context.
  * @param warning The warning to handle.
  */
- export function handleWarning(ctx: Pick<IEncodeContext, 'options' | 'warnings'>, warning: EncodeWarning) {
+export function handleWarning(ctx: Pick<IEncodeContext, 'options' | 'warnings'>, warning: EncodeWarning) {
   if (ctx.options.strictMode) {
     throw warning;
   }

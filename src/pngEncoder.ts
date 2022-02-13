@@ -24,9 +24,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
 ) => Uint8Array; }> {
   switch (type) {
     case KnownChunkTypes.tRNS: return import(`./chunks/tRNS_encode.js`);
-    // This is an exception that should never happen in practice, it's only here for a nice error
-    // message if it does.
-    /* istanbul ignore next */
+    /* istanbul ignore next - this error should never happen in practice */
     default:
       // Throw a regular error as this is unexpected
       throw new Error(`Could not get encoder for chunk type "${type}"`);
@@ -186,7 +184,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
     firstTransparentColor: transparentColorSet.size > 0 ? transparentColorSet.values().next().value : undefined,
     useTransparencyChunk,
     options,
-    warnings: [],
-    info: []
+    warnings,
+    info
   };
 }

@@ -14,11 +14,12 @@ export function encodeChunk(
 ): Uint8Array {
   switch (ctx.colorType) {
     case ColorType.Grayscale: {
+      /* istanbul ignore next - this error should never happen in practice */
       if (ctx.firstTransparentColor === undefined) {
-        throw new Error('Cannot write tRNS for True color without any transparent colors');
+        throw new Error('Cannot write tRNS for grayscale without any transparent colors');
       }
       const firstTransparentColor = ctx.firstTransparentColor;
-      return writeChunkDataFn('tRNS', 6, stream => {
+      return writeChunkDataFn('tRNS', 2, stream => {
         if (image.data.BYTES_PER_ELEMENT === 2) {
           stream.writeUint16((firstTransparentColor >> 48) & 0xFFFF);
         } else {
@@ -27,6 +28,7 @@ export function encodeChunk(
       });
     }
     case ColorType.Indexed: {
+      /* istanbul ignore next - this error should never happen in practice */
       if (!ctx.palette) {
         throw new Error('Cannot encode tRNS chunk for indexed image without palette');
       }
@@ -37,6 +39,7 @@ export function encodeChunk(
       });
     }
     case ColorType.Truecolor: {
+      /* istanbul ignore next - this error should never happen in practice */
       if (ctx.firstTransparentColor === undefined) {
         throw new Error('Cannot write tRNS for True color without any transparent colors');
       }
@@ -53,6 +56,7 @@ export function encodeChunk(
         }
       });
     }
+    /* istanbul ignore next - this error should never happen in practice */
     default:
       throw new Error(`Cannot encode tRNS chunk for color type "${ctx.colorType}"`);
   }

@@ -4,13 +4,14 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { fail, strictEqual } from 'assert';
+import { deepStrictEqual, fail, strictEqual } from 'assert';
+import * as fs from 'fs';
+import { join } from 'path';
+import { EncodeWarning } from '../../out-dev/png.js';
 import { decodePng } from '../../out-dev/pngDecoder.js';
 import { encodePng } from '../../out-dev/pngEncoder.js';
 import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../typings/api.js';
 import { colorTypeIdToName, dataArraysEqual } from '../testUtil.js';
-import * as fs from 'fs';
-import { join } from 'path';
 
 const red   = [0xFF, 0x00, 0x00, 0xFF];
 const green = [0x00, 0xFF, 0x00, 0xFF];
@@ -65,6 +66,71 @@ describe('encode', () => {
       return;
     }
     fail('exception expected');
+  });
+  describe('errors', () => {
+    it('should throw when image dimensions don\'t match data length', async () => {
+      try {
+        await encodePng({
+          data: new Uint8Array(red),
+          width: 2,
+          height: 1
+        });
+      } catch {
+        return;
+      }
+      fail('exception expected');
+    });
+    it('should give a warning when "upgrading" explicit color type', async () => {
+      const result = await encodePng({
+        data: new Uint8Array([255, 0, 0, 128, 255, 0, 0, 64]),
+        width: 2,
+        height: 1
+      }, {
+        colorType: ColorType.Truecolor
+      });
+      deepStrictEqual(result.warnings, [new EncodeWarning('Cannot encode image as color type Truecolor as it contains 2 transparent colors', 0)]);
+    });
+    it('should throw when "upgrading" explicit color type in strict mode', async () => {
+      try {
+        await encodePng({
+          data: new Uint8Array([255, 0, 0, 128, 255, 0, 0, 64]),
+          width: 2,
+          height: 1
+        }, {
+          colorType: ColorType.Truecolor,
+          strictMode: true
+        });
+      } catch {
+        return;
+      }
+      fail('exception expected');
+    });
+  });
+  describe('tRNS', () => {
+    it('should encode 8-bit grayscale tRNS chunk', async () => {
+      const data = new Uint8Array([255, 255, 255, 0, 128, 128, 128, 255]);
+      const result = await encodePng({
+        data,
+        width: 2,
+        height: 1
+      }, {
+        colorType: ColorType.Grayscale
+      });
+      const decoded = await decodePng(result.data, { strictMode: true });
+      dataArraysEqual(decoded.image.data, data);
+    });
+    it('should encode 16-bit grayscale tRNS chunk', async () => {
+      const data = new Uint16Array([65535, 65535, 65535, 0, 32768, 32768, 32768, 65535]);
+      const result = await encodePng({
+        data,
+        width: 2,
+        height: 1
+      }, {
+        colorType: ColorType.Grayscale
+      });
+      const decoded = await decodePng(result.data, { strictMode: true });
+      dataArraysEqual(decoded.image.data, data);
+    });
   });
   describe('integration', () => {
     for (const bitDepth of [undefined, 8, 16] as (BitDepth | undefined)[]) {
