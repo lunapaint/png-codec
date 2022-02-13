@@ -11,7 +11,7 @@ import { EncodeError, EncodeWarning } from '../../out-dev/public/png.js';
 import { decodePng } from '../../out-dev/decode/decoder.js';
 import { encodePng } from '../../out-dev/encode/encoder.js';
 import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../typings/api.js';
-import { colorTypeIdToName, dataArraysEqual } from '../testUtil.js';
+import { colorTypeIdToName, dataArraysEqual } from '../shared/testUtil.js';
 
 const red   = [0xFF, 0x00, 0x00, 0xFF];
 const green = [0x00, 0xFF, 0x00, 0xFF];

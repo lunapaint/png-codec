@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { IPngMetadataSuggestedPaletteEntry } from '../typings/api';
-import { createTests } from './testUtil.js';
+import { IPngMetadataSuggestedPaletteEntry } from '../../typings/api';
+import { createTests } from '../shared/testUtil.js';
 
 const pngSuiteRoot = 'test/pngsuite/png';
 

@@ -5,7 +5,7 @@
  */
 
 import * as fs from 'fs';
-import { colorTypeIdToName, createTests } from './testUtil.js';
+import { colorTypeIdToName, createTests } from '../shared/testUtil.js';
 
 const suiteRoot = 'test/random_pngs';
 

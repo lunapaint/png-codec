@@ -7,8 +7,8 @@
 import { deepStrictEqual, fail, ok, strictEqual } from 'assert';
 import * as fs from 'fs';
 import { join } from 'path';
-import { decodePng } from '../out-dev/public/png.js';
-import { ColorType, IPngDetails, PngMetadata } from '../typings/api';
+import { decodePng } from '../../out-dev/public/png.js';
+import { ColorType, IPngDetails, PngMetadata } from '../../typings/api';
 
 export interface ITestOptions {
   /**
