@@ -14,7 +14,6 @@ export function encodeChunk(
   if (image.width <= 0 || image.height <= 0) {
     throw new Error(`Invalid dimensions ${image.width}x${image.height}`);
   }
-  // TODO: Support 16 bit -> 8 bit convertion
   if (ctx.bitDepth === 16 || image.data.BYTES_PER_ELEMENT === 2) {
     throw new Error('Cannot encode 16 bit images using indexed color type');
   }

@@ -68,7 +68,6 @@ function writeUncompressedData(
 ) {
   let i = 0, x = 0, y = 0;
 
-  // TODO: Cover < bitDepth 8 case
   // If the image type is Palette, or the bit depth is smaller than 8, then do not filter the image
   // (i.e. use fixed filtering, with the filter None).
   if (ctx.colorType === ColorType.Indexed) {

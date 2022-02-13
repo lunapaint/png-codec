@@ -76,7 +76,6 @@ describe('encode', () => {
         ColorType.GrayscaleAndAlpha,
         ColorType.TruecolorAndAlpha
       ]) {
-        // TODO: Support indexed 16->8 bit conversion?
         if (colorType === ColorType.Indexed && bitDepth === 16) {
           continue;
         }

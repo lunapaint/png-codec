@@ -106,7 +106,6 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
   const warnings: DecodeWarning[] = [];
   const info: string[] = [];
 
-  // TODO: Don't analyze any info we don't need
   const pixelCount = image.width * image.height;
   const indexCount = pixelCount * 4;
   const colorSet = new Set<number>();
@@ -180,9 +179,7 @@ function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncod
 
   return {
     colorType,
-    // TODO: Support configuring bit depth
     bitDepth: image.data.BYTES_PER_ELEMENT === 2 ? 16 : 8,
-    // TODO: Support configuring interlace method
     interlaceMethod: InterlaceMethod.None,
     colorSet,
     transparentColorCount: transparentColorSet.size,
