@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkFollows, assertChunkPrecedes, createChunkDecodeWarning } from '../assert.js';
-import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `tRNS` Transparency

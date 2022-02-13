@@ -6,7 +6,7 @@
 
 import { throws } from 'assert';
 import { join } from 'path';
-import { verifyPngSignature } from '../out-dev/pngDecoder.js';
+import { verifyPngSignature } from '../out-dev/decode/decoder.js';
 import * as fs from 'fs';
 
 const pngSuiteRoot = 'test/pngsuite/png';

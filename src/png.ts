@@ -7,7 +7,7 @@
 export { DecodeError, DecodeWarning } from './decode/assert.js';
 export { EncodeError, EncodeWarning } from './encode/assert.js';
 import { IEncodedPng } from '../typings/api.js';
-import { IDecodedPng, IDecodePngOptions, IEncodePngOptions, IImage32, IImage64 } from './types.js';
+import { IDecodedPng, IDecodePngOptions, IEncodePngOptions, IImage32, IImage64 } from './shared/types.js';
 
 // This file is the entry point the the library, it wraps the implementation files using dynamic
 // imports so the bare minimum code is loaded when code splitting is enabled.

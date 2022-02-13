@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataChromaticity, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `cHRM` Primary chromacities and white point

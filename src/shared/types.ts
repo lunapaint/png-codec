@@ -41,7 +41,7 @@ export {
   OptionalParsedChunkTypes,
   PngMetadata,
   RenderingIntent
-} from '../typings/api.js';
+} from '../../typings/api.js';
 
 import {
   BitDepth,
@@ -56,7 +56,7 @@ import {
   IPngChunk,
   IPngPalette,
   PngMetadata
-} from '../typings/api.js';
+} from '../../typings/api.js';
 
 export interface IBaseDecodeContext {
   view: DataView;

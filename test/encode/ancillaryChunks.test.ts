@@ -5,8 +5,8 @@
  */
 
 import { deepStrictEqual } from 'assert';
-import { decodePng } from '../../out-dev/pngDecoder.js';
-import { encodePng } from '../../out-dev/pngEncoder.js';
+import { decodePng } from '../../out-dev/decode/decoder.js';
+import { encodePng } from '../../out-dev/encode/encoder.js';
 import { IDecodedPng, IEncodePngOptions, IImage32 } from '../../typings/api.js';
 
 

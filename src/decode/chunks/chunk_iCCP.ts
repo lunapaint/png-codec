@@ -6,7 +6,7 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthGte, assertChunkMutualExclusion, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataEmbeddedIccProfile, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `iCCP` Embedded ICC profile

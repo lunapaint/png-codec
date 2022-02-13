@@ -6,7 +6,7 @@
 
 import { assertChunkCompressionMethod, assertChunkDataLengthGte } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataInternationalTextualData } from '../../shared/types.js';
 
 /**
  * `iTXt` International textual data

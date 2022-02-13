@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataBackgroundColor, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `bKGD` Background

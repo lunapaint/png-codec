@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { ChunkPartByteLength, IDecodeContext, IDecodedPng, IInitialDecodeContext, IPngChunk, KnownChunkTypes } from '../types.js';
+import { ChunkPartByteLength, IDecodeContext, IDecodedPng, IInitialDecodeContext, IPngChunk, KnownChunkTypes } from '../shared/types.js';
 
 /**
  * Assert the given chunk type already exists.

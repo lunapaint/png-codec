@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkPrecedes, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataPhysicalPixelDimensions, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `pHYs` Physical pixel dimensions

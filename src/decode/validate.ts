@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { BitDepth, ColorType, FilterMethod, InterlaceMethod } from '../types.js';
+import { BitDepth, ColorType, FilterMethod, InterlaceMethod } from '../shared/types.js';
 
 export function isValidBitDepth(bitDepth: number): bitDepth is BitDepth {
   return (

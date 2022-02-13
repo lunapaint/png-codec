@@ -7,7 +7,7 @@
 import * as pako from 'pako';
 import { createChunkDecodeError, DecodeError } from '../assert.js';
 import { paethPredicator } from '../../shared/paeth.js';
-import { ChunkPartByteLength, ColorType, FilterType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../../types.js';
+import { ChunkPartByteLength, ColorType, FilterType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../../shared/types.js';
 
 /**
  * `IDAT` Image Data

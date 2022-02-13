@@ -6,7 +6,7 @@
 
 import { assertChunkDataLengthGte } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../../shared/types.js';
 
 /**
  * `tEXt` Textual data

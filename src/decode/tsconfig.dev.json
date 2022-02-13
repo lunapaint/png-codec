@@ -11,18 +11,16 @@
     "module": "CommonJS",
     "target": "ES2020",
     "rootDir": ".",
-    "outDir": "../out-dev",
+    "outDir": "../../out-dev/decode",
     "lib": [
       "DOM",
       "ES2020"
     ]
   },
   "include": [
-    "./*"
+    "./**/*"
   ],
   "references": [
-    { "path": "./decode/tsconfig.dev.json" },
-    { "path": "./encode/tsconfig.dev.json" },
-    { "path": "./shared/tsconfig.dev.json" }
+    { "path": "../shared/tsconfig.dev.json" }
   ]
 }

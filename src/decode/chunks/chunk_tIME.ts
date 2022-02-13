@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../../shared/types.js';
 
 /**
  * `tIME` Image last-modification time

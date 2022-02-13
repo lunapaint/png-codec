@@ -6,7 +6,7 @@
 
 import { assertChunkPrecedes, createChunkDecodeWarning } from '../assert.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataSuggestedPalette, IPngMetadataSuggestedPaletteEntry, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `sPLT` Suggested palette

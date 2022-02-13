@@ -7,7 +7,7 @@
 import { assertChunkDataLengthGte, assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning } from '../assert.js';
 import { readFloat } from '../float.js';
 import { readText } from '../text.js';
-import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCalibrationOfPixelValues, KnownChunkTypes } from '../../types.js';
+import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataCalibrationOfPixelValues, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `pCAL` Calibration of pixel values

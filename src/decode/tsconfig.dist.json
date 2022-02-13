@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.dev.json",
+  "compilerOptions": {
+    "removeComments": true,
+    "sourceMap": false,
+    "outDir": "../../out-dist/decode"
+  },
+  "references": [
+    { "path": "../shared/tsconfig.dist.json" }
+  ]
+}

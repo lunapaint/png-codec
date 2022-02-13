@@ -5,7 +5,7 @@
  */
 
 import { assertChunkCompressionMethod, assertChunkDataLengthEquals, createChunkDecodeError, createChunkDecodeWarning, handleWarning } from '../assert.js';
-import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, IInitialDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../../types.js';
+import { BitDepth, ChunkPartByteLength, ColorType, IDecodeContext, IInitialDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails } from '../../shared/types.js';
 import { isValidBitDepth, isValidColorType, isValidFilterMethod, isValidInterlaceMethod } from '../validate.js';
 
 /**

@@ -5,14 +5,12 @@
  */
 
 import { IEncodedPng } from '../../typings/api.js';
-import { DecodeWarning } from '../decode/assert.js';
 import { ByteStream } from './byteStream.js';
 import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
 import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
 import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
-import { handleWarning } from './assert.js';
-import { EncodeError, EncodeWarning } from '../png.js';
-import { ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from '../types.js';
+import { EncodeError, EncodeWarning, handleWarning } from './assert.js';
+import { ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from '../shared/types.js';
 
 /**
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
@@ -101,7 +99,7 @@ function writePngSignature(): Uint8Array {
 }
 
 function analyze(image: Readonly<IImage32> | Readonly<IImage64>, options: IEncodePngOptions = {}): IEncodeContext {
-  const warnings: DecodeWarning[] = [];
+  const warnings: EncodeWarning[] = [];
   const info: string[] = [];
 
   const pixelCount = image.width * image.height;

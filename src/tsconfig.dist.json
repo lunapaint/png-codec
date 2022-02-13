@@ -1,10 +1,13 @@
 {
   "extends": "./tsconfig.dev.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": false,
     "removeComments": true,
     "sourceMap": false,
     "outDir": "../out-dist"
-  }
+  },
+  "references": [
+    { "path": "./decode/tsconfig.dist.json" },
+    { "path": "./encode/tsconfig.dist.json" },
+    { "path": "./shared/tsconfig.dist.json" }
+  ]
 }

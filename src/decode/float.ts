@@ -6,7 +6,7 @@
 
 import { createChunkDecodeWarning, handleWarning } from './assert.js';
 import { readText } from './text.js';
-import { IDecodeContext, IPngChunk } from '../types.js';
+import { IDecodeContext, IPngChunk } from '../shared/types.js';
 
 export function readFloat(ctx: IDecodeContext, chunk: IPngChunk, textDecoder: TextDecoder | undefined, offset: number, maxOffset: number, readTrailingNull: boolean): { bytesRead: number, value: number } {
   const readResult = readText(ctx, chunk, textDecoder, undefined, offset, maxOffset, readTrailingNull);

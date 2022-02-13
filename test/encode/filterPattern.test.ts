@@ -6,9 +6,9 @@
 
 import * as fs from 'fs';
 import { join } from 'path';
-import { decodePng } from '../../out-dev/pngDecoder.js';
-import { encodePng } from '../../out-dev/pngEncoder.js';
-import { IEncodePngOptionsInternal } from '../../src/types.js';
+import { decodePng } from '../../out-dev/decode/decoder.js';
+import { encodePng } from '../../out-dev/encode/encoder.js';
+import { IEncodePngOptionsInternal } from '../../src/shared/types.js';
 import { dataArraysEqual } from '../testUtil.js';
 
 describe('filterPattern', () => {

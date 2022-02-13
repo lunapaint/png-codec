@@ -10,7 +10,7 @@ import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
 import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
 import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
 import { crc32 } from '../shared/crc32.js';
-import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata, IInitialDecodeContext } from '../types.js';
+import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata, IInitialDecodeContext } from '../shared/types.js';
 
 export function verifyPngSignature(ctx: IInitialDecodeContext): void {
   if (ctx.view.byteLength < 7) {

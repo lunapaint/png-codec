@@ -6,7 +6,7 @@
 
 import { ByteStream } from './byteStream.js';
 import { crc32 } from '../shared/crc32.js';
-import { ChunkPartByteLength } from '../types.js';
+import { ChunkPartByteLength } from '../shared/types.js';
 
 export function writeChunkType(stream: ByteStream, type: string) {
   stream.writeUint8(type.charCodeAt(0));

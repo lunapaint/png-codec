@@ -5,7 +5,7 @@
  */
 
 import { assertChunkDataLengthEquals, assertChunkFollows } from '../assert.js';
-import { IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes } from '../../types.js';
+import { IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes } from '../../shared/types.js';
 
 /**
  * `IEND` Image trailer
