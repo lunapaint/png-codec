@@ -5,8 +5,8 @@
  */
 
 import * as pako from 'pako';
-import { createChunkDecodeError, DecodeError } from '../../assert.js';
-import { paethPredicator } from '../../paeth.js';
+import { createChunkDecodeError, DecodeError } from '../assert.js';
+import { paethPredicator } from '../../shared/paeth.js';
 import { ChunkPartByteLength, ColorType, FilterType, IDecodeContext, InterlaceMethod, IPngChunk, IPngHeaderDetails, IPngMetadataTransparency, IPngPaletteInternal } from '../../types.js';
 
 /**

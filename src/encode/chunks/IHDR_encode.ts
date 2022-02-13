@@ -5,7 +5,7 @@
  */
 
 import { IEncodeContext, IImage32, IImage64 } from '../../types.js';
-import { writeChunkDataFn } from '../../write.js';
+import { writeChunkDataFn } from '../write.js';
 
 const enum Constants {
   DataLength = 13

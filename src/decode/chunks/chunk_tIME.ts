@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkSinglular } from '../../assert.js';
+import { assertChunkDataLengthEquals, assertChunkSinglular } from '../assert.js';
 import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataLastModificationTime } from '../../types.js';
 
 /**

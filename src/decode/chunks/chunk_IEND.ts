@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthEquals, assertChunkFollows } from '../../assert.js';
+import { assertChunkDataLengthEquals, assertChunkFollows } from '../assert.js';
 import { IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes } from '../../types.js';
 
 /**

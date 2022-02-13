@@ -6,7 +6,7 @@
 
 import { EncodeError } from '../../encode/assert.js';
 import { IEncodeContext, IImage32, IImage64 } from '../../types.js';
-import { writeChunkDataFn } from '../../write.js';
+import { writeChunkDataFn } from '../write.js';
 
 export function encodeChunk(
   ctx: IEncodeContext,

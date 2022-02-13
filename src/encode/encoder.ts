@@ -4,15 +4,15 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { IEncodedPng } from '../typings/api.js';
-import { DecodeWarning } from './assert.js';
+import { IEncodedPng } from '../../typings/api.js';
+import { DecodeWarning } from '../decode/assert.js';
 import { ByteStream } from './byteStream.js';
-import { encodeChunk as encodeIDAT } from './encode/chunks/IDAT_encode.js';
-import { encodeChunk as encodeIEND } from './encode/chunks/IEND_encode.js';
-import { encodeChunk as encodeIHDR } from './encode/chunks/IHDR_encode.js';
-import { handleWarning } from './encode/assert.js';
-import { EncodeError, EncodeWarning } from './png.js';
-import { ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from './types.js';
+import { encodeChunk as encodeIDAT } from './chunks/IDAT_encode.js';
+import { encodeChunk as encodeIEND } from './chunks/IEND_encode.js';
+import { encodeChunk as encodeIHDR } from './chunks/IHDR_encode.js';
+import { handleWarning } from './assert.js';
+import { EncodeError, EncodeWarning } from '../png.js';
+import { ColorType, IEncodeContext, IEncodePngOptions, IImage32, IImage64, InterlaceMethod, KnownChunkTypes } from '../types.js';
 
 /**
  * All lazy chunk decoders are explicitly mapped here such that bundlers are able to bundle all
@@ -23,7 +23,7 @@ function getChunkDecoder(type: KnownChunkTypes): Promise<{ encodeChunk: (
   image: Readonly<IImage32> | Readonly<IImage64>
 ) => Uint8Array; }> {
   switch (type) {
-    case KnownChunkTypes.tRNS: return import(`./encode/chunks/tRNS_encode.js`);
+    case KnownChunkTypes.tRNS: return import(`./chunks/tRNS_encode.js`);
     /* istanbul ignore next - this error should never happen in practice */
     default:
       // Throw a regular error as this is unexpected
@@ -44,7 +44,7 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
 
   sections.push(encodeIHDR(ctx, image));
   if (ctx.colorType === ColorType.Indexed) {
-    const result = (await import(`./encode/chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
+    const result = (await import(`./chunks/PLTE_encode.js`)).encodeChunk(ctx, image);
     ctx.palette = result.palette;
     sections.push(result.chunkData);
   }
@@ -54,12 +54,12 @@ export async function encodePng(image: Readonly<IImage32> | Readonly<IImage64>, 
   sections.push(encodeIDAT(ctx, image));
   // tEXt chunks
   if (options?.ancillaryChunks === undefined) {
-    sections.push((await import(`./encode/chunks/tEXt_encode.js`)).encodeChunk(ctx, image, 'Software', '@lunapaint/png-codec'));
+    sections.push((await import(`./chunks/tEXt_encode.js`)).encodeChunk(ctx, image, 'Software', '@lunapaint/png-codec'));
   } else {
     for (const chunk of options.ancillaryChunks) {
       switch (chunk.type) {
         case KnownChunkTypes.tEXt:
-          sections.push((await import(`./encode/chunks/tEXt_encode.js`)).encodeChunk(ctx, image, chunk.keyword, chunk.text));
+          sections.push((await import(`./chunks/tEXt_encode.js`)).encodeChunk(ctx, image, chunk.keyword, chunk.text));
           break;
         default:
           throw new Error(`Cannot encode chunk type "${chunk.type}"`);

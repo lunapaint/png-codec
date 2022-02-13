@@ -6,7 +6,7 @@
 
 import * as pako from 'pako';
 import { createChunkDecodeWarning } from './assert.js';
-import { IDecodeContext, IPngChunk } from './types';
+import { IDecodeContext, IPngChunk } from '../types';
 
 export function readText(ctx: IDecodeContext, chunk: IPngChunk, textDecoder: TextDecoder | undefined, maxLength: number | undefined, offset: number, maxOffset: number, readTrailingNull: boolean, isCompressed?: boolean): { bytesRead: number, text: string } {
   const bytes = [];

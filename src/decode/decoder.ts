@@ -6,11 +6,11 @@
 
 import { convert16BitTo8BitData } from './array.js';
 import { createChunkDecodeWarning, DecodeError, DecodeWarning, handleWarning } from './assert.js';
-import { parseChunk as parseChunkIDAT } from './decode/chunks/chunk_IDAT.js';
-import { parseChunk as parseChunkIEND } from './decode/chunks/chunk_IEND.js';
-import { parseChunk as parseChunkIHDR } from './decode/chunks/chunk_IHDR.js';
-import { crc32 } from './crc32.js';
-import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata, IInitialDecodeContext } from './types.js';
+import { parseChunk as parseChunkIDAT } from './chunks/chunk_IDAT.js';
+import { parseChunk as parseChunkIEND } from './chunks/chunk_IEND.js';
+import { parseChunk as parseChunkIHDR } from './chunks/chunk_IHDR.js';
+import { crc32 } from '../shared/crc32.js';
+import { ChunkPartByteLength, IDecodedPng, IDecodePngOptions, IImage32, IImage64, IDecodeContext, IPngChunk, IPngHeaderDetails, KnownChunkTypes, PngMetadata, IInitialDecodeContext } from '../types.js';
 
 export function verifyPngSignature(ctx: IInitialDecodeContext): void {
   if (ctx.view.byteLength < 7) {
@@ -69,25 +69,25 @@ const allLazyChunkTypes: ReadonlyArray<string> = Object.freeze([
  */
 function getChunkDecoder(type: KnownChunkTypes): Promise<{ parseChunk: (ctx: IDecodeContext, header: IPngHeaderDetails, chunk: IPngChunk) => PngMetadata }> {
   switch (type) {
-    case KnownChunkTypes.bKGD: return import(`./decode/chunks/chunk_bKGD.js`);
-    case KnownChunkTypes.cHRM: return import(`./decode/chunks/chunk_cHRM.js`);
-    case KnownChunkTypes.eXIf: return import(`./decode/chunks/chunk_eXIf.js`);
-    case KnownChunkTypes.gAMA: return import(`./decode/chunks/chunk_gAMA.js`);
-    case KnownChunkTypes.hIST: return import(`./decode/chunks/chunk_hIST.js`);
-    case KnownChunkTypes.iCCP: return import(`./decode/chunks/chunk_iCCP.js`);
-    case KnownChunkTypes.iTXt: return import(`./decode/chunks/chunk_iTXt.js`);
-    case KnownChunkTypes.tIME: return import(`./decode/chunks/chunk_tIME.js`);
-    case KnownChunkTypes.oFFs: return import(`./decode/chunks/chunk_oFFs.js`);
-    case KnownChunkTypes.pCAL: return import(`./decode/chunks/chunk_pCAL.js`);
-    case KnownChunkTypes.pHYs: return import(`./decode/chunks/chunk_pHYs.js`);
-    case KnownChunkTypes.sBIT: return import(`./decode/chunks/chunk_sBIT.js`);
-    case KnownChunkTypes.sCAL: return import(`./decode/chunks/chunk_sCAL.js`);
-    case KnownChunkTypes.sPLT: return import(`./decode/chunks/chunk_sPLT.js`);
-    case KnownChunkTypes.sRGB: return import(`./decode/chunks/chunk_sRGB.js`);
-    case KnownChunkTypes.sTER: return import(`./decode/chunks/chunk_sTER.js`);
-    case KnownChunkTypes.tEXt: return import(`./decode/chunks/chunk_tEXt.js`);
-    case KnownChunkTypes.tRNS: return import(`./decode/chunks/chunk_tRNS.js`);
-    case KnownChunkTypes.zTXt: return import(`./decode/chunks/chunk_zTXt.js`);
+    case KnownChunkTypes.bKGD: return import(`./chunks/chunk_bKGD.js`);
+    case KnownChunkTypes.cHRM: return import(`./chunks/chunk_cHRM.js`);
+    case KnownChunkTypes.eXIf: return import(`./chunks/chunk_eXIf.js`);
+    case KnownChunkTypes.gAMA: return import(`./chunks/chunk_gAMA.js`);
+    case KnownChunkTypes.hIST: return import(`./chunks/chunk_hIST.js`);
+    case KnownChunkTypes.iCCP: return import(`./chunks/chunk_iCCP.js`);
+    case KnownChunkTypes.iTXt: return import(`./chunks/chunk_iTXt.js`);
+    case KnownChunkTypes.tIME: return import(`./chunks/chunk_tIME.js`);
+    case KnownChunkTypes.oFFs: return import(`./chunks/chunk_oFFs.js`);
+    case KnownChunkTypes.pCAL: return import(`./chunks/chunk_pCAL.js`);
+    case KnownChunkTypes.pHYs: return import(`./chunks/chunk_pHYs.js`);
+    case KnownChunkTypes.sBIT: return import(`./chunks/chunk_sBIT.js`);
+    case KnownChunkTypes.sCAL: return import(`./chunks/chunk_sCAL.js`);
+    case KnownChunkTypes.sPLT: return import(`./chunks/chunk_sPLT.js`);
+    case KnownChunkTypes.sRGB: return import(`./chunks/chunk_sRGB.js`);
+    case KnownChunkTypes.sTER: return import(`./chunks/chunk_sTER.js`);
+    case KnownChunkTypes.tEXt: return import(`./chunks/chunk_tEXt.js`);
+    case KnownChunkTypes.tRNS: return import(`./chunks/chunk_tRNS.js`);
+    case KnownChunkTypes.zTXt: return import(`./chunks/chunk_zTXt.js`);
     /* istanbul ignore next - this error should never happen in practice */
     default:
       // Throw a regular error as this is unexpected
@@ -157,7 +157,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
         break;
       }
       case KnownChunkTypes.PLTE:
-        ctx.palette = (await import(`./decode/chunks/chunk_PLTE.js`)).parseChunk(ctx, header, chunk);
+        ctx.palette = (await import(`./chunks/chunk_PLTE.js`)).parseChunk(ctx, header, chunk);
         break;
       case KnownChunkTypes.IEND:
         parseChunkIEND(ctx, header, chunk);

@@ -4,8 +4,8 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkDataLengthGte } from '../../assert.js';
-import { readText } from '../../text.js';
+import { assertChunkDataLengthGte } from '../assert.js';
+import { readText } from '../text.js';
 import { ChunkPartByteLength, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngMetadataTextualData } from '../../types.js';
 
 /**

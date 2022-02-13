@@ -4,7 +4,7 @@
  * Released under MIT license. See LICENSE in the project root for details.
  */
 
-import { assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, handleWarning } from '../../assert.js';
+import { assertChunkPrecedes, assertChunkSinglular, createChunkDecodeWarning, handleWarning } from '../assert.js';
 import { ChunkPartByteLength, ColorType, IDecodeContext, IPngChunk, IPngHeaderDetails, IPngPaletteInternal, KnownChunkTypes } from '../../types.js';
 
 /**

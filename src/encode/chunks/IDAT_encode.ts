@@ -5,10 +5,10 @@
  */
 
 import * as pako from 'pako';
-import { ByteStream } from '../../byteStream.js';
-import { paethPredicator } from '../../paeth.js';
+import { ByteStream } from '../byteStream.js';
+import { paethPredicator } from '../../shared/paeth.js';
 import { ColorType, FilterType, IEncodeContext, IImage32, IImage64, InterlaceMethod } from '../../types.js';
-import { writeChunk } from '../../write.js';
+import { writeChunk } from '../write.js';
 
 export function encodeChunk(
   ctx: IEncodeContext,
