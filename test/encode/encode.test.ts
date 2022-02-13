@@ -7,7 +7,7 @@
 import { deepStrictEqual, fail, strictEqual } from 'assert';
 import * as fs from 'fs';
 import { join } from 'path';
-import { EncodeError, EncodeWarning } from '../../out-dev/png.js';
+import { EncodeError, EncodeWarning } from '../../out-dev/public/png.js';
 import { decodePng } from '../../out-dev/decode/decoder.js';
 import { encodePng } from '../../out-dev/encode/encoder.js';
 import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../typings/api.js';

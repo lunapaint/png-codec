@@ -24,6 +24,6 @@
     "./**/*"
   ],
   "references": [
-    { "path": "../src/tsconfig.dev.json" }
+    { "path": "../src/public/tsconfig.dev.json" }
   ]
 }

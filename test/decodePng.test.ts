@@ -6,7 +6,7 @@
 
 import { deepStrictEqual, fail, strictEqual, throws } from 'assert';
 import { join } from 'path';
-import { decodePng } from '../out-dev/png.js';
+import { decodePng } from '../out-dev/public/png.js';
 import { DecodeError } from '../out-dev/decode/assert.js';
 import * as fs from 'fs';
 import { KnownChunkTypes } from '../out-dev/shared/types.js';
