@@ -1,6 +1,6 @@
 # @lunapaint/png-codec
 
-This is a PNG decoder library for JavaScript that runs in both the browser and in Node.js. It is used in [Luna Paint](https://marketplace.visualstudio.com/items?itemName=Tyriar.luna-paint) (an image editor for VS Code) to work with PNG files.
+This is a PNG decoder and encoder library for JavaScript that runs in both the browser and in Node.js. It is used in [Luna Paint](https://marketplace.visualstudio.com/items?itemName=Tyriar.luna-paint) (an image editor for VS Code) to work with PNG files.
 
 You can try it out on [`vscode.dev`](https://vscode.dev/) by installing the Luna Paint extension and opening a png file.
 
@@ -8,7 +8,7 @@ You can try it out on [`vscode.dev`](https://vscode.dev/) by installing the Luna
 ## Features
 
 - **Performance**: Just like Luna Paint, performance is a priority. This includes code splitting such that code that parses optional chunks are only loaded as needed.
-- **Correctness**: The library has > 97% code coverage via over 3000 tests, including full coverage of [PngSuite](https://github.com/lunapaint/pngsuite)—the "official" test suite for PNG.
+- **Correctness**: The library has > 97% code coverage via over 7500 tests, including full coverage of [PngSuite](https://github.com/lunapaint/pngsuite)—the "official" test suite for PNG.
 - **Simple API**: The API is a well documented [TypeScript declaration file](https://github.dev/lunapaint/png-codec/blob/main/typings/api.d.ts).
 - **Metadata**: All supported metadata is exposed on the API such as text, gamma, default background color, etc.
 - **Readable Codebase**: A big part of this was a learning exercise for me so I put some effort in to make the code as readable as possible to help others on the same journey.
