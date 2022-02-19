@@ -210,7 +210,7 @@ export async function decodePng(data: Readonly<Uint8Array>, options: IDecodePngO
       interlaceMethod: header.interlaceMethod
     },
     palette: ctx.palette,
-    metadata: ctx.metadata.length > 0 ? ctx.metadata : undefined,
+    metadata: ctx.metadata,
     rawChunks: chunks,
     warnings: ctx.warnings,
     info: ctx.info

@@ -32,7 +32,7 @@ describe('ancillary chunks', () => {
       }]);
     });
     it('should suppress default tEXt chunk when using []', async () => {
-      await testAncillaryChunks([], undefined);
+      await testAncillaryChunks([], []);
     });
     it('should write a custom tEXt chunk', async () => {
       await testAncillaryChunks([{

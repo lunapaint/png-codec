@@ -53,7 +53,7 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
    * A list of metadata entries that have been decoded. See
    * {@link IDecodePngOptions.parseChunkTypes} for how to decode additional metadata entries.
    */
-  metadata?: PngMetadata[];
+  metadata: PngMetadata[];
 
   /**
    * All raw chunks contained in the png.
@@ -74,7 +74,7 @@ export interface IDecodedPng<T extends IImage32 | IImage64> {
    * Strict mode can be enabled via {@link IDecodePngOptions.strictMode} which will throw an error when
    * any warning is encountered.
    */
-  warnings?: DecodeWarning[];
+  warnings: DecodeWarning[];
 
   /**
    * Any informational messages when decoding. These are things of note but not important enough to
@@ -96,7 +96,7 @@ export interface IEncodedPng {
    * Strict mode can be enabled via {@link IEncodePngOptions.strictMode} which will throw an error
    * when any warning is encountered.
    */
-  warnings?: EncodeWarning[];
+  warnings: EncodeWarning[];
 
   /**
    * Any informational messages when encoding. These are things of note but not important enough to

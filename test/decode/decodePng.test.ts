@@ -32,7 +32,7 @@ describe('decodePng', () => {
     it('should not load sBIT when not specified', async () => {
       const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `cs3n2c16.png`)));
       const result = await decodePng(data);
-      deepStrictEqual(result.metadata, undefined);
+      deepStrictEqual(result.metadata, []);
     });
     it('should load sBIT when specified', async () => {
       const data = new Uint8Array(await fs.promises.readFile(join(pngSuiteRoot, `cs3n2c16.png`)));
