@@ -8,6 +8,9 @@
   "parserOptions": {
     "project": [
       "src/public/tsconfig.dev.json",
+      "src/decode/tsconfig.dev.json",
+      "src/encode/tsconfig.dev.json",
+      "src/shared/tsconfig.dev.json",
       "test/tsconfig.json"
     ],
     "sourceType": "module"
