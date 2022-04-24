@@ -29,7 +29,7 @@ export function verifyPngSignature(ctx: IInitialDecodeContext): void {
   if (!isCorrect) {
     const actual = formatHexAssertion(Array.from(new Uint8Array(ctx.view.buffer).slice(ctx.view.byteOffset, ctx.view.byteOffset + 8)));
     const expected = formatHexAssertion([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
-    throw new DecodeError(ctx, `Png signature is not correct (${actual} !== ${expected})`, 0);
+    throw new DecodeError(ctx, `Png signature is not correct (${actual} != ${expected})`, 0);
   }
 }
 
@@ -280,7 +280,7 @@ export function readChunk(ctx: IInitialDecodeContext, offset: number): IPngChunk
   const actualCrc = ctx.view.getUint32(offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength) >>> 0;
   const expectedCrc = crc32(ctx.view, offset + ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
   if (actualCrc !== expectedCrc) {
-    handleWarning(ctx, new DecodeWarning(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`, offset));
+    handleWarning(ctx, new DecodeWarning(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} != 0x${expectedCrc.toString(16)})`, offset));
   }
 
   return {
