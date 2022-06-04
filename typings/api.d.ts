@@ -946,7 +946,7 @@ export class DecodeError extends Error {
   offset: number;
 
   /**
-   * The partially decoded image which gives access to deocde warnings, dimensions, etc.
+   * The partially decoded image which gives access to decode warnings, dimensions, etc.
    */
   partiallyDecodedImage: Partial<IDecodedPng<any>>;
 }
