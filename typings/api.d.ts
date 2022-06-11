@@ -106,7 +106,7 @@ export interface IEncodedPng {
 }
 
 /**
- * A 32-bit image (ie. 8 bit depth).
+ * A 32-bit image, 8 bits per channel in rgba format.
  */
 export interface IImage32 {
   data: Uint8Array;
@@ -115,7 +115,7 @@ export interface IImage32 {
 }
 
 /**
- * A 64-bit image (ie. 16 bit depth).
+ * A 64-bit image, 16 bits per channel in rgba format.
  */
 export interface IImage64 {
   data: Uint16Array;
