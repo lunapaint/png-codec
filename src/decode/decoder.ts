@@ -280,7 +280,7 @@ export function readChunk(ctx: IInitialDecodeContext, offset: number): IPngChunk
   const actualCrc = ctx.view.getUint32(offset + ChunkPartByteLength.Length + ChunkPartByteLength.Type + dataLength) >>> 0;
   const expectedCrc = crc32(ctx.view, offset + ChunkPartByteLength.Length, ChunkPartByteLength.Type + dataLength);
   if (actualCrc !== expectedCrc) {
-    handleWarning(ctx, new DecodeWarning(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} != 0x${expectedCrc.toString(16)})`, offset));
+    handleWarning(ctx, new DecodeWarning(`CRC for chunk "${type}" at offset 0x${offset.toString(16)} doesn't match (0x${actualCrc.toString(16)} !== 0x${expectedCrc.toString(16)})`, offset));
   }
 
   return {
