@@ -8,7 +8,7 @@
     "build": "tsc -b ./tsconfig.all.json",
     "watch": "tsc -b -w ./tsconfig.all.json --preserveWatchOutput",
     "lint": "eslint -c .eslintrc.json --max-warnings 0 --ext .ts src/ test/",
-    "test": "mocha ./out-test/**/*.js",
+    "test": "mocha ./out-test/**/*.js --diff false",
     "coverage": "nyc npm run test",
     "encode": "node ./scripts/encode-image.js"
   },
