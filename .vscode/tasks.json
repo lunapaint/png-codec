@@ -22,8 +22,10 @@
       }
     },
     {
-      "type": "npm",
-      "script": "test",
+      "type": "shell",
+      "label": "test",
+      "command": "yarn",
+      "args": ["test"],
       "group": {
         "kind": "test",
         "isDefault": true
