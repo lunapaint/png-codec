@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "types": [
-      "../node_modules/@types/mocha",
-      "../node_modules/@types/node"
+      "../../node_modules/@types/mocha",
+      "../../node_modules/@types/node"
     ],
     "composite": true,
     "strict": true,
@@ -14,7 +14,7 @@
     "module": "CommonJS",
     "target": "ES2020",
     "rootDir": ".",
-    "outDir": "../out-test",
+    "outDir": "../../out-dev/test",
     "lib": [
       "DOM",
       "ES2020"
@@ -24,6 +24,6 @@
     "./**/*"
   ],
   "references": [
-    { "path": "../src/public/tsconfig.dev.json" }
+    { "path": "../public/tsconfig.dev.json" }
   ]
 }

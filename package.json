@@ -5,10 +5,10 @@
   "main": "out-dist/public/png.js",
   "typings": "typings/api.d.ts",
   "scripts": {
-    "build": "tsc -b ./tsconfig.all.json",
-    "watch": "tsc -b -w ./tsconfig.all.json --preserveWatchOutput",
+    "build": "tsc -b ./tsconfig.json",
+    "watch": "tsc -b -w ./tsconfig.json --preserveWatchOutput",
     "lint": "eslint -c .eslintrc.json --max-warnings 0 --ext .ts src/ test/",
-    "test": "mocha ./out-test/**/*.js --diff false --enable-source-maps",
+    "test": "mocha ./out-dev/test/**/*.js --diff false --enable-source-maps",
     "coverage": "nyc npm run test",
     "encode": "node ./scripts/encode-image.js"
   },

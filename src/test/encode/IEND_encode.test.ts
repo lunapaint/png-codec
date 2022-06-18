@@ -5,7 +5,7 @@
  */
 
 import { strictEqual } from 'assert';
-import { encodeChunk } from '../../out-dev/encode/chunks/IEND_encode.js';
+import { encodeChunk } from '../../encode/chunks/IEND_encode.js';
 
 describe('IEND_encode', () => {
   it('should write the IEND chunk correctly', async () => {

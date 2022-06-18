@@ -7,9 +7,9 @@
 import { deepStrictEqual, fail, strictEqual } from 'assert';
 import * as fs from 'fs';
 import { join } from 'path';
-import { EncodeError, EncodeWarning, encodePng } from '../../out-dev/public/png.js';
-import { decodePng } from '../../out-dev/decode/decoder.js';
-import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../typings/api.js';
+import { EncodeError, EncodeWarning, encodePng } from '../../public/png.js';
+import { decodePng } from '../../decode/decoder.js';
+import { BitDepth, ColorType, IDecodedPng, IImage32, IImage64 } from '../../../typings/api.js';
 import { colorTypeIdToName, dataArraysEqual } from '../shared/testUtil.js';
 
 const red   = [0xFF, 0x00, 0x00, 0xFF];

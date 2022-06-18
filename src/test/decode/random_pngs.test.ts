@@ -25,6 +25,7 @@ function getNumberAtIndex(file: string, index: number): number {
 // pixel data is random and not being tested, only ensuring images load in strict mode and have the
 // expected properties.
 describe('random_pngs', () => {
+  console.log('dir', __dirname);
   const testFiles = fs.readdirSync(suiteRoot);
   const testsByColorType: Map<number, string[]> = new Map();
   const colorTypes: (0 | 2 | 3 | 4 | 6)[] = [0, 2, 3, 4, 6];

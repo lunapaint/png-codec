@@ -4,6 +4,6 @@
   "references": [
     { "path": "./src/public/tsconfig.dev.json" },
     { "path": "./src/public/tsconfig.dist.json" },
-    { "path": "./test" }
+    { "path": "./src/test/tsconfig.dev.json" }
   ]
 }

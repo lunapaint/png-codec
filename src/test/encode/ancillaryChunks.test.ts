@@ -5,9 +5,9 @@
  */
 
 import { deepStrictEqual } from 'assert';
-import { decodePng } from '../../out-dev/decode/decoder.js';
-import { encodePng } from '../../out-dev/encode/encoder.js';
-import { IDecodedPng, IEncodePngOptions, IImage32 } from '../../typings/api.js';
+import { decodePng } from '../../decode/decoder.js';
+import { encodePng } from '../../encode/encoder.js';
+import { IDecodedPng, IEncodePngOptions, IImage32 } from '../../../typings/api.js';
 
 
 const white = [0xFF, 0xFF, 0xFF, 0xFF];

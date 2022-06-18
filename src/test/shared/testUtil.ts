@@ -7,8 +7,8 @@
 import { deepStrictEqual, fail, ok, strictEqual } from 'assert';
 import * as fs from 'fs';
 import { join } from 'path';
-import { decodePng } from '../../out-dev/public/png.js';
-import { ColorType, IPngDetails, PngMetadata } from '../../typings/api';
+import { decodePng } from '../../public/png.js';
+import { ColorType, IPngDetails, PngMetadata } from '../../../typings/api';
 
 export interface ITestOptions {
   /**
@@ -127,9 +127,9 @@ export function createTests(testCases: TestCase[], fixture: string) {
       // const require = createRequire(import.meta.url);
       let expected: number[];
       try {
-        expected = require(`../../${fixture}/json/${options.customFile || name}.json`);
+        expected = require(`../../../${fixture}/json/${options.customFile || name}.json`);
       } catch {
-        expected = require(`../../${fixture}/../json/${options.customFile || name}.json`);
+        expected = require(`../../../${fixture}/../json/${options.customFile || name}.json`);
       }
       if (options.forceBitDepth8) {
         for (let i = 0; i < actual.length; i += 4) {
