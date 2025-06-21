@@ -72,7 +72,7 @@ export class Palette implements IPngPaletteInternal {
 
   private _checkIndex(colorIndex: number) {
     // any out-of-range pixel value found in the image data is an error.
-    if (colorIndex < 0 || colorIndex * 3 > this._length - 3) {
+    if (colorIndex < 0 || colorIndex >= this._length / 3) {
       // This is a regular error as it is exposed on the API
       throw new Error(`Palette does not contain color index "${colorIndex}"`);
     }
